@@ -113,7 +113,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-024 | Install azaharizaman/php-blockchain package via composer require | | |
+| TASK-024 | Install azaharizaman/php-blockchain:dev-main package via composer require | | |
 | TASK-025 | Publish blockchain configuration if available | | |
 | TASK-026 | Create blockchain_verifications table migration with columns: id, model_type, model_id, activity_log_id, hash, previous_hash, block_index, created_at | | |
 | TASK-027 | Add indexes: (model_type, model_id), activity_log_id, hash | | |
