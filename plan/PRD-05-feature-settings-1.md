@@ -157,6 +157,7 @@ This implementation plan establishes a comprehensive, hierarchical settings mana
 |------|-------------|-----------|------|
 | TASK-046 | Create config/settings.php for setting schema definitions | | |
 | TASK-047 | Define structure: ['key' => ['type' => 'string', 'default' => 'value', 'rules' => ['required', 'min:3'], 'encrypted' => false, 'group' => 'system']] | | |
+|         | **Note:** The structure above uses PHP array syntax and is intended for the `config/settings.php` file. | | |
 | TASK-048 | Define system settings: app.name, app.timezone, app.locale, app.date_format, maintenance.enabled | | |
 | TASK-049 | Define tenant settings: company.name, company.logo, company.primary_color, company.default_currency, company.tax_rate | | |
 | TASK-050 | Define module settings: inventory.valuation_method, inventory.default_warehouse, sales.tax_enabled, sales.discount_allowed | | |
