@@ -44,9 +44,9 @@ class AuthServiceProvider extends ServiceProvider
         // Define gate for tenant impersonation
         // Only users with super admin privileges can impersonate tenants
         Gate::define('impersonate-tenant', function ($user, $tenant) {
-            // Check if user has admin privileges
-            // This allows future integration with spatie/laravel-permission or similar
-            return method_exists($user, 'can') && $user->can('impersonate-tenants');
+            // For now, only admins can impersonate tenants
+            // TODO: Replace with spatie/laravel-permission check when implemented
+            return $user->isAdmin();
         });
     }
 }
