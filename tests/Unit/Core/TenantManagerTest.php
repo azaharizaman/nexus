@@ -312,6 +312,31 @@ class TenantManagerTest extends TestCase
     }
 
     /**
+     * Test TenantManager accepts any subscription plan value
+     *
+     * Subscription plans are not restricted to a predefined set of values.
+     * This test verifies that any string value is accepted for subscription_plan.
+     */
+    public function test_accepts_any_subscription_plan_value(): void
+    {
+        $testPlans = ['premium', 'enterprise', 'starter', 'custom-plan', 'trial-2024'];
+
+        foreach ($testPlans as $plan) {
+            $data = [
+                'name' => "Tenant with {$plan}",
+                'domain' => strtolower($plan).'.example.com',
+                'billing_email' => "billing@{$plan}.com",
+                'subscription_plan' => $plan,
+            ];
+
+            $tenant = $this->tenantManager->create($data);
+
+            $this->assertInstanceOf(Tenant::class, $tenant);
+            $this->assertEquals($plan, $tenant->subscription_plan);
+        }
+    }
+
+    /**
      * Test TenantManager validates required fields
      */
     public function test_create_fails_with_missing_required_fields(): void
