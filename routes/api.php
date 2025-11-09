@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\TenantController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,4 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// API routes will be registered here
+// API Version 1
+Route::prefix('v1')->name('api.v1.')->group(function () {
+    // Tenant Management (Admin Only) - Protected by auth:sanctum middleware
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('tenants', TenantController::class);
+    });
+});

@@ -41,6 +41,11 @@ class IdentifyTenant
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Skip tenant identification for system-level routes (e.g., tenant management)
+        if ($this->shouldSkipTenantIdentification($request)) {
+            return $next($request);
+        }
+
         // Note: This check is redundant if auth middleware is properly applied
         // but provides a safety net for misconfigured routes
         if (! auth()->check()) {
@@ -73,5 +78,23 @@ class IdentifyTenant
 
         // Continue with request
         return $next($request);
+    }
+
+    /**
+     * Determine if tenant identification should be skipped for this request
+     *
+     * @param  Request  $request  The HTTP request
+     * @return bool
+     */
+    protected function shouldSkipTenantIdentification(Request $request): bool
+    {
+        $path = $request->path();
+
+        // Skip for tenant management routes (admin-only)
+        if (str_starts_with($path, 'api/v1/tenants')) {
+            return true;
+        }
+
+        return false;
     }
 }
