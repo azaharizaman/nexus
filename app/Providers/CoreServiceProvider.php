@@ -35,6 +35,12 @@ class CoreServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register policies
+        \Illuminate\Support\Facades\Gate::policy(
+            \App\Domains\Core\Models\Tenant::class,
+            \App\Domains\Core\Policies\TenantPolicy::class
+        );
+
         // Define gate for tenant impersonation
         // Only users with 'super-admin' role or specific permission can impersonate
         \Illuminate\Support\Facades\Gate::define('impersonate-tenant', function ($user, $tenant) {
