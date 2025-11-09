@@ -14,7 +14,8 @@ Create GitHub Issues for the implementation plan at `${file}`.
 3. Check existing labels to determine if there are enough labels for new issues
 4. Assign labels to issues based on the contents of each phase, you can create new labels if necessary that better reflects the issues if the existing ones are not sufficient
 5. Create new issue per phase using `create_issue` or update existing with `update_issue`
-6. Use `feature_request.yml` or `chore_request.yml` templates (fallback to default)
+6. Test with creating one issue first to see if you have access to the right tools for this job. If successful, proceed to create the remaining issues. and if you fail, stop the process and report the error.
+7. Use `feature_request.yml` or `chore_request.yml` templates (fallback to default)
 
 ## Requirements
 
