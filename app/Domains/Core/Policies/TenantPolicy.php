@@ -19,7 +19,6 @@ class TenantPolicy
      * Determine whether the user can view any tenants.
      *
      * @param  User  $user  The authenticated user
-     * @return bool
      */
     public function viewAny(User $user): bool
     {
@@ -31,7 +30,6 @@ class TenantPolicy
      *
      * @param  User  $user  The authenticated user
      * @param  Tenant  $tenant  The tenant to view
-     * @return bool
      */
     public function view(User $user, Tenant $tenant): bool
     {
@@ -42,7 +40,6 @@ class TenantPolicy
      * Determine whether the user can create tenants.
      *
      * @param  User  $user  The authenticated user
-     * @return bool
      */
     public function create(User $user): bool
     {
@@ -54,7 +51,6 @@ class TenantPolicy
      *
      * @param  User  $user  The authenticated user
      * @param  Tenant  $tenant  The tenant to update
-     * @return bool
      */
     public function update(User $user, Tenant $tenant): bool
     {
@@ -66,7 +62,6 @@ class TenantPolicy
      *
      * @param  User  $user  The authenticated user
      * @param  Tenant  $tenant  The tenant to delete
-     * @return bool
      */
     public function delete(User $user, Tenant $tenant): bool
     {
@@ -78,7 +73,6 @@ class TenantPolicy
      *
      * @param  User  $user  The authenticated user
      * @param  Tenant  $tenant  The tenant to restore
-     * @return bool
      */
     public function restore(User $user, Tenant $tenant): bool
     {
@@ -90,7 +84,6 @@ class TenantPolicy
      *
      * @param  User  $user  The authenticated user
      * @param  Tenant  $tenant  The tenant to force delete
-     * @return bool
      */
     public function forceDelete(User $user, Tenant $tenant): bool
     {

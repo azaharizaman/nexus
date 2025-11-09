@@ -8,7 +8,6 @@ use App\Domains\Core\Actions\ArchiveTenantAction;
 use App\Domains\Core\Actions\CreateTenantAction;
 use App\Domains\Core\Actions\UpdateTenantAction;
 use App\Domains\Core\Contracts\TenantRepositoryContract;
-use App\Domains\Core\Enums\TenantStatus;
 use App\Domains\Core\Models\Tenant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTenantRequest;
@@ -43,7 +42,6 @@ class TenantController extends Controller
      * Supports pagination, filtering by status and search term, and sorting.
      *
      * @param  Request  $request  The HTTP request
-     * @return AnonymousResourceCollection
      */
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -95,7 +93,6 @@ class TenantController extends Controller
      * Store a newly created tenant.
      *
      * @param  StoreTenantRequest  $request  The validated request
-     * @return JsonResponse
      */
     public function store(StoreTenantRequest $request): JsonResponse
     {
@@ -110,13 +107,12 @@ class TenantController extends Controller
      * Display the specified tenant.
      *
      * @param  string  $id  The tenant UUID
-     * @return TenantResource
      */
     public function show(string $id): TenantResource
     {
         $tenant = $this->repository->findById($id);
 
-        abort_if(!$tenant, 404, 'Tenant not found');
+        abort_if(! $tenant, 404, 'Tenant not found');
 
         $this->authorize('view', $tenant);
 
@@ -133,13 +129,12 @@ class TenantController extends Controller
      *
      * @param  UpdateTenantRequest  $request  The validated request
      * @param  string  $id  The tenant UUID
-     * @return TenantResource
      */
     public function update(UpdateTenantRequest $request, string $id): TenantResource
     {
         $tenant = $this->repository->findById($id);
 
-        abort_if(!$tenant, 404, 'Tenant not found');
+        abort_if(! $tenant, 404, 'Tenant not found');
 
         $this->authorize('update', $tenant);
 
@@ -152,13 +147,12 @@ class TenantController extends Controller
      * Remove the specified tenant (archive/soft delete).
      *
      * @param  string  $id  The tenant UUID
-     * @return JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {
         $tenant = $this->repository->findById($id);
 
-        abort_if(!$tenant, 404, 'Tenant not found');
+        abort_if(! $tenant, 404, 'Tenant not found');
 
         $this->authorize('delete', $tenant);
 

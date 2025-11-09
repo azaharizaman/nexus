@@ -37,7 +37,6 @@ class IdentifyTenant
      * - 404 Not Found: if tenant cannot be resolved from database
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @return Response
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -84,7 +83,6 @@ class IdentifyTenant
      * Determine if tenant identification should be skipped for this request
      *
      * @param  Request  $request  The HTTP request
-     * @return bool
      */
     protected function shouldSkipTenantIdentification(Request $request): bool
     {
