@@ -97,7 +97,7 @@ class ListTenantsCommand extends Command
                     $tenant->id,
                     $tenant->name,
                     $tenant->domain,
-                    $tenant->status->label(),
+                    $tenant->status?->label() ?? 'Unknown',
                     $tenant->created_at->format('Y-m-d H:i:s'),
                 ];
             })->toArray();
