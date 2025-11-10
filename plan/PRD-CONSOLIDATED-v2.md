@@ -1,21 +1,26 @@
 ---
 goal: Laravel ERP System - Consolidated Product Requirements Document
-version: 2.0
+version: 2.1
 date_created: 2025-11-10
 last_updated: 2025-11-10
 owner: Core Development Team
 status: 'In Progress'
-tags: [consolidated, architecture, mvp, phase-1-6, enterprise-erp]
+tags: [consolidated, architecture, mvp, milestone-based, enterprise-erp]
+milestone_target: 2026-01-01
 ---
 
-# Laravel ERP System - Consolidated PRD v2.0
+# Laravel ERP System - Consolidated PRD v2.1
 
 ![Status: In Progress](https://img.shields.io/badge/status-In%20Progress-yellow)
 ![Architecture: Headless](https://img.shields.io/badge/architecture-Headless-blue)
-![API: RESTful](https://img.shields.io/badge/API-RESTful-green)
+![API: RESTful + GraphQL](https://img.shields.io/badge/API-RESTful%20%2B%20GraphQL-green)
+![MVP: Jan 1, 2026](https://img.shields.io/badge/MVP-Jan%201%2C%202026-red)
 
 **Last Updated:** November 10, 2025  
-**Target Release:** MVP Q2 2026
+**MVP Target:** 🎯 January 1, 2026  
+**Delivery Model:** Milestone-based (4 milestones)
+
+> **📋 See Also:** [MILESTONE-MAPPING.md](MILESTONE-MAPPING.md) for detailed milestone breakdown, issue dependencies, and progress tracking.
 
 ---
 
@@ -23,14 +28,48 @@ tags: [consolidated, architecture, mvp, phase-1-6, enterprise-erp]
 
 The Laravel ERP System is an **enterprise-grade, headless ERP backend** designed to rival SAP, Odoo, and Microsoft Dynamics while maintaining superior modularity, extensibility, and AI-powered automation capabilities. Built on Laravel 12+ and PHP 8.2+, the system follows a strict domain-driven design with contract-driven development, event-driven architecture, and complete package decoupling.
 
+**MVP Delivery Target:** January 1, 2026 (8 weeks from kickoff)
+
 ### System Characteristics
 
 - **Architecture:** Headless backend-only (RESTful API, GraphQL, WebSockets, Streaming)
 - **Database:** Agnostic (MySQL, PostgreSQL, SQLite, SQL Server)
 - **Integration:** AI automation via `azaharizaman/huggingface-php`
+- **API Standards:** RESTful + GraphQL for flexible data querying
 - **Design Philosophy:** Contract-driven, Domain-driven, Event-driven
 - **Target Users:** AI agents, custom frontends, automated systems
 - **Modularity:** Enable/disable modules without system-wide impact
+- **Delivery Model:** Milestone-based with explicit issue dependencies
+
+### MVP Scope (6 PRDs)
+
+```mermaid
+graph LR
+    subgraph "MVP Delivery - Jan 1, 2026"
+        M1[Milestone 1<br/>Infrastructure<br/>Nov 10-30] --> M2[Milestone 2<br/>Auth & Audit<br/>Dec 1-15]
+        M2 --> M3[Milestone 3<br/>Business<br/>Dec 16-25]
+        M3 --> M4[Milestone 4<br/>UOM & Final<br/>Dec 26 - Jan 1]
+    end
+    
+    PRD01[PRD-01<br/>Multi-tenancy<br/>✅ Complete] --> M1
+    PRD02A[PRD-02A<br/>Core Auth] --> M1
+    PRD02B[PRD-02B<br/>User Mgmt] --> M2
+    PRD02C[PRD-02C<br/>Security] --> M2
+    PRD03[PRD-03<br/>Audit] --> M2
+    PRD04[PRD-04<br/>Serial Numbers] --> M3
+    PRD05[PRD-05<br/>Settings] --> M3
+    PRD13[PRD-13<br/>UOM] --> M4
+    PRD00A[PRD-00A<br/>GraphQL] --> M4
+    PRD00B[PRD-00B<br/>AI Hooks] --> M4
+    
+    style PRD01 fill:#90EE90
+    style M1 fill:#FFE4B5
+    style M2 fill:#FFE4B5
+    style M3 fill:#FFE4B5
+    style M4 fill:#FFE4B5
+```
+
+**Total:** 9 sub-PRDs, 47 issues, 421 tasks
 
 ---
 
@@ -42,12 +81,52 @@ The system is organized into four hierarchical layers, each serving distinct pur
 
 **Purpose:** Architectural and technical requirements of the system foundation.
 
-**Status:** ✅ Fully Implemented
+**Status:** 🚧 In Progress (Multi-tenancy ✅, GraphQL 📋, AI 📋)
+
+**Architecture Diagram:**
+
+```mermaid
+graph TB
+    subgraph "Layer 0: Core Architecture"
+        MT[Multi-Tenancy<br/>✅ Complete]
+        DB[Database Design<br/>✅ Complete]
+        API[API Architecture<br/>🚧 In Progress]
+        PKG[Package Decoupling<br/>✅ High Priority Done]
+        GQL[GraphQL Schema<br/>📋 Planned]
+        AI[AI Automation<br/>📋 Planned]
+    end
+    
+    subgraph "External Integration"
+        REST[RESTful API<br/>/api/v1/*]
+        GRAPHQL[GraphQL API<br/>/graphql]
+        WS[WebSockets<br/>Real-time]
+        STREAM[Streaming<br/>Large Exports]
+        HF[HuggingFace PHP<br/>AI Models]
+    end
+    
+    MT --> API
+    DB --> API
+    PKG --> API
+    API --> REST
+    API --> GRAPHQL
+    API --> WS
+    API --> STREAM
+    GQL --> GRAPHQL
+    AI --> HF
+    
+    style MT fill:#90EE90
+    style DB fill:#90EE90
+    style PKG fill:#90EE90
+    style GQL fill:#FFE4B5
+    style AI fill:#FFE4B5
+    style API fill:#FFD700
+```
 
 **Components:**
 
 #### 1.1.1 Multi-Tenancy Infrastructure
 - **PRD Reference:** PRD-01 (Fully Implemented)
+- **Status:** ✅ Complete
 - **Scope:** Single-instance multi-organization support
 - **Key Features:**
   - Tenant model with UUID primary keys
@@ -64,6 +143,7 @@ The system is organized into four hierarchical layers, each serving distinct pur
   - Encrypted tenant configuration
 
 #### 1.1.2 Database Design
+- **Status:** ✅ Complete
 - **Primary Keys:** UUID across all tables
 - **Soft Deletes:** Enabled on all domain models
 - **Indexing Strategy:**
@@ -76,8 +156,9 @@ The system is organized into four hierarchical layers, each serving distinct pur
   - Check constraints for enum validation
 
 #### 1.1.3 API Design
+- **Status:** 🚧 In Progress (RESTful ✅, GraphQL 📋)
 - **RESTful API:** `/api/v1/` namespace
-- **GraphQL:** Schema-first design (future)
+- **GraphQL API:** Schema-first design (PRD-00A, Milestone 4)
 - **WebSockets:** Real-time updates (future)
 - **Streaming:** Large dataset exports (future)
 - **Versioning:** URI versioning (`/v1/`, `/v2/`)
@@ -85,7 +166,51 @@ The system is organized into four hierarchical layers, each serving distinct pur
 - **Pagination:** Cursor-based and offset-based
 - **Rate Limiting:** Per user, per tenant, per endpoint
 
-#### 1.1.4 Package Decoupling Strategy
+#### 1.1.4 GraphQL API Foundation (NEW)
+- **PRD Reference:** PRD-00A (Milestone 4)
+- **Status:** 📋 Planned
+- **Purpose:** Flexible, client-driven data querying
+- **Key Features:**
+  - Schema-first design approach
+  - Type-safe queries and mutations
+  - Nested resource fetching (solve N+1 problem)
+  - Real-time subscriptions via WebSockets
+  - GraphQL Playground for API exploration
+- **Implementation:**
+  - Laravel Lighthouse or GraphQLite package
+  - Tenant-scoped resolvers
+  - Authorization via Sanctum + Policies
+  - Rate limiting per query complexity
+- **Use Cases:**
+  - Complex data fetching for dashboards
+  - Mobile app integration
+  - Third-party API consumers
+  - AI agent data queries
+
+#### 1.1.5 AI Automation Foundation (NEW)
+- **PRD Reference:** PRD-00B (Milestone 4)
+- **Status:** 📋 Planned
+- **Purpose:** AI-powered automation and intelligence
+- **Package:** `azaharizaman/huggingface-php`
+- **Key Features:**
+  - Pre-trained model integration (sentiment, classification, NER)
+  - Custom model fine-tuning support
+  - Async job processing for ML inference
+  - Result caching for performance
+  - Webhook callbacks for long-running jobs
+- **Integration Points:**
+  - Invoice OCR and data extraction
+  - Predictive inventory forecasting
+  - Customer sentiment analysis
+  - Anomaly detection in financial data
+  - Automated document classification
+- **Implementation:**
+  - AI service abstraction contract
+  - HuggingFace adapter implementation
+  - Queue-based async processing
+  - Result storage and versioning
+
+#### 1.1.6 Package Decoupling Strategy
 - **Status:** ✅ High Priority Packages Decoupled
 - **Decoupled Packages:**
   - `spatie/laravel-activitylog` → ActivityLoggerContract ✅
@@ -97,6 +222,11 @@ The system is organized into four hierarchical layers, each serving distinct pur
   - Adapter implementations in `app/Support/Services/{Category}/`
   - Wrapper traits in `app/Support/Traits/`
   - Service provider bindings
+- **Benefits:**
+  - Easy package replacement without code changes
+  - Simplified testing with mocked contracts
+  - Vendor lock-in prevention
+  - Clear separation of concerns
 
 ---
 
@@ -886,88 +1016,242 @@ Closes #42
 
 ## 4. Implementation Roadmap
 
-### Phase 1: Core Infrastructure (Q2 2026) - MVP TARGET
+### Delivery Model
 
-**Duration:** 6 months  
-**Status:** 🚧 In Progress
+The Laravel ERP implementation follows a **milestone-based delivery model** with explicit dependency tracking:
+
+```
+Main PRD (PRD-CONSOLIDATED-v2.md)
+  └── sub-PRD (Requirements Document)
+      └── Milestone (Delivery Tracking)
+          └── Issue (Work Item) [Max 7 per sub-PRD]
+              └── Task (Granular Steps) [Unlimited per Issue]
+```
+
+**Key Principles:**
+1. **Maximum 7 issues per sub-PRD** - Large PRDs broken into multiple sub-PRDs
+2. **Unlimited tasks per issue** - Detailed work breakdown within issues
+3. **Dependency-based prioritization** - Milestone → Issue Dependencies (not creation order)
+4. **Milestone-based delivery** - Clear delivery targets with success criteria
+
+**📋 See [MILESTONE-MAPPING.md](MILESTONE-MAPPING.md) for:**
+- Detailed milestone breakdowns
+- Complete issue dependency graph
+- Issue creation priority order
+- Progress tracking framework
+
+---
+
+### MVP Delivery Timeline (Jan 1, 2026)
+
+```mermaid
+gantt
+    title Laravel ERP MVP Delivery (Nov 10, 2025 - Jan 1, 2026)
+    dateFormat YYYY-MM-DD
+    
+    section Milestone 1
+    M1: Core Infrastructure           :m1, 2025-11-10, 2025-11-30
+    PRD-01 Multi-tenancy (Done)       :done, 2025-11-10, 2025-11-15
+    PRD-02A Core Auth                 :active, 2025-11-15, 2025-11-30
+    
+    section Milestone 2
+    M2: Auth & Audit                  :m2, 2025-12-01, 2025-12-15
+    PRD-02B User Management           :2025-12-01, 2025-12-05
+    PRD-02C Security & Testing        :2025-12-05, 2025-12-10
+    PRD-03 Audit Logging              :2025-12-10, 2025-12-15
+    
+    section Milestone 3
+    M3: Business Foundations          :m3, 2025-12-16, 2025-12-25
+    PRD-04 Serial Numbering           :2025-12-16, 2025-12-20
+    PRD-05 Settings Management        :2025-12-20, 2025-12-25
+    
+    section Milestone 4
+    M4: UOM & Finalization            :m4, 2025-12-26, 2026-01-01
+    PRD-13 Unit of Measure            :2025-12-26, 2025-12-29
+    PRD-00A GraphQL Foundation        :2025-12-29, 2025-12-31
+    PRD-00B AI Automation Hooks       :2025-12-31, 2026-01-01
+    
+    section MVP Release
+    MVP Launch                        :milestone, 2026-01-01, 1d
+```
+
+---
+
+### Milestone 1: Core Infrastructure Foundation
+
+**Target Date:** November 30, 2025 (3 weeks)  
+**Status:** 🚧 In Progress  
+**GitHub Milestone:** [Milestone 1](https://github.com/azaharizaman/laravel-erp/milestone/1)
+
+**PRDs Included:**
+- ✅ PRD-01: Multi-Tenancy Infrastructure (COMPLETED)
+- 🚧 PRD-02A: Core Authentication Foundation (7 issues, IN PROGRESS)
 
 **Deliverables:**
-- ✅ Multi-tenancy system (PRD-01) - **COMPLETED**
-- 🚧 Authentication & Authorization (PRD-02) - **IN PROGRESS**
-- 📋 Audit Logging (PRD-03) - **PLANNED**
-- 📋 Serial Numbering (PRD-04) - **PLANNED**
-- 📋 Settings Management (PRD-05) - **PLANNED**
-- 📋 Unit of Measure (PRD-13) - **PLANNED**
+- ✅ Multi-tenancy with tenant isolation
+- ✅ Tenant-scoped RBAC foundation
+- 🚧 User Model & Database (Phase 1)
+- 🚧 Sanctum Token Authentication (Phase 2)
+- 🚧 Spatie Permission Integration (Phase 3)
+- 🚧 Roles & Permissions Setup (Phase 4)
+- 🚧 Basic Auth Actions (Register, Login, Logout) (Phase 5)
+- 📋 MFA Implementation (Phase 6, optional for M1)
+- 📋 Account Security Features (Phase 7)
 
 **Success Criteria:**
-- All core architecture components operational
-- All core foundations functional
-- Complete test coverage (≥80%)
-- API documentation complete
-- Security audit passed
+- ✅ Multi-tenancy with tenant isolation working
+- ✅ Users can register, login, logout
+- ✅ Tenant-scoped RBAC with Spatie Permission
+- ✅ API token authentication via Sanctum
+- ✅ Basic password security (hashing, lockout)
 
-### Phase 2: Backoffice Management (Q3 2026)
+**Dependencies:**
+- PRD-01 BLOCKS PRD-02A (tenant_id required in users table)
 
-**Duration:** 2 months
+---
+
+### Milestone 2: Auth Completion & Audit
+
+**Target Date:** December 15, 2025 (2 weeks)  
+**Status:** 📋 Planned  
+**GitHub Milestone:** [Milestone 2](https://github.com/azaharizaman/laravel-erp/milestone/2)
+
+**PRDs Included:**
+- 📋 PRD-02B: User & Role Management (4 issues)
+- 📋 PRD-02C: Advanced Security & Testing (5 issues)
+- 📋 PRD-03: Audit Logging & Activity Tracking (7 issues)
 
 **Deliverables:**
-- Company Management (PRD-06)
-- Office Management (PRD-07)
-- Department Management (PRD-08)
-- Staff Management (PRD-09)
+- API Endpoints for Auth Operations
+- Request Validation & Error Handling
+- User Management API (CRUD users)
+- Role & Permission Management API
+- Authorization Policies
+- CLI Commands (user:create, role:assign)
+- Rate Limiting & Security Features
+- Events & Listeners for Auth
+- Comprehensive Testing (≥80% coverage)
+- Activity Logging Setup
+- Custom Activity Logger Implementation
+- Critical Operations Identification
+- Blockchain Integration (optional)
+- Audit Export API
+- Authentication Event Logging
 
 **Success Criteria:**
-- Complete organizational structure support
-- Hierarchical relationships working
-- Integration with Core modules
+- ✅ Complete auth system with MFA, password reset
+- ✅ User and role management APIs operational
+- ✅ CLI commands for admin operations
+- ✅ Comprehensive audit logging with blockchain option
+- ✅ Rate limiting and security features enabled
+- ✅ Complete test coverage (≥80%)
 
-### Phase 3: Inventory Management (Q4 2026)
+**Dependencies:**
+- PRD-02A BLOCKS PRD-02B (core auth must be complete)
+- PRD-02B BLOCKS PRD-02C (user APIs needed for testing)
+- PRD-02A (phases 1-5) BLOCKS PRD-03 (auth events required)
 
-**Duration:** 3 months
+---
+
+### Milestone 3: Business Foundations
+
+**Target Date:** December 25, 2025 (10 days)  
+**Status:** 📋 Planned  
+**GitHub Milestone:** [Milestone 3](https://github.com/azaharizaman/laravel-erp/milestone/3)
+
+**PRDs Included:**
+- 📋 PRD-04: Serial Numbering System (7 issues)
+- 📋 PRD-05: Settings Management (6 issues)
 
 **Deliverables:**
-- Item Master Data (PRD-10)
-- Warehouse Management (PRD-11)
-- Stock Management (PRD-12)
+- Serial Numbering Package Installation (`azaharizaman/laravel-serial-numbering`)
+- Pattern Configuration (date, sequence, prefix, suffix)
+- Model Integration (traits, observers)
+- Manual Override Support
+- Multi-tenant Serial Number Support
+- Serial Number API Layer
+- Serial Number Testing
+- Settings Schema & Model
+- Setting Types (string, int, bool, json, encrypted)
+- Hierarchical Settings (tenant, user, default)
+- Settings API Endpoints (CRUD)
+- CLI Commands (setting:get, setting:set)
+- Settings Testing
 
 **Success Criteria:**
-- Multi-warehouse inventory control
-- Stock valuation working
-- Batch/serial tracking operational
+- ✅ Auto-generated serial numbers for documents
+- ✅ Configurable patterns per tenant
+- ✅ Manual override with validation
+- ✅ Hierarchical settings system
+- ✅ API for settings CRUD operations
 
-### Phase 4: Sales Management (Q1 2027)
+**Dependencies:**
+- PRD-01 BLOCKS PRD-04 (tenant_id required)
+- PRD-01 BLOCKS PRD-05 (tenant_id required)
 
-**Duration:** 3 months
+---
+
+### Milestone 4: UOM & MVP Finalization
+
+**Target Date:** January 1, 2026 (7 days) 🎯  
+**Status:** 📋 Planned  
+**GitHub Milestone:** [Milestone 4](https://github.com/azaharizaman/laravel-erp/milestone/4)
+
+**PRDs Included:**
+- 📋 PRD-13: Unit of Measure (6 issues)
+- 📋 PRD-00A: GraphQL API Foundation (3 issues)
+- 📋 PRD-00B: AI Automation Foundation (2 issues)
 
 **Deliverables:**
-- Customer Management (PRD-14)
-- Sales Quotation (PRD-15)
-- Sales Order (PRD-16)
-- Pricing Management (PRD-17)
+- UOM Model & Schema (azaharizaman/laravel-uom-management)
+- Conversion Logic & Factors
+- UOM Groups (length, weight, volume, etc.)
+- Multi-unit Support in Transactions
+- UOM API Layer
+- UOM Testing
+- GraphQL Schema Setup (Lighthouse/GraphQLite)
+- GraphQL Resolvers (tenant-scoped)
+- GraphQL Testing & Playground
+- HuggingFace PHP Integration
+- AI Automation Hooks (invoice OCR, forecasting, sentiment)
 
 **Success Criteria:**
-- Complete order-to-cash flow
-- Dynamic pricing operational
-- Customer portal ready
+- ✅ UOM master data with conversion factors
+- ✅ Multi-unit support for transactions
+- ✅ GraphQL schema for core modules
+- ✅ AI automation hooks via HuggingFace PHP
+- ✅ MVP fully tested and documented
+- ✅ Production deployment ready
 
-### Phase 5: Purchasing Management (Q2 2027)
+**Dependencies:**
+- PRD-01 BLOCKS PRD-13 (tenant_id required)
+- PRD-02B BLOCKS PRD-00A (user APIs needed for GraphQL)
+- PRD-02A BLOCKS PRD-00B (auth events for AI hooks)
 
-**Duration:** 3 months
+---
 
-**Deliverables:**
-- Vendor Management (PRD-18)
-- Purchase Requisition (PRD-19)
-- Purchase Order (PRD-20)
-- Goods Receipt Notes (PRD-21)
+### Post-MVP Roadmap (2026-2027)
 
-**Success Criteria:**
-- Complete procure-to-pay flow
-- Three-way matching working
-- Vendor evaluation operational
+**Milestone 5-8: Layer 2 Modules (2026)**
+- Backoffice Management (Company, Office, Department, Staff)
+- Inventory Management (Item Master, Warehouses, Stock)
+- Sales Management (Customers, Quotations, Orders, Pricing)
+- Purchasing Management (Vendors, Requisitions, POs, GRN)
 
-### Phase 6: Financial Management (Q3-Q4 2027)
+**Milestone 9-12: Financial Management (2027)**
+- General Ledger & Chart of Accounts
+- Accounts Payable & Receivable
+- Cost Accounting & Financial Reporting
+- Multi-currency Support
 
-**Duration:** 6 months
+**Milestone 13+: Layer 3 Industry Operations (2028+)**
+- Healthcare (EHR/EMR)
+- Manufacturing (BOM, Production)
+- Utilities (Metering, Billing)
+- Compliance & Governance
+- Analytics & Business Intelligence
+
+**See individual PRDs in `/plan/` for detailed specifications.**
 
 **Deliverables:**
 - General Ledger
@@ -1108,10 +1392,10 @@ Closes #42
 ---
 
 **Document Control:**
-- **Version:** 2.0
+- **Version:** 2.1
 - **Status:** Living Document
-- **Review Cycle:** Monthly
-- **Next Review:** December 10, 2025
+- **Review Cycle:** Weekly (during MVP), Monthly (post-MVP)
+- **Next Review:** November 17, 2025
 - **Owner:** Core Development Team
 - **Approvers:** Product Owner, Tech Lead, Security Lead
 
@@ -1123,7 +1407,9 @@ Closes #42
 |---------|------|--------|---------|
 | 1.0 | 2025-11-08 | Core Team | Initial PRD-02 created |
 | 2.0 | 2025-11-10 | Core Team | Consolidated with implementation structure, added Layer 0-3 hierarchy, integrated all PRDs, added future phases |
+| 2.1 | 2025-11-10 | Core Team | Restructured to milestone-based delivery, updated MVP target to Jan 1 2026, added GraphQL (PRD-00A) and AI Automation (PRD-00B) to Layer 0, split PRD-02 into PRD-02A/B/C, added Mermaid diagrams, added MILESTONE-MAPPING.md reference, removed non-MVP PRDs (06-12, 14-21) |
 
 ---
 
-*This document consolidates and replaces individual PRD documents for strategic planning while maintaining detailed sub-PRDs for implementation tracking.*
+*This document consolidates all MVP requirements while maintaining detailed sub-PRDs for implementation tracking. See [MILESTONE-MAPPING.md](MILESTONE-MAPPING.md) for delivery schedule and issue dependencies.*
+```

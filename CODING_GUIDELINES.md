@@ -5,6 +5,7 @@ This document outlines the coding standards and best practices for the Laravel E
 ## Table of Contents
 
 - [PHP Standards](#php-standards)
+- [Modern Laravel Attributes](#modern-laravel-attributes)
 - [Type Declarations](#type-declarations)
 - [PHPDoc Documentation](#phpdoc-documentation)
 - [Testing Standards](#testing-standards)
@@ -51,6 +52,318 @@ class User extends Authenticatable
 **Why:** Strict type declarations prevent type coercion errors and make the code more predictable by enforcing strict type checking at runtime.
 
 **Applies to:** All PHP files including models, controllers, migrations, services, actions, enums, traits, and tests.
+
+---
+
+## Modern Laravel Attributes
+
+### 1a. Prioritize PHP 8+ Attributes Over Traditional Registration
+
+**✅ REQUIRED:** Use PHP 8+ attributes for dependency injection, route registration, and service binding instead of traditional service provider methods.
+
+**Why:** Attributes provide better IDE support, keep configuration close to the code, reduce boilerplate, and make dependencies explicit.
+
+#### Service Container Binding
+
+##### ❌ Incorrect (Traditional Service Provider)
+
+```php
+// In app/Providers/AppServiceProvider.php
+public function register(): void
+{
+    $this->app->bind(
+        TenantRepositoryContract::class,
+        TenantRepository::class
+    );
+    
+    $this->app->singleton(
+        ActivityLoggerContract::class,
+        SpatieActivityLogger::class
+    );
+    
+    $this->app->scoped(
+        SearchServiceContract::class,
+        ScoutSearchService::class
+    );
+}
+```
+
+##### ✅ Correct (Using Attributes)
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domains\Core\Repositories;
+
+use App\Domains\Core\Contracts\TenantRepositoryContract;
+use Illuminate\Container\Attributes\Bind;
+
+#[Bind(TenantRepositoryContract::class)]
+class TenantRepository implements TenantRepositoryContract
+{
+    public function findById(int $id): ?Tenant
+    {
+        return Tenant::find($id);
+    }
+}
+```
+
+**Available Binding Attributes:**
+
+```php
+use Illuminate\Container\Attributes\Bind;      // Standard binding (bind)
+use Illuminate\Container\Attributes\Singleton; // Singleton binding
+use Illuminate\Container\Attributes\Scoped;    // Scoped binding (per request)
+
+// Singleton example
+#[Singleton(ActivityLoggerContract::class)]
+class SpatieActivityLogger implements ActivityLoggerContract
+{
+    // ...
+}
+
+// Scoped example (fresh instance per request)
+#[Scoped(SearchServiceContract::class)]
+class ScoutSearchService implements SearchServiceContract
+{
+    // ...
+}
+```
+
+#### Route Attributes
+
+##### ❌ Incorrect (Traditional routes file)
+
+```php
+// In routes/api.php
+Route::middleware(['auth:sanctum', 'tenant'])->group(function () {
+    Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
+    Route::post('/tenants', [TenantController::class, 'store'])->name('tenants.store');
+    Route::get('/tenants/{tenant}', [TenantController::class, 'show'])->name('tenants.show');
+    Route::patch('/tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');
+    Route::delete('/tenants/{tenant}', [TenantController::class, 'destroy'])->name('tenants.destroy');
+});
+```
+
+##### ✅ Correct (Using Attributes)
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Api\V1;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Attribute\Middleware;
+use Illuminate\Routing\Attribute\Prefix;
+use Illuminate\Routing\Attribute\Resource;
+
+#[Prefix('api/v1')]
+#[Middleware(['auth:sanctum', 'tenant'])]
+#[Resource('tenants')]
+class TenantController extends Controller
+{
+    // Automatically creates standard resource routes:
+    // GET    /api/v1/tenants          -> index
+    // POST   /api/v1/tenants          -> store
+    // GET    /api/v1/tenants/{tenant} -> show
+    // PATCH  /api/v1/tenants/{tenant} -> update
+    // DELETE /api/v1/tenants/{tenant} -> destroy
+}
+
+// For individual routes with specific attributes:
+use Illuminate\Routing\Attribute\Get;
+use Illuminate\Routing\Attribute\Post;
+
+class UserController extends Controller
+{
+    #[Get('/api/v1/users/{user}/profile', name: 'users.profile')]
+    #[Middleware(['auth:sanctum', 'verified'])]
+    public function profile(User $user): JsonResponse
+    {
+        return response()->json($user);
+    }
+    
+    #[Post('/api/v1/users/{user}/avatar', name: 'users.avatar.update')]
+    #[Middleware(['auth:sanctum', 'throttle:uploads'])]
+    public function updateAvatar(User $user, Request $request): JsonResponse
+    {
+        // ...
+    }
+}
+```
+
+#### Event Listener Attributes
+
+##### ❌ Incorrect (Traditional EventServiceProvider)
+
+```php
+// In app/Providers/EventServiceProvider.php
+protected $listen = [
+    TenantCreatedEvent::class => [
+        InitializeTenantDataListener::class,
+        SendWelcomeEmailListener::class,
+    ],
+    UserRegisteredEvent::class => [
+        LogUserRegistrationListener::class,
+    ],
+];
+```
+
+##### ✅ Correct (Using Attributes)
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domains\Core\Listeners;
+
+use App\Domains\Core\Events\TenantCreatedEvent;
+use Illuminate\Events\Attribute\Listen;
+
+class InitializeTenantDataListener
+{
+    #[Listen(TenantCreatedEvent::class)]
+    public function handle(TenantCreatedEvent $event): void
+    {
+        // Initialize default roles and permissions
+        $this->createDefaultRoles($event->tenant);
+    }
+}
+
+// Multiple events for same listener
+class ActivityLogListener
+{
+    #[Listen(TenantCreatedEvent::class)]
+    #[Listen(TenantUpdatedEvent::class)]
+    #[Listen(TenantDeletedEvent::class)]
+    public function handle(object $event): void
+    {
+        activity()->log($event::class);
+    }
+}
+```
+
+#### Schedule Attributes
+
+##### ❌ Incorrect (Traditional Console Kernel)
+
+```php
+// In app/Console/Kernel.php
+protected function schedule(Schedule $schedule): void
+{
+    $schedule->command('tenants:cleanup')
+        ->daily()
+        ->at('03:00');
+        
+    $schedule->command('cache:prune-stale-tags')
+        ->hourly();
+}
+```
+
+##### ✅ Correct (Using Attributes)
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Console\Scheduling\Attribute\Schedule;
+
+class CleanupTenantsCommand extends Command
+{
+    protected $signature = 'tenants:cleanup';
+    
+    #[Schedule('daily', at: '03:00')]
+    public function handle(): int
+    {
+        // Cleanup logic
+        return self::SUCCESS;
+    }
+}
+
+class PruneStaleTagsCommand extends Command
+{
+    protected $signature = 'cache:prune-stale-tags';
+    
+    #[Schedule('hourly')]
+    public function handle(): int
+    {
+        // Prune logic
+        return self::SUCCESS;
+    }
+}
+```
+
+#### Benefits of Using Attributes
+
+1. **Co-location:** Configuration lives next to the code it affects
+2. **Type Safety:** IDE can validate attribute parameters
+3. **Discoverability:** Easy to find which classes are bound/scheduled/listening
+4. **Reduced Boilerplate:** No need for separate provider registration
+5. **Better IDE Support:** Autocomplete and navigation work better
+6. **Single Responsibility:** Each class declares its own dependencies
+
+#### When to Use Attributes vs. Traditional Methods
+
+**✅ Use Attributes:**
+- Service container bindings for repositories, services, contracts
+- Route definitions in API controllers
+- Event listener registration
+- Scheduled command registration
+- Authorization gates and policies (Laravel 11+)
+
+**⚠️ Use Traditional Methods:**
+- Complex conditional bindings based on environment
+- Dynamic route registration from database
+- Third-party package service provider registration
+- Legacy code that requires gradual migration
+
+#### Migration Strategy
+
+**For new code:** Always use attributes from the start.
+
+**For existing code:** Migrate gradually:
+1. Start with new classes (use attributes)
+2. When modifying existing classes, convert to attributes
+3. Update service providers to remove redundant registrations
+4. Test thoroughly after each migration
+
+**Example Migration:**
+
+```php
+// Step 1: Add attribute to existing class
+#[Bind(TenantRepositoryContract::class)]
+class TenantRepository implements TenantRepositoryContract
+{
+    // ... existing code
+}
+
+// Step 2: Remove from service provider
+// public function register(): void
+// {
+//     $this->app->bind(
+//         TenantRepositoryContract::class,
+//         TenantRepository::class
+//     ); // ← Remove this
+// }
+
+// Step 3: Test that dependency injection still works
+// Step 4: Commit the change
+```
+
+**Important Notes:**
+1. Laravel automatically discovers attributes - no manual registration needed
+2. Attributes are processed during container bootstrapping
+3. All attribute-based bindings are available immediately
+4. No performance penalty compared to traditional methods
 
 ---
 
@@ -2479,32 +2792,59 @@ These patterns apply throughout the codebase, especially when implementing contr
 
 Before submitting code for review, ensure:
 
+### Type Safety & Documentation
 - [ ] All PHP files have `declare(strict_types=1);`
 - [ ] All method parameters have type hints
 - [ ] All methods declare return types
 - [ ] All public/protected methods have complete PHPDoc blocks with `@return` tags
 - [ ] PHPDoc documents all error responses and conditions
-- [ ] All migrations use anonymous class format
+- [ ] Factory state methods have `@param` and `@return` documentation
+- [ ] PHPDoc uses imported class names, not FQCNs
+
+### Modern Laravel Practices
+- [ ] **Using attributes for service bindings** (#[Bind], #[Singleton], #[Scoped])
+- [ ] **Using attributes for routes** (#[Get], #[Post], #[Resource], #[Middleware])
+- [ ] **Using attributes for event listeners** (#[Listen])
+- [ ] **Using attributes for scheduled commands** (#[Schedule])
+- [ ] Service providers only used for complex/conditional bindings
+
+### Architecture & Design
+- [ ] Using traits instead of manual implementation (e.g., `BelongsToTenant`)
+- [ ] No race conditions in increment/decrement operations
+- [ ] Models use appropriate traits: `HasUuids`, `SoftDeletes`, `LogsActivity`, etc.
 - [ ] Data access uses repository pattern (no direct `Model::create()` or `Model::find()` in services)
+
+### Database & Migrations
+- [ ] All migrations use anonymous class format
+- [ ] Migration order is correct (parent tables before child tables with FKs)
+- [ ] Foreign key constraints reference existing tables
+- [ ] Tested with `php artisan migrate:fresh` on clean database
+
+### Security & Validation
 - [ ] Authentication checks before using `auth()->user()`
 - [ ] Authorization checks for privileged operations
 - [ ] Complete validation rules for all fillable fields
 - [ ] Accurate `@throws` tags in PHPDoc matching actual exceptions
 - [ ] **No N+1 queries in middleware or frequently-called code**
 - [ ] **Middleware dependencies and ordering documented**
+
+### Testing
 - [ ] **Unit tests do not use database (or are in Feature directory)**
 - [ ] **No hard-coded IDs or values in tests**
 - [ ] **No performance tests with hard time limits in regular test suites**
-- [ ] **Performance claims in documentation are qualified**
+
+### Code Quality
 - [ ] **Import statements are alphabetically ordered** (PSR-12)
 - [ ] **Database IDs use `int|string` union type in contracts**
 - [ ] **Boolean returns reflect actual state changes**
 - [ ] **Numeric parameters from arrays are cast to expected types**
 - [ ] **Eloquent attribute checking uses `array_key_exists()` on `$attributes`**
 - [ ] **Contracts designed with optional parameters for flexibility**
+- [ ] **Performance claims in documentation are qualified**
 - [ ] Code passes Laravel Pint formatting (`./vendor/bin/pint`)
 - [ ] All tests pass (`php artisan test`)
 - [ ] No untyped variables or parameters remain
+- [ ] No code duplication - using traits where applicable
 
 ---
 
