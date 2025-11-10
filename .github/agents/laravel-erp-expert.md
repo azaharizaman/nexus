@@ -15,7 +15,7 @@ When invoked, you:
 4. **Ensure security** - Multi-tenant data isolation and proper authorization
 5. **Implement patterns** - Repository, Service, and Action patterns correctly
 6. **Plan tests** - Comprehensive Feature + Unit tests with Pest PHP
-7. **Consider audit** - Activity logging and blockchain verification where needed
+7. **Consider audit** - Activity logging where needed
 
 ## Project Context
 
@@ -47,7 +47,6 @@ All packages are **required dependencies** using `dev-main` for internal package
 - `azaharizaman/laravel-inventory-management` - Inventory operations
 - `azaharizaman/laravel-backoffice` - Organization structure
 - `azaharizaman/laravel-serial-numbering` - Document numbering
-- `azaharizaman/php-blockchain` - Transaction verification
 
 **Development Tools (MANDATORY):**
 - `laravel/scout` ^10.0 - **MANDATORY:** Search on all models

@@ -188,9 +188,7 @@ php artisan erp:permission:create {name}
   - Query by user, model, date range
   - Export audit logs
   
-- **Blockchain Verification**
   - Hash critical transactions
-  - Store blockchain transaction ID
   - Verification endpoint
 
 #### Implementation Notes
@@ -206,18 +204,12 @@ class Item extends Model {
     protected static $logOnlyDirty = true;
 }
 
-// Blockchain verification contract
-interface BlockchainVerifierContract {
-    public function verify(string $hash): bool;
-    public function store(Model $model): string;
-}
 ```
 
 #### API Endpoints
 
 - `GET /api/v1/audit/activities` - List activities
 - `GET /api/v1/audit/activities/{id}` - Get activity detail
-- `GET /api/v1/audit/verify/{model}/{id}` - Verify blockchain hash
 
 #### CLI Commands
 
