@@ -1,0 +1,22 @@
+High Level Overviiew
+
+-   **Core Architecture** Requirements specific to the architectural and technical requirement of the system
+-   **Core Foundations** These are the requirements that can be hybrid of technical requirements and user requirements but not specific to any business use cases. Such as handling of permission, serial numbering, model statuses and so on
+- **Core Modules** These are features that the user will be using and is essential to all the other business specific modules. These modules can't be turn off completely bnut some feature can be toggle on and off depending on the needs of the user. For example 
+     - Financial - GL AP/AR, Cost Accounting
+     - Human Capital Management (HCM) - Staffing, Payroll, Talent Management, Work Force Management
+     - Supply Chain Management - Procurement, Invbentory, Order
+     - Client Relationship Managemnt - Sales Force Management, Marketing, Price List, After Sales Service, Patient Management
+- **Industry Based Operations** Can be turn off completely without affecting any other modules. Specific to industry
+    - Operations & Serviuces
+            - BOM, Metering, HGrant Management, EHR/EMR
+    - Governance
+            - Compliance, Document Management, Audit Management
+    - Strategic
+            - EPM (Demand, Forecasting, Scenario ModellingCitizen Analytic, IoT data management)
+            - EAM (Predictive Maintenance, Fleet Managemment, Asset lifecycle)
+            - Analytics and Intelligence
+
+Terget MVP is to deliver upt ot he Core Modeules with features applicable to the general industry use case
+
+Architechturally, the system is fully headless, RESTApi, GraphQL, Websockets, Streaming data is supported at its core. Database agnostic, AI automation backed in through azaharizaman/huggingface-php package
