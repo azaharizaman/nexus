@@ -2250,6 +2250,231 @@ use RefreshDatabase;
 
 ---
 
+## PR Review Learnings: Package Decoupling Implementation
+
+This section documents key learnings from the PR review process for the package decoupling implementation. These findings apply to contract-driven development and package abstraction patterns.
+
+### 1. Import Statement Ordering (PSR-12 Compliance)
+
+**Issue:** Import statements must be alphabetically ordered according to PSR-12 and Laravel Pint standards.
+
+#### ❌ Incorrect
+```php
+use Illuminate\Support\ServiceProvider;
+use App\Support\Contracts\SearchServiceContract;
+use App\Support\Services\Search\ScoutSearchService;
+```
+
+#### ✅ Correct
+```php
+use App\Support\Contracts\SearchServiceContract;
+use App\Support\Services\Search\ScoutSearchService;
+use Illuminate\Support\ServiceProvider;
+```
+
+**Rule:** Always alphabetize imports. Laravel classes come after app classes alphabetically.
+
+---
+
+### 2. Union Types for Database IDs
+
+**Issue:** Database IDs can be either `int` or `string` depending on the driver and configuration. Contracts should accept both types.
+
+#### ❌ Incorrect
+```php
+public function revokeToken(User $user, string $tokenId): bool;
+```
+
+#### ✅ Correct
+```php
+public function revokeToken(User $user, int|string $tokenId): bool;
+```
+
+**Rule:** When accepting IDs from the database, always use `int|string` union type to support various database drivers and configurations.
+
+---
+
+### 3. Boolean Return Values Should Reflect Actual State
+
+**Issue:** Methods returning boolean should accurately reflect whether an operation succeeded or had any effect.
+
+#### ❌ Incorrect
+```php
+public function revokeAllTokens(User $user): bool
+{
+    $user->tokens()->delete();
+    return true;  // Always returns true, even if no tokens were deleted
+}
+```
+
+#### ✅ Correct
+```php
+public function revokeAllTokens(User $user): bool
+{
+    $deleted = $user->tokens()->delete();
+    return $deleted > 0;  // Returns true only if tokens were deleted
+}
+```
+
+**Rule:** Boolean returns should indicate actual state changes, not just successful execution.
+
+---
+
+### 4. Type Casting for Numeric Parameters
+
+**Issue:** When accepting numeric parameters from arrays (like options or config), always cast to the expected type to prevent type errors.
+
+#### ❌ Incorrect
+```php
+$perPage = $options['per_page'] ?? 15;
+$page = $options['page'] ?? 1;
+$paginated = $builder->paginate($perPage, ['*'], 'page', $page);
+```
+
+**Problem:** If `$options['page']` is passed as a string `"2"`, math operations will fail with `TypeError: Unsupported operand types: string - int`.
+
+#### ✅ Correct
+```php
+$perPage = (int) ($options['per_page'] ?? 15);
+$page = (int) ($options['page'] ?? 1);
+$paginated = $builder->paginate($perPage, ['*'], 'page', $page);
+```
+
+**Rule:** Always cast numeric parameters from arrays to their expected types to prevent runtime errors.
+
+---
+
+### 5. Eloquent Attribute Checking
+
+**Issue:** `hasAttribute()` method doesn't exist on Eloquent models. Use `array_key_exists()` on the `$attributes` array instead.
+
+#### ❌ Incorrect
+```php
+if ($this->hasAttribute('tenant_id')) {
+    $array['tenant_id'] = $this->tenant_id;
+}
+```
+
+**Problem:** `hasAttribute()` is not a valid Eloquent method and will cause a fatal error.
+
+#### ✅ Correct
+```php
+if (array_key_exists('tenant_id', $this->attributes)) {
+    $array['tenant_id'] = $this->tenant_id;
+}
+```
+
+**Alternative (checks if fillable or in casts):**
+```php
+if (in_array('tenant_id', $this->getFillable()) || array_key_exists('tenant_id', $this->getCasts())) {
+    $array['tenant_id'] = $this->tenant_id;
+}
+```
+
+**Rule:** Use `array_key_exists('attribute', $this->attributes)` to check if a model has a specific attribute.
+
+---
+
+### 6. Flexible Contract Parameters
+
+**Issue:** Contracts should be flexible enough to support optional parameters that implementations may need, even if not all implementations use them.
+
+#### Example: Adding Optional Log Name Parameter
+
+When a test or use case needs to categorize activities by log name, the contract should support it:
+
+```php
+// Contract signature
+public function log(
+    string $description,
+    Model $subject,
+    ?Model $causer = null,
+    array $properties = [],
+    ?string $logName = null  // Optional parameter
+): void;
+
+// Implementation uses it
+if ($logName !== null) {
+    $activity->useLog($logName);
+}
+```
+
+**Rule:** Design contracts to be extensible. Add optional parameters to support future use cases without breaking existing implementations.
+
+---
+
+### 7. Pagination Logic Should Check Multiple Keys
+
+**Issue:** When implementing pagination, check for any pagination-related keys, not just one specific key.
+
+#### ❌ Incorrect
+```php
+if (isset($options['paginate'])) {
+    // Only triggers if 'paginate' key exists
+}
+```
+
+**Problem:** Doesn't work if user passes `'page'` or `'per_page'` without `'paginate'` flag.
+
+#### ✅ Correct
+```php
+if (isset($options['paginate']) || isset($options['page']) || isset($options['per_page'])) {
+    $perPage = (int) ($options['per_page'] ?? 15);
+    $page = (int) ($options['page'] ?? 1);
+    // Apply pagination
+}
+```
+
+**Rule:** Check for all relevant keys that indicate pagination intent, not just a single flag.
+
+---
+
+### 8. Test Isolation in Feature Tests
+
+**Issue:** Feature tests may fail if they don't properly isolate data between test runs.
+
+**False Positive Example:** Test expects 1 activity but finds 2 because previous tests left activities in the database.
+
+**Solution Patterns:**
+
+1. **Use RefreshDatabase trait** (already used):
+```php
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+```
+
+2. **Use unique identifiers in tests**:
+```php
+$tenant = Tenant::factory()->create(['name' => 'Unique-' . Str::random(8)]);
+```
+
+3. **Clean up after tests if needed**:
+```php
+afterEach(function () {
+    Activity::truncate();
+});
+```
+
+**Rule:** Ensure tests don't depend on database state from other tests. Use factories, unique identifiers, and database refresh.
+
+---
+
+### Summary of Key Learnings
+
+1. ✅ **Always alphabetize imports** (PSR-12)
+2. ✅ **Use `int|string` for database IDs** in contracts
+3. ✅ **Boolean returns should reflect actual state** (not just "no errors")
+4. ✅ **Cast numeric parameters** from arrays to prevent type errors
+5. ✅ **Use `array_key_exists()` for attribute checking** in Eloquent
+6. ✅ **Design flexible contracts** with optional parameters
+7. ✅ **Check multiple keys for pagination** logic
+8. ✅ **Ensure proper test isolation** to avoid false positives
+
+These patterns apply throughout the codebase, especially when implementing contracts, adapters, and service layers.
+
+---
+
 ## Code Review Checklist (Updated)
 
 Before submitting code for review, ensure:
@@ -2271,6 +2496,12 @@ Before submitting code for review, ensure:
 - [ ] **No hard-coded IDs or values in tests**
 - [ ] **No performance tests with hard time limits in regular test suites**
 - [ ] **Performance claims in documentation are qualified**
+- [ ] **Import statements are alphabetically ordered** (PSR-12)
+- [ ] **Database IDs use `int|string` union type in contracts**
+- [ ] **Boolean returns reflect actual state changes**
+- [ ] **Numeric parameters from arrays are cast to expected types**
+- [ ] **Eloquent attribute checking uses `array_key_exists()` on `$attributes`**
+- [ ] **Contracts designed with optional parameters for flexibility**
 - [ ] Code passes Laravel Pint formatting (`./vendor/bin/pint`)
 - [ ] All tests pass (`php artisan test`)
 - [ ] No untyped variables or parameters remain
@@ -2284,4 +2515,4 @@ If you have questions about these guidelines or suggestions for improvements, pl
 2. Discuss in the team chat
 3. Propose changes via pull request
 
-**Last Updated:** November 9, 2025
+**Last Updated:** November 10, 2025

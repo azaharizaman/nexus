@@ -110,8 +110,8 @@ test('can get activity statistics', function () {
     $stats = $this->logger->getStatistics();
 
     expect($stats)->toBeArray()
-        ->and($stats)->toHaveKey('total')
-        ->and($stats['total'])->toBeGreaterThanOrEqual(3);
+        ->and($stats)->toHaveKey('total_count')
+        ->and($stats['total_count'])->toBeGreaterThanOrEqual(3);
 });
 
 test('can cleanup old activities', function () {
@@ -126,7 +126,7 @@ test('can cleanup old activities', function () {
     $this->logger->log('Recent activity', $this->tenant);
 
     // Cleanup activities older than 1 year
-    $deleted = $this->logger->cleanup(365);
+    $deleted = $this->logger->cleanup(Carbon::now()->subDays(365));
 
     expect($deleted)->toBeGreaterThan(0);
 

@@ -29,10 +29,10 @@ interface TokenServiceContract
      * Revoke a specific token
      *
      * @param  User  $user  The user who owns the token
-     * @param  string  $tokenId  The token ID to revoke
+     * @param  int|string  $tokenId  The token ID to revoke
      * @return bool True if token was revoked
      */
-    public function revokeToken(User $user, string $tokenId): bool;
+    public function revokeToken(User $user, int|string $tokenId): bool;
 
     /**
      * Revoke all tokens for a user

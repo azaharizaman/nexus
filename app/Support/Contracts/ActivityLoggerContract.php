@@ -23,12 +23,14 @@ interface ActivityLoggerContract
      * @param  Model  $subject  The model being acted upon
      * @param  Model|null  $causer  The user performing the action (null for system actions)
      * @param  array<string, mixed>  $properties  Additional properties to log
+     * @param  string|null  $logName  Optional log name for categorization
      */
     public function log(
         string $description,
         Model $subject,
         ?Model $causer = null,
-        array $properties = []
+        array $properties = [],
+        ?string $logName = null
     ): void;
 
     /**

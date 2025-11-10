@@ -37,10 +37,11 @@ class ScoutSearchService implements SearchServiceContract
             }
         }
 
-        // Apply pagination if provided
-        if (isset($options['paginate'])) {
-            $perPage = $options['per_page'] ?? 15;
-            $paginated = $builder->paginate($perPage);
+        // Apply pagination if 'paginate', 'page', or 'per_page' are provided
+        if (isset($options['paginate']) || isset($options['page']) || isset($options['per_page'])) {
+            $perPage = (int) ($options['per_page'] ?? 15);
+            $page = (int) ($options['page'] ?? 1);
+            $paginated = $builder->paginate($perPage, ['*'], 'page', $page);
 
             return Collection::make($paginated->items());
         }

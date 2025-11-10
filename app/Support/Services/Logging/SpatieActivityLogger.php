@@ -25,16 +25,22 @@ class SpatieActivityLogger implements ActivityLoggerContract
      * @param  Model  $subject  The model being acted upon
      * @param  Model|null  $causer  The user performing the action
      * @param  array<string, mixed>  $properties  Additional properties to log
+     * @param  string|null  $logName  Optional log name for categorization
      */
     public function log(
         string $description,
         Model $subject,
         ?Model $causer = null,
-        array $properties = []
+        array $properties = [],
+        ?string $logName = null
     ): void {
         $activity = activity()
             ->performedOn($subject)
             ->withProperties($properties);
+
+        if ($logName !== null) {
+            $activity->useLog($logName);
+        }
 
         if ($causer !== null) {
             $activity->causedBy($causer);

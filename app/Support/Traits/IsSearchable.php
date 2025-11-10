@@ -54,7 +54,7 @@ trait IsSearchable
             }
 
             // Always include tenant_id for multi-tenancy if it exists
-            if ($this->hasAttribute('tenant_id')) {
+            if (array_key_exists('tenant_id', $this->attributes)) {
                 $array['tenant_id'] = $this->tenant_id;
             }
 
@@ -65,7 +65,7 @@ trait IsSearchable
         $array = $this->toArray();
 
         // Ensure tenant_id is included for multi-tenancy
-        if ($this->hasAttribute('tenant_id') && ! isset($array['tenant_id'])) {
+        if (array_key_exists('tenant_id', $this->attributes) && ! isset($array['tenant_id'])) {
             $array['tenant_id'] = $this->tenant_id;
         }
 

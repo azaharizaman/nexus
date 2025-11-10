@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Support\Contracts\SearchServiceContract;
 use App\Support\Services\Search\ScoutSearchService;
+use Illuminate\Support\ServiceProvider;
 
 /**
  * Search Service Provider
