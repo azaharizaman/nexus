@@ -31,7 +31,7 @@ This is an **enterprise-grade, headless ERP backend system** built with Laravel 
 - **Design Philosophy:** Contract-driven, Domain-driven, Event-driven
 - **Target Users:** AI agents, custom frontends, and automated systems
 - **Modularity:** Enable/disable modules without system-wide impact
-- **Security:** Zero-trust model  for critical operations
+- **Security:** Zero-trust model for critical operations
 
 ### System Boundaries
 

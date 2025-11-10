@@ -187,9 +187,6 @@ php artisan erp:permission:create {name}
   - Tamper-evident storage
   - Query by user, model, date range
   - Export audit logs
-  
-  - Hash critical transactions
-  - Verification endpoint
 
 #### Implementation Notes
 

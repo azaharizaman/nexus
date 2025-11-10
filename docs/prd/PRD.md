@@ -348,9 +348,6 @@ php artisan erp:
 - **API Security:** Rate limiting, IP whitelisting, token rotation
 - **Data Isolation:** Tenant data completely isolated
 
-- Transaction hash storage in database
-- Verification endpoints via API
-
 ---
 
 ## Testing Strategy
