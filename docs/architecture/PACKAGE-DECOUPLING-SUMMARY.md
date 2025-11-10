@@ -293,7 +293,7 @@ All new code MUST use contracts, never direct package dependencies.
 
 ## References
 
-- **Strategy Document:** [docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md](docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md)
+- **Strategy Document:** [PACKAGE-DECOUPLING-STRATEGY.md](PACKAGE-DECOUPLING-STRATEGY.md)
 - **Coding Guidelines:** [CODING_GUIDELINES.md#package-decoupling](../../CODING_GUIDELINES.md#package-decoupling)
 - **GitHub Issue:** [#81](https://github.com/azaharizaman/laravel-erp/issues/81)
 

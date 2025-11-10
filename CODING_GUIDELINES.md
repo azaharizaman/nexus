@@ -965,13 +965,15 @@ class LoggingServiceProvider extends ServiceProvider
 4. **spatie/laravel-permission** - Authorization (MEDIUM priority)
 
 **Implementation Pattern:**
-1. Create contract in `app/Support/Contracts/{PackageName}Contract.php`
-2. Create adapter in `app/Support/Services/{Category}/{PackageName}Service.php`
+1. Create contract in `app/Support/Contracts/{ServiceName}Contract.php`
+   - **Note:** `{ServiceName}` should be a descriptive name representing the service functionality (e.g., `ActivityLogger`, `SearchService`, `TokenService`), not the literal package name.
+   - **Example:** For activity logging, use `ActivityLoggerContract.php` (not `ActivitylogContract.php`).
+2. Create adapter in `app/Support/Services/{Category}/{ServiceName}Service.php`
 3. Bind in appropriate service provider
 4. Update business code to inject contract
 5. Add tests with mocked contract
 
-**See:** [docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md](../docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md) for comprehensive decoupling guide.
+**See:** [docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md](docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md) for comprehensive decoupling guide.
 
 ---
 
