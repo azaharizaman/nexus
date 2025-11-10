@@ -45,9 +45,12 @@ return [
     | considered expired. This will override any values set in the token's
     | "expires_at" attribute, but first-party sessions are not affected.
     |
+    | Default: 480 minutes (8 hours) for security and usability balance.
+    | Set to null to disable automatic expiration.
+    |
     */
 
-    'expiration' => null,
+    'expiration' => env('SANCTUM_EXPIRATION_MINUTES', 480),
 
     /*
     |--------------------------------------------------------------------------
@@ -80,5 +83,86 @@ return [
         'encrypt_cookies' => Illuminate\Cookie\Middleware\EncryptCookies::class,
         'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Token Abilities (Scopes)
+    |--------------------------------------------------------------------------
+    |
+    | This section documents the available token abilities/scopes for fine-grained
+    | access control. Abilities are used when creating tokens to restrict what
+    | actions the token holder can perform.
+    |
+    | Usage Example:
+    |   $token = $user->createToken('api-token', ['tenant:read', 'tenant:write']);
+    |
+    | Checking abilities in controllers:
+    |   if (!auth()->user()->tokenCan('tenant:write')) {
+    |       abort(403, 'Insufficient permissions');
+    |   }
+    |
+    | Or using middleware:
+    |   Route::middleware(['auth:sanctum', 'abilities:tenant:write'])->group(...);
+    |
+    | Available Abilities:
+    |
+    | Core Domain:
+    |   - 'tenant:read'        - Read tenant information
+    |   - 'tenant:write'       - Create/update tenants (admin only)
+    |   - 'tenant:delete'      - Delete/archive tenants (admin only)
+    |   - 'user:read'          - Read user information
+    |   - 'user:write'         - Create/update users
+    |   - 'user:delete'        - Delete/deactivate users
+    |   - 'settings:read'      - Read system settings
+    |   - 'settings:write'     - Modify system settings
+    |
+    | Backoffice Domain:
+    |   - 'company:read'       - Read company information
+    |   - 'company:write'      - Create/update companies
+    |   - 'office:read'        - Read office information
+    |   - 'office:write'       - Create/update offices
+    |   - 'department:read'    - Read department information
+    |   - 'department:write'   - Create/update departments
+    |   - 'staff:read'         - Read staff information
+    |   - 'staff:write'        - Create/update staff
+    |
+    | Inventory Domain:
+    |   - 'inventory:read'     - Read inventory items
+    |   - 'inventory:write'    - Create/update inventory items
+    |   - 'warehouse:read'     - Read warehouse information
+    |   - 'warehouse:write'    - Create/update warehouses
+    |   - 'stock:read'         - Read stock levels
+    |   - 'stock:write'        - Adjust stock levels
+    |
+    | Sales Domain:
+    |   - 'customer:read'      - Read customer information
+    |   - 'customer:write'     - Create/update customers
+    |   - 'quotation:read'     - Read sales quotations
+    |   - 'quotation:write'    - Create/update quotations
+    |   - 'order:read'         - Read sales orders
+    |   - 'order:write'        - Create/update orders
+    |
+    | Purchasing Domain:
+    |   - 'vendor:read'        - Read vendor information
+    |   - 'vendor:write'       - Create/update vendors
+    |   - 'purchase:read'      - Read purchase orders
+    |   - 'purchase:write'     - Create/update purchase orders
+    |   - 'goods-receipt:read' - Read goods receipts
+    |   - 'goods-receipt:write' - Create goods receipts
+    |
+    | Accounting Domain:
+    |   - 'accounting:read'    - Read financial data
+    |   - 'accounting:write'   - Create/update financial transactions
+    |   - 'reports:read'       - Read financial reports
+    |
+    | Special Abilities:
+    |   - '*'                  - Grants all abilities (use with caution)
+    |   - 'api:full-access'    - Full API access for trusted integrations
+    |   - 'api:read-only'      - Read-only access to all resources
+    |
+    | Note: Abilities follow the pattern 'domain:action' for consistency.
+    |       Always check abilities in addition to Laravel policies for defense in depth.
+    |
+    */
 
 ];

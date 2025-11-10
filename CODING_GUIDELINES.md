@@ -7,6 +7,7 @@ This document outlines the coding standards and best practices for the Laravel E
 - [PHP Standards](#php-standards)
 - [Type Declarations](#type-declarations)
 - [PHPDoc Documentation](#phpdoc-documentation)
+- [Testing Standards](#testing-standards)
 - [Migration Standards](#migration-standards)
 - [Common Mistakes and How to Avoid Them](#common-mistakes-and-how-to-avoid-them)
 
@@ -264,9 +265,121 @@ class InitializeTenantDataListener
 
 ---
 
+## Testing Standards
+
+### 7. Pest Testing Framework (MANDATORY)
+
+**✅ REQUIRED:** ALL tests MUST use Pest v4+ syntax. PHPUnit class-based tests are NOT allowed.
+
+#### ❌ Incorrect (PHPUnit Class-Based)
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Auth;
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class SanctumAuthenticationTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+    }
+
+    public function test_user_can_create_token(): void
+    {
+        $token = $this->user->createToken('test-token');
+        
+        $this->assertNotNull($token->plainTextToken);
+    }
+}
+```
+
+#### ✅ Correct (Pest Syntax)
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $this->user = User::factory()->create();
+});
+
+test('user can create token', function () {
+    $token = $this->user->createToken('test-token');
+    
+    expect($token->plainTextToken)->not->toBeNull();
+});
+```
+
+**Why:** Pest provides a more expressive, readable syntax that reduces boilerplate code and makes tests easier to write and understand. It's the official testing framework mandated for this project.
+
+**Key Pest Syntax Elements:**
+- Use `test()` function instead of `public function test_*()`
+- Use `expect()` assertions instead of `$this->assert*()`
+- Use `beforeEach()` instead of `setUp()`
+- Use `uses()` to apply traits like `RefreshDatabase`
+- No need for class definitions or namespace declarations
+
+**Running Tests:**
+```bash
+./vendor/bin/pest                              # All tests
+./vendor/bin/pest tests/Feature/               # Feature tests only
+./vendor/bin/pest tests/Unit/                  # Unit tests only
+./vendor/bin/pest --parallel                   # Parallel execution
+./vendor/bin/pest --coverage                   # With coverage
+```
+
+**Common Pest Assertions:**
+```php
+// Equality
+expect($value)->toBe(10);
+expect($value)->toEqual($expected);
+expect($value)->not->toBe(20);
+
+// Types
+expect($value)->toBeInt();
+expect($value)->toBeString();
+expect($value)->toBeArray();
+expect($value)->toBeNull();
+expect($value)->not->toBeNull();
+
+// Collections
+expect($array)->toHaveCount(5);
+expect($array)->toContain('item');
+expect($array)->toHaveKey('key');
+
+// Booleans
+expect($condition)->toBeTrue();
+expect($condition)->toBeFalse();
+
+// Strings
+expect($string)->toContain('substring');
+expect($string)->toStartWith('prefix');
+expect($string)->toEndWith('suffix');
+```
+
+---
+
 ## Migration Standards
 
-### 7. Migration Class Format
+### 8. Migration Class Format
 
 **✅ REQUIRED:** Use anonymous migration classes with `return new class extends Migration`.
 
