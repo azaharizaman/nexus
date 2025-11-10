@@ -132,9 +132,9 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-062 | Support export formats: CSV, JSON with configurable date range | | |
 | TASK-063 | Generate export filename with timestamp: audit_log_YYYYMMDD_HHMMSS.csv | | |
 | TASK-064 | Include all relevant fields: timestamp, user, action, model, old/new values | | |
-| TASK-065 | ~~Removed: Blockchain verification task - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
-| TASK-066 | ~~Removed: Blockchain verification task - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
-| TASK-067 | ~~Removed: Blockchain verification task - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
+| TASK-065 | [REMOVED] Blockchain verification task - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-066 | [REMOVED] Blockchain verification task - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-067 | [REMOVED] Blockchain verification task - decision made to not implement blockchain feature at this stage | N/A | N/A |
 | TASK-068 | Implement queue-based async export for large datasets | | |
 
 ### Implementation Phase 9: API Endpoints
@@ -147,10 +147,10 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-070 | Implement index() method with pagination, filtering, and sorting | | |
 | TASK-071 | Support query parameters: subject_type, subject_id, causer_id, log_name, from_date, to_date | | |
 | TASK-072 | Implement show() method returning single activity with full details | | |
-| TASK-073 | ~~Removed: Blockchain verification endpoint - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
+| TASK-073 | [REMOVED] Blockchain verification endpoint - decision made to not implement blockchain feature at this stage | N/A | N/A |
 | TASK-074 | Create AuditLogResource in app/Http/Resources/AuditLogResource.php | | |
 | TASK-075 | Include fields: id, description, subject, causer, properties, log_name, created_at | | |
-| TASK-076 | ~~Removed: Blockchain hash field in resource - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
+| TASK-076 | [REMOVED] Blockchain hash field in resource - decision made to not implement blockchain feature at this stage | N/A | N/A |
 | TASK-077 | Apply authorization: only users with 'view audit logs' permission can access | | |
 
 ### Implementation Phase 10: Audit Export Endpoint
@@ -178,8 +178,8 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-087 | Add options: --from, --to, --format, --output, --tenant | | |
 | TASK-088 | Call ExportAuditLogsAction and save to specified output path | | |
 | TASK-089 | Display progress bar for large exports | | |
-| TASK-090 | ~~Removed: Blockchain verification CLI command - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
-| TASK-091 | ~~Removed: Blockchain verification CLI task - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
+| TASK-090 | [REMOVED] Blockchain verification CLI command - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-091 | [REMOVED] Blockchain verification CLI task - decision made to not implement blockchain feature at this stage | N/A | N/A |
 | TASK-092 | Create CleanupAuditLogsCommand in app/Console/Commands/Audit/CleanupAuditLogsCommand.php with signature erp:audit:cleanup | | |
 | TASK-093 | Add option --days to specify retention period (default 365 days) | | |
 | TASK-094 | Archive old logs to separate table or storage before deletion | | |
@@ -242,7 +242,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-123 | Implement viewAny() checking 'view audit logs' permission | | |
 | TASK-124 | Implement view() checking 'view audit logs' permission and tenant isolation | | |
 | TASK-125 | Implement export() checking 'export audit logs' permission (Admin/Auditor only) | | |
-| TASK-126 | ~~Removed: Blockchain verification permission - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
+| TASK-126 | [REMOVED] Blockchain verification permission - decision made to not implement blockchain feature at this stage | N/A | N/A |
 | TASK-127 | Register AuditLogPolicy in AuthServiceProvider | | |
 | TASK-128 | Apply policy checks in AuditLogController methods | | |
 
@@ -256,7 +256,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-130 | GET /api/v1/audit/activities - List audit logs with filters | | |
 | TASK-131 | GET /api/v1/audit/activities/{id} - Get single audit log | | |
 | TASK-132 | GET /api/v1/audit/export - Export audit logs | | |
-| TASK-133 | ~~Removed: Blockchain verification route - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
+| TASK-133 | [REMOVED] Blockchain verification route - decision made to not implement blockchain feature at this stage | N/A | N/A |
 | TASK-134 | Apply auth:sanctum middleware to all audit routes | | |
 | TASK-135 | Apply throttle middleware to prevent abuse | | |
 
@@ -276,10 +276,10 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-143 | Test audit log export generates correct file | | |
 | TASK-144 | Test unauthorized user cannot access audit logs (403) | | |
 | TASK-145 | Test tenant isolation: user cannot see other tenant's logs | | |
-| TASK-146 | ~~Removed: Blockchain verification test - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
-| TASK-147 | ~~Removed: Blockchain verification test - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
-| TASK-148 | ~~Removed: Blockchain verification test - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
-| TASK-149 | ~~Removed: Blockchain verification test - decision made to not implement blockchain feature at this stage~~ | N/A | N/A |
+| TASK-146 | [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-147 | [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-148 | [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-149 | [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage | N/A | N/A |
 | TASK-150 | Create AuditLogRepositoryTest unit test in tests/Unit/Core/AuditLogRepositoryTest.php | | |
 | TASK-151 | Test getBySubject() returns correct logs | | |
 | TASK-152 | Test getByCauser() returns user's activities | | |
@@ -345,9 +345,9 @@ This implementation plan establishes a comprehensive audit logging system for th
 **Unit Tests:**
 - **TEST-001**: Test ActivityLoggerService log() method creates activity record
 - **TEST-002**: Test ActivityLoggerService includes causer and tenant context
-- **TEST-003**: ~~Removed: Blockchain verification test - decision made to not implement blockchain feature at this stage~~
-- **TEST-004**: ~~Removed: Blockchain verification test - decision made to not implement blockchain feature at this stage~~
-- **TEST-005**: ~~Removed: Blockchain verification test - decision made to not implement blockchain feature at this stage~~
+- **TEST-003**: [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage
+- **TEST-004**: [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage
+- **TEST-005**: [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage
 - **TEST-006**: Test AuditLogRepository getBySubject() returns correct logs
 - **TEST-007**: Test AuditLogRepository getByCauser() filters by user
 - **TEST-008**: Test AuditLogRepository getByDateRange() filters correctly
@@ -365,16 +365,16 @@ This implementation plan establishes a comprehensive audit logging system for th
 - **TEST-018**: Test filtering audit logs by date range
 - **TEST-019**: Test GET /api/v1/audit/activities/{id} returns single log
 - **TEST-020**: Test GET /api/v1/audit/export exports logs
-- **TEST-021**: ~~Removed: Blockchain verification integration test - decision made to not implement blockchain feature at this stage~~
+- **TEST-021**: [REMOVED] Blockchain verification integration test - decision made to not implement blockchain feature at this stage
 - **TEST-022**: Test unauthorized user cannot access audit logs (403)
 - **TEST-023**: Test tenant isolation in audit logs
 - **TEST-024**: Test authentication events are logged
 - **TEST-025**: Test permission changes are logged
 - **TEST-026**: Test CLI command php artisan erp:audit:export works
-- **TEST-027**: ~~Removed: Test CLI command php artisan erp:audit:verify - decision made to not implement blockchain feature at this stage~~
+- **TEST-027**: [REMOVED] Test CLI command php artisan erp:audit:verify - decision made to not implement blockchain feature at this stage
 
 **Integration Tests:**
-- **TEST-028**: ~~Removed: Blockchain verification integration test - decision made to not implement blockchain feature at this stage~~
+- **TEST-028**: [REMOVED] Blockchain verification integration test - decision made to not implement blockchain feature at this stage
 - **TEST-029**: Test audit log export for large datasets
 - **TEST-030**: Test audit log cleanup archives old records
 
@@ -382,9 +382,9 @@ This implementation plan establishes a comprehensive audit logging system for th
 
 **Risks:**
 - **RISK-001**: Audit log table growth impacting performance - Mitigation: Implement table partitioning, regular archival, proper indexing
-- **RISK-002**: ~~Removed: Blockchain-related risk - decision made to not implement blockchain feature at this stage~~
+- **RISK-002**: [REMOVED] Blockchain-related risk - decision made to not implement blockchain feature at this stage
 - **RISK-003**: Storage costs for long-term audit retention - Mitigation: Archive to cheaper storage (S3 Glacier), implement compression
-- **RISK-004**: ~~Removed: Blockchain-related risk - decision made to not implement blockchain feature at this stage~~
+- **RISK-004**: [REMOVED] Blockchain-related risk - decision made to not implement blockchain feature at this stage
 - **RISK-005**: Privacy concerns with detailed logging - Mitigation: Encrypt sensitive data, support GDPR deletion requests
 - **RISK-006**: Query performance on large activity_log table - Mitigation: Proper indexing, table partitioning, read replicas
 
