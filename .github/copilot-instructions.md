@@ -31,7 +31,7 @@ This is an **enterprise-grade, headless ERP backend system** built with Laravel 
 - **Design Philosophy:** Contract-driven, Domain-driven, Event-driven
 - **Target Users:** AI agents, custom frontends, and automated systems
 - **Modularity:** Enable/disable modules without system-wide impact
-- **Security:** Zero-trust model with blockchain verification for critical operations
+- **Security:** Zero-trust model for critical operations
 
 ### System Boundaries
 
@@ -74,7 +74,6 @@ All packages below are **required dependencies** for this project:
   "azaharizaman/laravel-inventory-management": "dev-main",
   "azaharizaman/laravel-backoffice": "dev-main",
   "azaharizaman/laravel-serial-numbering": "dev-main",
-  "azaharizaman/php-blockchain": "dev-main"
 }
 ```
 

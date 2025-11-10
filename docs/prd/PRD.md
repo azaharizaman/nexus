@@ -9,14 +9,14 @@
 
 ## Executive Summary
 
-Build enterprise-grade, headless ERP backend system using Laravel 12+ and PHP 8.2+ that rivals SAP, Odoo, and Microsoft Dynamics in functionality while maintaining superior modularity, extensibility, and agentic capabilities. The system provides zero-trust blockchain-enabled architecture with full API-based integration, enabling organizations to build custom frontends while leveraging robust backend business logic.
+Build enterprise-grade, headless ERP backend system using Laravel 12+ and PHP 8.2+ that rivals SAP, Odoo, and Microsoft Dynamics in functionality while maintaining superior modularity, extensibility, and agentic capabilities. The system provides zero-trust architecture with full API-based integration, enabling organizations to build custom frontends while leveraging robust backend business logic.
 
 ### Core Value Proposition
 
 - **Headless Architecture:** Pure backend system accessible via RESTful APIs and CLI
 - **Modular Design:** Enable/disable modules without system-wide impact
 - **Agentic-First:** Built for AI agents with extensive contracts, interfaces, and extensibility hooks
-- **Enterprise-Ready:** Database-agnostic, blockchain-enabled, zero-trust security model
+- **Enterprise-Ready:** Database-agnostic, zero-trust security model
 - **Modern Stack:** Laravel 12+, PHP 8.2+, leveraging ecosystem best practices
 
 ---
@@ -36,7 +36,7 @@ Build enterprise-grade, headless ERP backend system using Laravel 12+ and PHP 8.
 - Module activation/deactivation without system failure
 - 100% API coverage for all business operations
 - Database-agnostic implementation
-- Comprehensive audit logging with blockchain verification
+- Comprehensive audit logging
 - CLI-based administration and operations
 - Zero UI dependencies
 
@@ -50,7 +50,6 @@ Build enterprise-grade, headless ERP backend system using Laravel 12+ and PHP 8.
   - `azaharizaman/laravel-inventory-management` (dev-main)
   - `azaharizaman/laravel-backoffice` (dev-main)
   - `azaharizaman/laravel-serial-numbering` (dev-main)
-  - `azaharizaman/php-blockchain` (dev-main, when available)
 - **Composer Stability:** dev
 
 ---
@@ -293,7 +292,6 @@ php artisan erp:
 - `Domain\[Module]\Events\[Entity][Action]Event`
 - `Domain\[Module]\Events\[Entity][State]ChangedEvent`
 - Integration events for cross-module communication
-- Blockchain verification events
 
 ### Webhook Support
 
@@ -347,25 +345,8 @@ php artisan erp:
 - **Authorization:** Role-based access control (RBAC) with permissions
 - **Encryption:** Data at rest and in transit
 - **Audit Logging:** Every action logged with user context
-- **Blockchain Verification:** Critical transactions verified via blockchain
 - **API Security:** Rate limiting, IP whitelisting, token rotation
 - **Data Isolation:** Tenant data completely isolated
-
-### Blockchain Integration
-
-**Blockchain Verification Points:**
-- Financial transactions (journal entries)
-- Inventory movements (stock in/out)
-- Purchase order approvals
-- Sales order confirmations
-- Document signatures
-- Configuration changes
-
-**Implementation:**
-- Use `azaharizaman/php-blockchain` package
-- Async blockchain writes via queue
-- Transaction hash storage in database
-- Verification endpoints via API
 
 ---
 
@@ -566,7 +547,6 @@ When optional module disabled:
 - Complete audit trail for all transactions
 - User action logging
 - Data change history
-- Blockchain verification for critical operations
 - Retention policies per regulation
 - Export capabilities for compliance reporting
 
@@ -604,7 +584,6 @@ When optional module disabled:
 - Laravel Inventory Management: github.com/azaharizaman/laravel-inventory-management
 - Laravel Backoffice: github.com/azaharizaman/laravel-backoffice
 - Laravel Serial Numbering: github.com/azaharizaman/laravel-serial-numbering
-- PHP Blockchain: github.com/azaharizaman/php-blockchain
 
 ---
 

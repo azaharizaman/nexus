@@ -132,9 +132,9 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-062 | Support export formats: CSV, JSON with configurable date range | | |
 | TASK-063 | Generate export filename with timestamp: audit_log_YYYYMMDD_HHMMSS.csv | | |
 | TASK-064 | Include all relevant fields: timestamp, user, action, model, old/new values | | |
-| TASK-065 | [REMOVED] Blockchain verification task - decision made to not implement blockchain feature at this stage | N/A | N/A |
-| TASK-066 | [REMOVED] Blockchain verification task - decision made to not implement blockchain feature at this stage | N/A | N/A |
-| TASK-067 | [REMOVED] Blockchain verification task - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-065 | Create VerifyBlockchainAction in app/Domains/Core/Actions/Audit/VerifyBlockchainAction.php | | |
+| TASK-066 | Accept model type and ID, call BlockchainVerifier.verify() | | |
+| TASK-067 | Return verification result with tamper status and hash details | | |
 | TASK-068 | Implement queue-based async export for large datasets | | |
 
 ### Implementation Phase 9: API Endpoints
@@ -147,10 +147,10 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-070 | Implement index() method with pagination, filtering, and sorting | | |
 | TASK-071 | Support query parameters: subject_type, subject_id, causer_id, log_name, from_date, to_date | | |
 | TASK-072 | Implement show() method returning single activity with full details | | |
-| TASK-073 | [REMOVED] Blockchain verification endpoint - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-073 | Implement verify() method to verify blockchain hash for specific record | | |
 | TASK-074 | Create AuditLogResource in app/Http/Resources/AuditLogResource.php | | |
 | TASK-075 | Include fields: id, description, subject, causer, properties, log_name, created_at | | |
-| TASK-076 | [REMOVED] Blockchain hash field in resource - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-076 | Include blockchain verification status if applicable | | |
 | TASK-077 | Apply authorization: only users with 'view audit logs' permission can access | | |
 
 ### Implementation Phase 10: Audit Export Endpoint
@@ -178,8 +178,8 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-087 | Add options: --from, --to, --format, --output, --tenant | | |
 | TASK-088 | Call ExportAuditLogsAction and save to specified output path | | |
 | TASK-089 | Display progress bar for large exports | | |
-| TASK-090 | [REMOVED] Blockchain verification CLI command - decision made to not implement blockchain feature at this stage | N/A | N/A |
-| TASK-091 | [REMOVED] Blockchain verification CLI task - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-090 | Create VerifyBlockchainCommand in app/Console/Commands/Audit/VerifyBlockchainCommand.php with signature erp:audit:verify {model} {id} | | |
+| TASK-091 | Call VerifyBlockchainAction and display verification result | | |
 | TASK-092 | Create CleanupAuditLogsCommand in app/Console/Commands/Audit/CleanupAuditLogsCommand.php with signature erp:audit:cleanup | | |
 | TASK-093 | Add option --days to specify retention period (default 365 days) | | |
 | TASK-094 | Archive old logs to separate table or storage before deletion | | |
@@ -242,7 +242,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-123 | Implement viewAny() checking 'view audit logs' permission | | |
 | TASK-124 | Implement view() checking 'view audit logs' permission and tenant isolation | | |
 | TASK-125 | Implement export() checking 'export audit logs' permission (Admin/Auditor only) | | |
-| TASK-126 | [REMOVED] Blockchain verification permission - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-126 | Implement verify() checking 'verify blockchain' permission | | |
 | TASK-127 | Register AuditLogPolicy in AuthServiceProvider | | |
 | TASK-128 | Apply policy checks in AuditLogController methods | | |
 
@@ -256,7 +256,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-130 | GET /api/v1/audit/activities - List audit logs with filters | | |
 | TASK-131 | GET /api/v1/audit/activities/{id} - Get single audit log | | |
 | TASK-132 | GET /api/v1/audit/export - Export audit logs | | |
-| TASK-133 | [REMOVED] Blockchain verification route - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-133 | GET /api/v1/audit/verify/{model}/{id} - Verify blockchain hash | | |
 | TASK-134 | Apply auth:sanctum middleware to all audit routes | | |
 | TASK-135 | Apply throttle middleware to prevent abuse | | |
 
@@ -276,10 +276,10 @@ This implementation plan establishes a comprehensive audit logging system for th
 | TASK-143 | Test audit log export generates correct file | | |
 | TASK-144 | Test unauthorized user cannot access audit logs (403) | | |
 | TASK-145 | Test tenant isolation: user cannot see other tenant's logs | | |
-| TASK-146 | [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage | N/A | N/A |
-| TASK-147 | [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage | N/A | N/A |
-| TASK-148 | [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage | N/A | N/A |
-| TASK-149 | [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage | N/A | N/A |
+| TASK-146 | Create BlockchainVerificationTest unit test in tests/Unit/Core/BlockchainVerificationTest.php | | |
+| TASK-147 | Test blockchain hash generation is deterministic | | |
+| TASK-148 | Test blockchain verification detects tampering | | |
+| TASK-149 | Test blockchain chain validation | | |
 | TASK-150 | Create AuditLogRepositoryTest unit test in tests/Unit/Core/AuditLogRepositoryTest.php | | |
 | TASK-151 | Test getBySubject() returns correct logs | | |
 | TASK-152 | Test getByCauser() returns user's activities | | |
@@ -291,6 +291,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 
 - **ALT-002**: Use database triggers for audit logging - Rejected because it couples audit logic to database layer, makes it database-specific, and reduces flexibility. Application-level logging provides better control.
 
+- **ALT-003**: Third-party blockchain service (e.g., AWS Quantum Ledger Database) - Considered but custom implementation with php-blockchain provides more control and avoids vendor lock-in. Can be migrated later if needed.
 
 - **ALT-004**: Event sourcing architecture for complete audit trail - Considered but too complex for Phase 1. Current approach provides sufficient audit trail. Event sourcing can be added to specific domains in later phases.
 
@@ -301,6 +302,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 - **DEP-001**: Laravel 12.x framework installed and configured
 - **DEP-002**: PHP 8.2+ for attributes and typed properties
 - **DEP-003**: spatie/laravel-activitylog package (install via composer)
+- **DEP-004**: azaharizaman/php-blockchain package (install via composer)
 - **DEP-005**: User authentication system must be implemented (PRD-02)
 - **DEP-006**: Tenant system must be implemented (PRD-01)
 - **DEP-007**: Queue driver configured (Redis/Database) for async operations
@@ -311,18 +313,25 @@ This implementation plan establishes a comprehensive audit logging system for th
 
 **New Files to Create:**
 - **FILE-001**: database/migrations/YYYY_MM_DD_HHMMSS_add_tenant_id_to_activity_log_table.php - Add tenant isolation
+- **FILE-002**: database/migrations/YYYY_MM_DD_HHMMSS_create_blockchain_verifications_table.php - Blockchain table
 - **FILE-003**: app/Domains/Core/Models/Activity.php - Extended Activity model with tenant support
+- **FILE-004**: app/Domains/Core/Models/BlockchainVerification.php - Blockchain verification model
 - **FILE-005**: app/Domains/Core/Contracts/ActivityLoggerContract.php - Activity logger interface
 - **FILE-006**: app/Domains/Core/Services/ActivityLoggerService.php - Custom activity logging service
+- **FILE-007**: app/Domains/Core/Contracts/BlockchainVerifierContract.php - Blockchain verifier interface
+- **FILE-008**: app/Domains/Core/Services/BlockchainVerifier.php - Blockchain verification service
 - **FILE-009**: app/Domains/Core/Attributes/CriticalOperation.php - Critical operation attribute
+- **FILE-010**: app/Domains/Core/Observers/BlockchainObserver.php - Blockchain observer
 - **FILE-011**: app/Domains/Core/Observers/RolePermissionObserver.php - Role/permission observer
 - **FILE-012**: app/Domains/Core/Contracts/AuditLogRepositoryContract.php - Audit log repository interface
 - **FILE-013**: app/Domains/Core/Repositories/AuditLogRepository.php - Audit log repository
 - **FILE-014**: app/Domains/Core/Actions/Audit/GetAuditLogsAction.php - Get audit logs action
 - **FILE-015**: app/Domains/Core/Actions/Audit/ExportAuditLogsAction.php - Export action
+- **FILE-016**: app/Domains/Core/Actions/Audit/VerifyBlockchainAction.php - Verify blockchain action
 - **FILE-017**: app/Http/Controllers/Api/V1/AuditLogController.php - Audit log API controller
 - **FILE-018**: app/Http/Resources/AuditLogResource.php - Audit log API resource
 - **FILE-019**: app/Console/Commands/Audit/ExportAuditLogsCommand.php - Export CLI command
+- **FILE-020**: app/Console/Commands/Audit/VerifyBlockchainCommand.php - Verify CLI command
 - **FILE-021**: app/Console/Commands/Audit/CleanupAuditLogsCommand.php - Cleanup CLI command
 - **FILE-022**: app/Domains/Core/Policies/AuditLogPolicy.php - Audit log authorization policy
 - **FILE-023**: app/Domains/Core/Jobs/ExportAuditLogsJob.php - Async export job
@@ -337,6 +346,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 
 **Test Files:**
 - **FILE-030**: tests/Feature/Core/AuditLogTest.php - Feature tests
+- **FILE-031**: tests/Unit/Core/BlockchainVerificationTest.php - Blockchain unit tests
 - **FILE-032**: tests/Unit/Core/AuditLogRepositoryTest.php - Repository unit tests
 - **FILE-033**: tests/Unit/Core/ActivityLoggerServiceTest.php - Service unit tests
 
@@ -345,9 +355,9 @@ This implementation plan establishes a comprehensive audit logging system for th
 **Unit Tests:**
 - **TEST-001**: Test ActivityLoggerService log() method creates activity record
 - **TEST-002**: Test ActivityLoggerService includes causer and tenant context
-- **TEST-003**: [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage
-- **TEST-004**: [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage
-- **TEST-005**: [REMOVED] Blockchain verification test - decision made to not implement blockchain feature at this stage
+- **TEST-003**: Test BlockchainVerifier generates deterministic hashes
+- **TEST-004**: Test BlockchainVerifier verify() detects tampering
+- **TEST-005**: Test BlockchainVerifier verifyChain() validates entire chain
 - **TEST-006**: Test AuditLogRepository getBySubject() returns correct logs
 - **TEST-007**: Test AuditLogRepository getByCauser() filters by user
 - **TEST-008**: Test AuditLogRepository getByDateRange() filters correctly
@@ -365,32 +375,34 @@ This implementation plan establishes a comprehensive audit logging system for th
 - **TEST-018**: Test filtering audit logs by date range
 - **TEST-019**: Test GET /api/v1/audit/activities/{id} returns single log
 - **TEST-020**: Test GET /api/v1/audit/export exports logs
-- **TEST-021**: [REMOVED] Blockchain verification integration test - decision made to not implement blockchain feature at this stage
+- **TEST-021**: Test GET /api/v1/audit/verify verifies blockchain hash
 - **TEST-022**: Test unauthorized user cannot access audit logs (403)
 - **TEST-023**: Test tenant isolation in audit logs
 - **TEST-024**: Test authentication events are logged
 - **TEST-025**: Test permission changes are logged
 - **TEST-026**: Test CLI command php artisan erp:audit:export works
-- **TEST-027**: [REMOVED] Test CLI command php artisan erp:audit:verify - decision made to not implement blockchain feature at this stage
+- **TEST-027**: Test CLI command php artisan erp:audit:verify works
 
 **Integration Tests:**
-- **TEST-028**: [REMOVED] Blockchain verification integration test - decision made to not implement blockchain feature at this stage
+- **TEST-028**: Test blockchain verification workflow end-to-end
 - **TEST-029**: Test audit log export for large datasets
 - **TEST-030**: Test audit log cleanup archives old records
+- **TEST-031**: Test critical operations generate blockchain entries
 
 ## 7. Risks & Assumptions
 
 **Risks:**
 - **RISK-001**: Audit log table growth impacting performance - Mitigation: Implement table partitioning, regular archival, proper indexing
-- **RISK-002**: [REMOVED] Blockchain-related risk - decision made to not implement blockchain feature at this stage
+- **RISK-002**: Blockchain verification performance overhead - Mitigation: Async blockchain storage, only for critical operations
 - **RISK-003**: Storage costs for long-term audit retention - Mitigation: Archive to cheaper storage (S3 Glacier), implement compression
-- **RISK-004**: [REMOVED] Blockchain-related risk - decision made to not implement blockchain feature at this stage
+- **RISK-004**: Blockchain chain validation failure - Mitigation: Regular validation jobs, alerting, backup verification methods
 - **RISK-005**: Privacy concerns with detailed logging - Mitigation: Encrypt sensitive data, support GDPR deletion requests
 - **RISK-006**: Query performance on large activity_log table - Mitigation: Proper indexing, table partitioning, read replicas
 
 **Assumptions:**
 - **ASSUMPTION-001**: 7-year retention period is sufficient for compliance
 - **ASSUMPTION-002**: Database can handle audit log volume (estimated 1M records/month per tenant)
+- **ASSUMPTION-003**: Blockchain verification is only needed for critical operations (< 5% of total operations)
 - **ASSUMPTION-004**: Async logging is acceptable for non-critical operations
 - **ASSUMPTION-005**: CSV and JSON export formats are sufficient
 - **ASSUMPTION-006**: Monthly cleanup job is adequate for archive management
@@ -402,5 +414,7 @@ This implementation plan establishes a comprehensive audit logging system for th
 - [PRD-01-infrastructure-multitenancy-1.md](./PRD-01-infrastructure-multitenancy-1.md) - Multi-tenancy system
 - [PRD-02-infrastructure-auth-1.md](./PRD-02-infrastructure-auth-1.md) - Authentication system
 - [Spatie Laravel Activitylog Documentation](https://spatie.be/docs/laravel-activitylog)
+- [PHP Blockchain Package](https://github.com/azaharizaman/php-blockchain)
+- [Blockchain for Audit Trails](https://www.sciencedirect.com/science/article/pii/S2096720921000336)
 - [SOC 2 Audit Trail Requirements](https://www.vanta.com/resources/soc-2-audit-logs)
 - [MODULE-DEVELOPMENT.md](../docs/prd/MODULE-DEVELOPMENT.md) - Module development guidelines

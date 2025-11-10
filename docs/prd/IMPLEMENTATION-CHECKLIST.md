@@ -68,12 +68,9 @@
 #### Audit Logging (Core.003)
 - [ ] Spatie Activitylog configured
 - [ ] LogsActivity trait applied to all models
-- [ ] Blockchain verifier contract defined
-- [ ] Blockchain service implemented (when package available)
 - [ ] API endpoints for audit queries
 - [ ] CLI commands for audit export
 - [ ] Tests for activity logging
-- [ ] Tests for blockchain verification
 
 #### Serial Numbering (Core.004)
 - [ ] Package integrated and configured
@@ -456,7 +453,6 @@
 - [ ] Journal entry model created
 - [ ] Posting process implemented
 - [ ] Period management
-- [ ] Blockchain verification integration
 - [ ] API endpoints implemented
 - [ ] CLI commands created
 - [ ] Tests complete
