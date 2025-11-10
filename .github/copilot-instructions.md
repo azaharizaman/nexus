@@ -1,23 +1,54 @@
 # Laravel ERP System - GitHub Copilot Instructions
 
-**Version:** 1.0.0  
-**Last Updated:** November 8, 2025  
+**Version:** 2.0.0  
+**Last Updated:** November 10, 2025  
 **Project:** Laravel Headless ERP Backend System
+
+> **📖 Important:** Before starting any development, read the [CODING_GUIDELINES.md](../CODING_GUIDELINES.md) file in the repository root. It contains critical coding standards and common mistakes to avoid.
+
+---
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Technology Stack](#technology-stack)
+3. [Core Architecture Patterns](#core-architecture-patterns)
+4. [Mandatory Tool Integration](#mandatory-tool-integration)
+5. [Development Standards](#development-standards)
+6. [Domain Organization](#domain-organization)
+7. [Quick Reference](#quick-reference)
 
 ---
 
 ## Project Overview
 
-This is an enterprise-grade, headless ERP backend system built with Laravel 12+ and PHP 8.2+. The system is designed to rival SAP, Odoo, and Microsoft Dynamics while maintaining superior modularity, extensibility, and agentic capabilities.
+This is an **enterprise-grade, headless ERP backend system** built with Laravel 12+ and PHP 8.2+. The system is designed to rival SAP, Odoo, and Microsoft Dynamics while maintaining superior modularity, extensibility, and agentic capabilities.
 
 ### Key Characteristics
 
-- **Architecture:** Headless backend-only system (no UI components)
+- **Architecture:** Headless backend-only system (NO UI components, NO views, NO frontend assets)
 - **Integration:** RESTful APIs and CLI commands only
-- **Design Philosophy:** Contract-driven, domain-driven, event-driven
-- **Target:** AI agents, custom frontends, and automated systems
+- **Design Philosophy:** Contract-driven, Domain-driven, Event-driven
+- **Target Users:** AI agents, custom frontends, and automated systems
 - **Modularity:** Enable/disable modules without system-wide impact
-- **Security:** Zero-trust model with blockchain verification
+- **Security:** Zero-trust model with blockchain verification for critical operations
+
+### System Boundaries
+
+**✅ This system includes:**
+- RESTful API endpoints (versioned as `/api/v1/`)
+- Artisan CLI commands (prefixed with `erp:`)
+- Background queue jobs
+- Event-driven integrations
+- Database schema and migrations
+- Business logic (Actions, Services, Repositories)
+
+**❌ This system excludes:**
+- Web views (Blade templates)
+- Frontend JavaScript frameworks
+- HTML/CSS assets
+- Server-side rendering
+- Traditional web forms
 
 ---
 
@@ -25,24 +56,41 @@ This is an enterprise-grade, headless ERP backend system built with Laravel 12+ 
 
 ### Core Requirements
 
-- **PHP:** ≥ 8.2 (use latest PHP 8.2+ features)
-- **Laravel:** ≥ 12.x (latest stable version)
-- **Database:** Agnostic design (MySQL, PostgreSQL, SQLite, SQL Server)
-- **Composer Stability:** `dev` for internal packages
+| Component | Version | Purpose |
+|-----------|---------|---------|
+| **PHP** | ≥ 8.2 | Use latest PHP 8.2+ features (readonly, enums, etc.) |
+| **Laravel** | ≥ 12.x | Latest stable version with streamlined structure |
+| **Database** | Agnostic | Design for MySQL, PostgreSQL, SQLite, SQL Server |
+| **Composer** | Latest | Use `dev-main` stability for internal packages |
 
 ### Required Packages
 
+All packages below are **required dependencies** for this project:
+
+#### Core Business Packages (dev-main)
 ```json
 {
   "azaharizaman/laravel-uom-management": "dev-main",
   "azaharizaman/laravel-inventory-management": "dev-main",
   "azaharizaman/laravel-backoffice": "dev-main",
   "azaharizaman/laravel-serial-numbering": "dev-main",
-  "azaharizaman/php-blockchain": "dev-main",
-  "laravel/scout": "^10.0",
-  "laravel/pulse": "^1.0",
-  "pestphp/pest": "^4.0",
-  "laravel/pint": "^1.0",
+  "azaharizaman/php-blockchain": "dev-main"
+}
+```
+
+#### Development Tools (MANDATORY)
+```json
+{
+  "laravel/scout": "^10.0",          // MANDATORY: Search on all models
+  "laravel/pulse": "^1.0",           // Optional: Performance monitoring
+  "pestphp/pest": "^4.0",            // MANDATORY: Primary testing framework
+  "laravel/pint": "^1.0"             // MANDATORY: Code style enforcement
+}
+```
+
+#### Architecture Support
+```json
+{
   "lorisleiva/laravel-actions": "^2.0",
   "spatie/laravel-permission": "^6.0",
   "spatie/laravel-model-status": "^2.0",
@@ -51,36 +99,155 @@ This is an enterprise-grade, headless ERP backend system built with Laravel 12+ 
 }
 ```
 
-### Architecture Patterns
+---
 
-- **Contract-Driven Development:** All functionality defined by interfaces
-- **Domain-Driven Design:** Business logic organized by domain boundaries
-- **Event-Driven Architecture:** Module communication via Laravel events
-- **Repository Pattern:** Data access abstraction layer
-- **Service Layer Pattern:** Business logic encapsulation
-- **Action Pattern:** Discrete business operations using `lorisleiva/laravel-actions`
-- **SOLID Principles:** Single responsibility, dependency injection throughout
+## Core Architecture Patterns
+
+### 1. Contract-Driven Development
+
+**ALWAYS define interfaces before implementation:**
+
+```php
+// 1. Define contract in app/Domains/{Domain}/Contracts/
+interface TenantRepositoryContract
+{
+    public function findById(int $id): ?Tenant;
+    public function create(array $data): Tenant;
+}
+
+// 2. Implement in app/Domains/{Domain}/Repositories/
+class TenantRepository implements TenantRepositoryContract
+{
+    public function findById(int $id): ?Tenant
+    {
+        return Tenant::find($id);
+    }
+}
+
+// 3. Bind in service provider
+$this->app->bind(TenantRepositoryContract::class, TenantRepository::class);
+
+// 4. Inject via constructor
+public function __construct(
+    private readonly TenantRepositoryContract $repository
+) {}
+```
+
+### 2. Domain-Driven Design
+
+**Strict domain boundaries:**
+
+```
+app/Domains/
+├── Core/              # Multi-tenancy, auth, settings (NO business logic)
+├── Backoffice/        # Organization structure, staff
+├── Inventory/         # Items, warehouses, stock movements
+├── Sales/             # Customers, orders, pricing
+├── Purchasing/        # Vendors, POs, goods receipt
+└── Accounting/        # GL, AP/AR, reporting
+```
+
+Each domain contains:
+```
+{DomainName}/
+├── Actions/          # Business operations (Laravel Actions)
+├── Contracts/        # Interfaces
+├── Events/           # Domain events
+├── Listeners/        # Event handlers
+├── Models/           # Eloquent models
+├── Observers/        # Model observers
+├── Policies/         # Authorization
+├── Repositories/     # Data access
+└── Services/         # Business logic
+```
+
+**Cross-domain communication:** ONLY via events. No direct dependencies between business domains.
+
+### 3. Event-Driven Architecture
+
+```php
+// Dispatch domain events
+event(new StockAdjustedEvent($item, $quantity, $reason));
+
+// Listen in other domains
+class UpdateInventoryBalanceListener
+{
+    public function handle(StockAdjustedEvent $event): void
+    {
+        // Update accounting balances
+    }
+}
+```
+
+### 4. Repository Pattern
+
+**NEVER use direct Model access in services:**
+
+```php
+// ❌ WRONG
+class TenantManager
+{
+    public function create(array $data): Tenant
+    {
+        return Tenant::create($data);  // Direct model access
+    }
+}
+
+// ✅ CORRECT
+class TenantManager
+{
+    public function __construct(
+        private readonly TenantRepositoryContract $repository
+    ) {}
+    
+    public function create(array $data): Tenant
+    {
+        return $this->repository->create($data);
+    }
+}
+```
+
+### 5. Action Pattern
+
+Use `lorisleiva/laravel-actions` for all business operations:
+
+```php
+use Lorisleiva\Actions\Concerns\AsAction;
+
+class CreatePurchaseOrderAction
+{
+    use AsAction;
+    
+    public function handle(array $data): PurchaseOrder
+    {
+        // Validation, business logic, audit logging, event dispatching
+        return $order;
+    }
+    
+    // Automatically available as:
+    // - Job: CreatePurchaseOrderAction::dispatch($data)
+    // - Command: php artisan erp:create-purchase-order
+    // - Controller: CreatePurchaseOrderAction::run($data)
+}
+```
 
 ---
 
-## Laravel Scout Integration
+## Mandatory Tool Integration
 
-### Search Functionality Requirements
+### 1. Laravel Scout (MANDATORY)
 
-**MANDATORY:** All Eloquent models in the Laravel ERP system MUST implement Laravel Scout for search functionality. This ensures consistent, performant search capabilities across all domains.
+**ALL Eloquent models MUST implement Scout:**
 
-#### Model Implementation
 ```php
 namespace App\Domains\Inventory\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 
 class InventoryItem extends Model
 {
     use Searchable;
     
-    // Scout configuration
     public function searchableAs(): string
     {
         return 'inventory_items';
@@ -93,59 +260,25 @@ class InventoryItem extends Model
             'code' => $this->code,
             'name' => $this->name,
             'description' => $this->description,
-            'category' => $this->category?->name,
-            'tenant_id' => $this->tenant_id,
+            'tenant_id' => $this->tenant_id,  // Required for multi-tenancy
         ];
     }
-    
-    // Scout automatically indexes on create/update/delete
 }
 ```
 
-#### Search Usage
+**Requirements:**
+- ✅ Use `Searchable` trait on all models
+- ✅ Implement `searchableAs()` for index naming
+- ✅ Implement `toSearchableArray()` for search data
+- ✅ Include `tenant_id` for tenant isolation
+- ✅ Test search in feature tests
+
+### 2. Pest Testing (MANDATORY)
+
+**ALL tests MUST use Pest v4+ syntax:**
+
 ```php
-// Basic search
-$results = InventoryItem::search('laptop')->get();
-
-// Advanced search with filters
-$results = InventoryItem::search('laptop')
-    ->where('tenant_id', $tenantId)
-    ->take(20)
-    ->get();
-
-// Search with pagination
-$results = InventoryItem::search('laptop')->paginate(15);
-```
-
-#### Configuration
-- **Driver:** Use `collection` for development, configure production driver (Algolia, MeiliSearch, etc.) via `SCOUT_DRIVER` env variable
-- **Queue:** Enable queued indexing via `SCOUT_QUEUE=true` for production performance
-- **Tenant Isolation:** Include `tenant_id` in searchable array for proper multi-tenant search
-
-#### Requirements
-- ✅ All models MUST use `Laravel\Scout\Searchable` trait
-- ✅ Implement `searchableAs()` method for index naming
-- ✅ Implement `toSearchableArray()` method for search data
-- ✅ Include tenant_id for multi-tenant isolation
-- ✅ Test search functionality in feature tests
-- ✅ Configure Scout driver in production environment
-
----
-
-## Pest Testing Framework
-
-### Pest v4+ Integration
-
-**MANDATORY:** All testing in the Laravel ERP system MUST use Pest v4+ as the primary testing framework. Pest provides a more expressive and modern testing experience compared to PHPUnit.
-
-#### Installation & Configuration
-- **Framework:** Pest v4.1.3 (primary testing framework)
-- **PHPUnit:** v12.4.1 (dependency for Pest compatibility)
-- **Configuration:** `tests/Pest.php` extends `Tests\TestCase`
-
-#### Testing Standards
-```php
-// Feature Test Example
+// Feature Test
 test('can create inventory item', function () {
     $user = User::factory()->create();
     
@@ -160,487 +293,332 @@ test('can create inventory item', function () {
     expect($response->json('data.code'))->toBe('ITEM-001');
 });
 
-// Unit Test Example
-test('inventory item has required attributes', function () {
-    $item = InventoryItem::factory()->create();
+// Unit Test
+test('can increase stock quantity', function () {
+    $item = InventoryItem::factory()->create(['quantity' => 100]);
     
-    expect($item)->toHaveAttribute('code')
-        ->and($item->code)->toBeString()
-        ->and($item->quantity)->toBeNumeric();
+    $result = AdjustStockAction::run($item, 50, 'Purchase receipt');
+    
+    expect($result)->toBeTrue();
+    expect($item->fresh()->quantity)->toBe(150.0);
 });
 ```
 
-#### Pest Features to Use
-- **Higher-Order Testing:** `$user->can('create', Item::class)`
-- **Expectation API:** `expect($value)->toBe($expected)`
-- **Test Data Factories:** `User::factory()->create()`
-- **Model Factories:** `InventoryItem::factory()->create()`
-- **Parallel Testing:** `./vendor/bin/pest --parallel`
-- **Coverage:** `./vendor/bin/pest --coverage`
-
-#### Requirements
-- ✅ All new tests MUST use Pest syntax (`test()`, `it()`, `expect()`)
-- ✅ Use Pest expectation API instead of PHPUnit assertions
-- ✅ Leverage Pest's higher-order testing capabilities
-- ✅ Run tests with `./vendor/bin/pest` instead of `phpunit`
-- ✅ Use Pest plugins for architecture testing (`pest-plugin-arch`)
-- ✅ Maintain PHPUnit compatibility for legacy tests during migration
-
-#### Running Tests
+**Run tests:**
 ```bash
-# Run all tests
-./vendor/bin/pest
-
-# Run specific test file
-./vendor/bin/pest tests/Feature/Api/V1/InventoryTest.php
-
-# Run with coverage
-./vendor/bin/pest --coverage
-
-# Run in parallel
-./vendor/bin/pest --parallel
+./vendor/bin/pest                              # All tests
+./vendor/bin/pest tests/Feature/               # Feature tests only
+./vendor/bin/pest --parallel                   # Parallel execution
+./vendor/bin/pest --coverage                   # With coverage
 ```
 
----
+### 3. Laravel Pint (MANDATORY)
 
-## Laravel Pulse Monitoring
+**Run before every commit:**
 
-### Performance Monitoring Integration
-
-**OPTIONAL:** Laravel Pulse provides real-time performance monitoring and can be enabled for production environments.
-
-#### Installation & Configuration
-- **Package:** laravel/pulse ^1.4.3
-- **Storage:** Database tables for metrics storage
-- **Dashboard:** Web-based monitoring interface
-
-#### Configuration
-- **Recorders:** All recorders enabled by default
-- **Retention:** Configurable data retention periods
-- **Authorization:** Admin-only access to dashboard
-
-#### Dashboard Access
-- **Route:** `/pulse` (configurable)
-- **Middleware:** Authentication required
-- **Metrics:** Application performance, cache hits, queue jobs, slow queries
-
-#### Requirements
-- ✅ Publish migrations and run them for database setup
-- ✅ Configure proper authorization for dashboard access
-- ✅ Set up automated cleanup for old metrics data
-- ✅ Monitor key performance indicators in production
-
----
-
-## Laravel Pint Code Quality
-
-### Code Style Enforcement
-
-**MANDATORY:** All code MUST follow Laravel Pint standards for consistent code style.
-
-#### Configuration
-- **Tool:** Laravel Pint v1.25.1
-- **Standard:** PSR-12 with Laravel-specific rules
-- **Automation:** Pre-commit hooks and CI/CD integration
-
-#### Usage
 ```bash
-# Check code style
-./vendor/bin/pint --test
-
-# Fix code style issues
-./vendor/bin/pint
-
-# Fix specific file
-./vendor/bin/pint app/Models/User.php
+./vendor/bin/pint                              # Fix all issues
+./vendor/bin/pint --test                       # Check only (CI)
+./vendor/bin/pint app/Models/User.php          # Fix specific file
 ```
 
-#### Requirements
-- ✅ Run `./vendor/bin/pint` before committing changes
-- ✅ Fix all style issues identified by Pint
-- ✅ Configure IDE to use Pint for auto-formatting
-- ✅ Include Pint in CI/CD pipeline for automated checking
+**Configuration:** PSR-12 with Laravel-specific rules
+
+### 4. Laravel Pulse (OPTIONAL)
+
+Performance monitoring for production:
+- Dashboard: `/pulse`
+- Metrics: Application performance, cache hits, queue jobs, slow queries
+- Authorization: Admin-only access
 
 ---
 
-===
+## Development Standards
 
-<laravel-boost-guidelines>
-=== foundation rules ===
+### Type Safety (MANDATORY)
 
-# Laravel Boost Guidelines
+All PHP files MUST follow strict typing:
 
-The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to enhance the user's satisfaction building Laravel applications.
+```php
+<?php
 
-## Foundational Context
-This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
+declare(strict_types=1);  // ← REQUIRED
 
-- php - 8.3.27
-- laravel/framework (LARAVEL) - v12
-- laravel/prompts (PROMPTS) - v0
-- laravel/sanctum (SANCTUM) - v4
-- laravel/scout (SCOUT) - v10
-- laravel/mcp (MCP) - v0
-- laravel/pint (PINT) - v1
-- laravel/pulse (PULSE) - v1
-- laravel/sail (SAIL) - v1
-- livewire/livewire (LIVEWIRE) - v3
-- pestphp/pest (PEST) - v4
-- phpunit/phpunit (PHPUNIT) - v12
+namespace App\Domains\Core\Models;
 
-## Conventions
-- You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, naming.
-- Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
-- Check for existing components to reuse before writing a new one.
-
-## Verification Scripts
-- Do not create verification scripts or tinker when tests cover that functionality and prove it works. Unit and feature tests are more important.
-
-## Application Structure & Architecture
-- Stick to existing directory structure - don't create new base folders without approval.
-- Do not change the application's dependencies without approval.
-
-## Frontend Bundling
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
-
-## Replies
-- Be concise in your explanations - focus on what's important rather than explaining obvious details.
-
-## Documentation Files
-- You must only create documentation files if explicitly requested by the user.
-
-
-=== boost rules ===
-
-## Laravel Boost
-- Laravel Boost is an MCP server that comes with powerful tools designed specifically for this application. Use them.
-
-## Artisan
-- Use the `list-artisan-commands` tool when you need to call an Artisan command to double check the available parameters.
-
-## URLs
-- Whenever you share a project URL with the user you should use the `get-absolute-url` tool to ensure you're using the correct scheme, domain / IP, and port.
-
-## Tinker / Debugging
-- You should use the `tinker` tool when you need to execute PHP to debug code or query Eloquent models directly.
-- Use the `database-query` tool when you only need to read from the database.
-
-## Reading Browser Logs With the `browser-logs` Tool
-- You can read browser logs, errors, and exceptions using the `browser-logs` tool from Boost.
-- Only recent browser logs will be useful - ignore old logs.
-
-## Searching Documentation (Critically Important)
-- Boost comes with a powerful `search-docs` tool you should use before any other approaches. This tool automatically passes a list of installed packages and their versions to the remote Boost API, so it returns only version-specific documentation specific for the user's circumstance. You should pass an array of packages to filter on if you know you need docs for particular packages.
-- The 'search-docs' tool is perfect for all Laravel related packages, including Laravel, Inertia, Livewire, Filament, Tailwind, Pest, Nova, Nightwatch, etc.
-- You must use this tool to search for Laravel-ecosystem documentation before falling back to other approaches.
-- Search the documentation before making code changes to ensure we are taking the correct approach.
-- Use multiple, broad, simple, topic based queries to start. For example: `['rate limiting', 'routing rate limiting', 'routing']`.
-- Do not add package names to queries - package information is already shared. For example, use `test resource table`, not `filament 4 test resource table`.
-
-### Available Search Syntax
-- You can and should pass multiple queries at once. The most relevant results will be returned first.
-
-1. Simple Word Searches with auto-stemming - query=authentication - finds 'authenticate' and 'auth'
-2. Multiple Words (AND Logic) - query=rate limit - finds knowledge containing both "rate" AND "limit"
-3. Quoted Phrases (Exact Position) - query="infinite scroll" - Words must be adjacent and in that order
-4. Mixed Queries - query=middleware "rate limit" - "middleware" AND exact phrase "rate limit"
-5. Multiple Queries - queries=["authentication", "middleware"] - ANY of these terms
-
-
-=== php rules ===
-
-## PHP
-
-- Always use curly braces for control structures, even if it has one line.
-
-### Constructors
-- Use PHP 8 constructor property promotion in `__construct()`.
-    - <code-snippet>public function __construct(public GitHub $github) { }</code-snippet>
-- Do not allow empty `__construct()` methods with zero parameters.
-
-### Type Declarations
-- Always use explicit return type declarations for methods and functions.
-- Use appropriate PHP type hints for method parameters.
-
-<code-snippet name="Explicit Return Types and Method Params" lang="php">
-protected function isAccessible(User $user, ?string $path = null): bool
+class Tenant extends Model
 {
-    ...
+    // All methods MUST have:
+    // 1. Parameter type hints
+    // 2. Return type declarations
+    // 3. PHPDoc with @return tags
+    
+    /**
+     * Get active tenants
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', TenantStatus::ACTIVE);
+    }
 }
-</code-snippet>
+```
 
-## Comments
-- Prefer PHPDoc blocks over comments. Never use comments within the code itself unless there is something _very_ complex going on.
+### Multi-Tenancy (MANDATORY)
 
-## PHPDoc Blocks
-- Add useful array shape type definitions for arrays when appropriate.
+All tenant-aware models MUST use the trait:
 
-## Enums
-- Typically, keys in an Enum should be TitleCase. For example: `FavoritePerson`, `BestLake`, `Monthly`.
+```php
+use App\Domains\Core\Traits\BelongsToTenant;
 
+class InventoryItem extends Model
+{
+    use BelongsToTenant;  // Automatic tenant_id handling
+}
+```
 
-=== laravel/core rules ===
+**Benefits:**
+- Automatic `tenant_id` on creation
+- Global scope for filtering
+- Helper methods: `withoutTenantScope()`, `withAllTenants()`
 
-## Do Things the Laravel Way
+### Security (MANDATORY)
 
-- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
-- If you're creating a generic PHP class, use `artisan make:class`.
-- Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
+```php
+// 1. Authentication checks
+if (! auth()->check()) {
+    throw new RuntimeException('Requires authenticated user');
+}
 
-### Database
-- Always use proper Eloquent relationship methods with return type hints. Prefer relationship methods over raw queries or manual joins.
-- Use Eloquent models and relationships before suggesting raw database queries
-- Avoid `DB::`; prefer `Model::query()`. Generate code that leverages Laravel's ORM capabilities rather than bypassing them.
-- Generate code that prevents N+1 query problems by using eager loading.
-- Use Laravel's query builder for very complex database operations.
+// 2. Authorization checks
+if (! auth()->user()->can('impersonate-tenant', $tenant)) {
+    throw new AuthorizationException('Unauthorized');
+}
 
-### Model Creation
-- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `php artisan make:model`.
-
-### APIs & Eloquent Resources
-- For APIs, default to using Eloquent API Resources and API versioning unless existing API routes do not, then you should follow existing application convention.
-
-### Controllers & Validation
-- Always create Form Request classes for validation rather than inline validation in controllers. Include both validation rules and custom error messages.
-- Check sibling Form Requests to see if the application uses array or string based validation rules.
-
-### Queues
-- Use queued jobs for time-consuming operations with the `ShouldQueue` interface.
-
-### Authentication & Authorization
-- Use Laravel's built-in authentication and authorization features (gates, policies, Sanctum, etc.).
-
-### URL Generation
-- When generating links to other pages, prefer named routes and the `route()` function.
-
-### Configuration
-- Use environment variables only in configuration files - never use the `env()` function directly outside of config files. Always use `config('app.name')`, not `env('APP_NAME')`.
-
-### Testing
-- When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
-- Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
-- When creating tests, make use of `php artisan make:test [options] <name>` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
-
-### Vite Error
-- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
-
-
-=== laravel/v12 rules ===
-
-## Laravel 12
-
-- Use the `search-docs` tool to get version specific documentation.
-- Since Laravel 11, Laravel has a new streamlined file structure which this project uses.
-
-### Laravel 12 Structure
-- No middleware files in `app/Http/Middleware/`.
-- `bootstrap/app.php` is the file to register middleware, exceptions, and routing files.
-- `bootstrap/providers.php` contains application specific service providers.
-- **No app\Console\Kernel.php** - use `bootstrap/app.php` or `routes/console.php` for console configuration.
-- **Commands auto-register** - files in `app/Console/Commands/` are automatically available and do not require manual registration.
-
-### Database
-- When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
-- Laravel 11 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
-
-### Models
-- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
-
-
-=== pint/core rules ===
-
-## Laravel Pint Code Formatter
-
-- You must run `vendor/bin/pint --dirty` before finalizing changes to ensure your code matches the project's expected style.
-- Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
-
-
-=== livewire/core rules ===
-
-## Livewire Core
-- Use the `search-docs` tool to find exact version specific documentation for how to write Livewire & Livewire tests.
-- Use the `php artisan make:livewire [Posts\\CreatePost]` artisan command to create new components
-- State should live on the server, with the UI reflecting it.
-- All Livewire requests hit the Laravel backend, they're like regular HTTP requests. Always validate form data, and run authorization checks in Livewire actions.
-
-## Livewire Best Practices
-- Livewire components require a single root element.
-- Use `wire:loading` and `wire:dirty` for delightful loading states.
-- Add `wire:key` in loops:
-
-    ```blade
-    @foreach ($items as $item)
-        <div wire:key="item-{{ $item->id }}">
-            {{ $item->name }}
-        </div>
-    @endforeach
-    ```
-
-- Prefer lifecycle hooks like `mount()`, `updatedFoo()` for initialization and reactive side effects:
-
-<code-snippet name="Lifecycle hook examples" lang="php">
-    public function mount(User $user) { $this->user = $user; }
-    public function updatedSearch() { $this->resetPage(); }
-</code-snippet>
-
-
-## Testing Livewire
-
-<code-snippet name="Example Livewire component test" lang="php">
-    Livewire::test(Counter::class)
-        ->assertSet('count', 0)
-        ->call('increment')
-        ->assertSet('count', 1)
-        ->assertSee(1)
-        ->assertStatus(200);
-</code-snippet>
-
-
-    <code-snippet name="Testing a Livewire component exists within a page" lang="php">
-        $this->get('/posts/create')
-        ->assertSeeLivewire(CreatePost::class);
-    </code-snippet>
-
-
-=== livewire/v3 rules ===
-
-## Livewire 3
-
-### Key Changes From Livewire 2
-- These things changed in Livewire 2, but may not have been updated in this application. Verify this application's setup to ensure you conform with application conventions.
-    - Use `wire:model.live` for real-time updates, `wire:model` is now deferred by default.
-    - Components now use the `App\Livewire` namespace (not `App\Http\Livewire`).
-    - Use `$this->dispatch()` to dispatch events (not `emit` or `dispatchBrowserEvent`).
-    - Use the `components.layouts.app` view as the typical layout path (not `layouts.app`).
-
-### New Directives
-- `wire:show`, `wire:transition`, `wire:cloak`, `wire:offline`, `wire:target` are available for use. Use the documentation to find usage examples.
-
-### Alpine
-- Alpine is now included with Livewire, don't manually include Alpine.js.
-- Plugins included with Alpine: persist, intersect, collapse, and focus.
-
-### Lifecycle Hooks
-- You can listen for `livewire:init` to hook into Livewire initialization, and `fail.status === 419` for the page expiring:
-
-<code-snippet name="livewire:load example" lang="js">
-document.addEventListener('livewire:init', function () {
-    Livewire.hook('request', ({ fail }) => {
-        if (fail && fail.status === 419) {
-            alert('Your session expired');
-        }
-    });
-
-    Livewire.hook('message.failed', (message, component) => {
-        console.error(message);
-    });
-});
-</code-snippet>
-
-
-=== pest/core rules ===
-
-## Pest
-
-### Testing
-- If you need to verify a feature is working, write or update a Unit / Feature test.
-
-### Pest Tests
-- All tests must be written using Pest. Use `php artisan make:test --pest <name>`.
-- You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files - these are core to the application.
-- Tests should test all of the happy paths, failure paths, and weird paths.
-- Tests live in the `tests/Feature` and `tests/Unit` directories.
-- Pest tests look and behave like this:
-<code-snippet name="Basic Pest Test Example" lang="php">
-it('is true', function () {
-    expect(true)->toBeTrue();
-});
-</code-snippet>
-
-### Running Tests
-- Run the minimal number of tests using an appropriate filter before finalizing code edits.
-- To run all tests: `php artisan test`.
-- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
-- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
-- When the tests relating to your changes are passing, ask the user if they would like to run the entire test suite to ensure everything is still passing.
-
-### Pest Assertions
-- When asserting status codes on a response, use the specific method like `assertForbidden` and `assertNotFound` instead of using `assertStatus(403)` or similar, e.g.:
-<code-snippet name="Pest Example Asserting postJson Response" lang="php">
-it('returns all', function () {
-    $response = $this->postJson('/api/docs', []);
-
-    $response->assertSuccessful();
-});
-</code-snippet>
-
-### Mocking
-- Mocking can be very helpful when appropriate.
-- When mocking, you can use the `Pest\Laravel\mock` Pest function, but always import it via `use function Pest\Laravel\mock;` before using it. Alternatively, you can use `$this->mock()` if existing tests do.
-- You can also create partial mocks using the same import or self method.
-
-### Datasets
-- Use datasets in Pest to simplify tests which have a lot of duplicated data. This is often the case when testing validation rules, so consider going with this solution when writing tests for validation rules.
-
-<code-snippet name="Pest Dataset Example" lang="php">
-it('has emails', function (string $email) {
-    expect($email)->not->toBeEmpty();
-})->with([
-    'james' => 'james@laravel.com',
-    'taylor' => 'taylor@laravel.com',
+// 3. Input validation
+$validator = Validator::make($data, [
+    'name' => ['required', 'string', 'max:255'],
+    'status' => ['nullable', 'string', Rule::in(TenantStatus::values())],
 ]);
-</code-snippet>
 
+// 4. Audit logging
+use Spatie\Activitylog\Traits\LogsActivity;
 
-=== pest/v4 rules ===
+class PurchaseOrder extends Model
+{
+    use LogsActivity;
+    
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'total_amount'])
+            ->logOnlyDirty();
+    }
+}
+```
 
-## Pest 4
+### Naming Conventions
 
-- Pest v4 is a huge upgrade to Pest and offers: browser testing, smoke testing, visual regression testing, test sharding, and faster type coverage.
-- Browser testing is incredibly powerful and useful for this project.
-- Browser tests should live in `tests/Browser/`.
-- Use the `search-docs` tool for detailed guidance on utilizing these features.
+| Element | Convention | Example |
+|---------|-----------|---------|
+| Classes | PascalCase | `InventoryItemController`, `CreatePurchaseOrderAction` |
+| Methods | camelCase | `createPurchaseOrder()`, `calculateTotal()` |
+| Variables | camelCase | `$itemQuantity`, `$totalAmount` |
+| Tables | snake_case (plural) | `inventory_items`, `purchase_orders` |
+| Columns | snake_case | `created_at`, `unit_price`, `tenant_id` |
+| Constants | UPPER_SNAKE_CASE | `MAX_QUANTITY`, `DEFAULT_CURRENCY` |
 
-### Browser Testing
-- You can use Laravel features like `Event::fake()`, `assertAuthenticated()`, and model factories within Pest v4 browser tests, as well as `RefreshDatabase` (when needed) to ensure a clean state for each test.
-- Interact with the page (click, type, scroll, select, submit, drag-and-drop, touch gestures, etc.) when appropriate to complete the test.
-- If requested, test on multiple browsers (Chrome, Firefox, Safari).
-- If requested, test on different devices and viewports (like iPhone 14 Pro, tablets, or custom breakpoints).
-- Switch color schemes (light/dark mode) when appropriate.
-- Take screenshots or pause tests for debugging when appropriate.
+### Database Best Practices
 
-### Example Tests
-
-<code-snippet name="Pest Browser Test Example" lang="php">
-it('may reset the password', function () {
-    Notification::fake();
-
-    $this->actingAs(User::factory()->create());
-
-    $page = visit('/sign-in'); // Visit on a real browser...
-
-    $page->assertSee('Sign In')
-        ->assertNoJavascriptErrors() // or ->assertNoConsoleLogs()
-        ->click('Forgot Password?')
-        ->fill('email', 'nuno@laravel.com')
-        ->click('Send Reset Link')
-        ->assertSee('We have emailed your password reset link!')
-
-    Notification::assertSent(ResetPassword::class);
+```php
+Schema::create('inventory_items', function (Blueprint $table) {
+    $table->id();
+    
+    // Foreign keys with explicit naming
+    $table->foreignId('tenant_id')
+        ->constrained('tenants')
+        ->onDelete('cascade');
+    
+    // Always index tenant_id
+    $table->index(['tenant_id', 'is_active']);
+    
+    // Decimal precision for financial data
+    $table->decimal('quantity', 15, 4)->default(0);
+    $table->decimal('unit_cost', 15, 2)->default(0);
+    
+    $table->timestamps();
+    $table->softDeletes();
 });
-</code-snippet>
+```
 
-<code-snippet name="Pest Smoke Testing Example" lang="php">
-$pages = visit(['/', '/about', '/contact']);
+---
 
-$pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
-</code-snippet>
+## Domain Organization
 
+### Core Domain
+- **Purpose:** Multi-tenancy foundation, authentication, audit logging
+- **Packages:** Laravel Sanctum, Spatie Permission
+- **Rule:** NO business logic here
 
-=== tests rules ===
+### Backoffice Domain
+- **Purpose:** Organization structure (Company, Office, Department)
+- **Package:** `azaharizaman/laravel-backoffice`
+- **Depends on:** Core
 
-## Test Enforcement
+### Inventory Domain
+- **Purpose:** Item master, warehouse, stock movements
+- **Packages:** `azaharizaman/laravel-inventory-management`, `laravel-uom-management`
+- **Depends on:** Core, Backoffice
 
-- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
-- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
-</laravel-boost-guidelines>
+### Sales Domain
+- **Purpose:** Customers, quotations, sales orders
+- **Depends on:** Core, Inventory
+
+### Purchasing Domain
+- **Purpose:** Vendors, purchase orders, goods receipt
+- **Depends on:** Core, Inventory
+
+### Accounting Domain
+- **Purpose:** General ledger, AP/AR, financial reporting
+- **Depends on:** Core, Sales, Purchasing
+
+---
+
+## Quick Reference
+
+### Pre-Commit Checklist
+
+Before committing code:
+
+- [ ] Read [CODING_GUIDELINES.md](../CODING_GUIDELINES.md)
+- [ ] All files have `declare(strict_types=1);`
+- [ ] All methods have parameter types and return types
+- [ ] All public methods have PHPDoc blocks
+- [ ] Using repository pattern (no direct Model access in services)
+- [ ] Authentication and authorization checks in place
+- [ ] Complete validation rules for all fillable fields
+- [ ] Tests written (Feature + Unit) using Pest
+- [ ] Run `./vendor/bin/pint` to fix code style
+- [ ] Run `./vendor/bin/pest` to verify tests pass
+
+### Common Commands
+
+```bash
+# Testing
+./vendor/bin/pest                              # Run all tests
+./vendor/bin/pest --filter=testName            # Run specific test
+./vendor/bin/pest --parallel                   # Parallel execution
+
+# Code Quality
+./vendor/bin/pint                              # Fix code style
+./vendor/bin/pint --test                       # Check only (CI)
+
+# Artisan
+php artisan make:model {Domain}/Models/{Name}  # Create model
+php artisan make:action {Domain}/Actions/{Name} # Create action
+php artisan make:test {Name} --pest            # Create Pest test
+```
+
+### API Development Pattern
+
+```php
+// 1. Form Request (validation)
+class StoreInventoryItemRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            'code' => ['required', 'string', 'unique:inventory_items'],
+            'name' => ['required', 'string', 'max:255'],
+        ];
+    }
+}
+
+// 2. Action (business logic)
+class CreateInventoryItemAction
+{
+    use AsAction;
+    
+    public function handle(array $data): InventoryItem
+    {
+        // Business logic here
+    }
+}
+
+// 3. Resource (transformation)
+class InventoryItemResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'name' => $this->name,
+        ];
+    }
+}
+
+// 4. Controller (thin layer)
+class InventoryItemController extends Controller
+{
+    public function store(StoreInventoryItemRequest $request): JsonResponse
+    {
+        $item = CreateInventoryItemAction::run($request->validated());
+        
+        return InventoryItemResource::make($item)
+            ->response()
+            ->setStatusCode(201);
+    }
+}
+```
+
+### Performance Optimization
+
+```php
+// ✅ GOOD: Eager loading
+$items = InventoryItem::with(['uom', 'category'])->get();
+
+// ❌ BAD: N+1 query
+foreach ($items as $item) {
+    echo $item->uom->name; // Separate query each iteration
+}
+
+// ✅ GOOD: Chunk large datasets
+InventoryItem::chunk(1000, function ($items) {
+    foreach ($items as $item) {
+        // Process item
+    }
+});
+```
+
+---
+
+## Important Reminders
+
+1. **📖 Read CODING_GUIDELINES.md first** - Contains common mistakes and how to avoid them
+2. **🚫 No UI components** - This is a headless API-only system
+3. **✅ Contract-first** - Define interfaces before implementation
+4. **🔍 Scout everywhere** - All models must be searchable
+5. **🧪 Test with Pest** - All tests use Pest v4+ syntax
+6. **✨ Pint before commit** - Run code formatter before committing
+7. **🏢 Multi-tenant aware** - Use BelongsToTenant trait on all tenant models
+8. **🔒 Security first** - Always check authentication and authorization
+9. **📝 Audit everything** - Use LogsActivity trait for important models
+10. **🎯 Domain boundaries** - Communicate between domains via events only
+
+---
+
+## Additional Resources
+
+- **[CODING_GUIDELINES.md](../CODING_GUIDELINES.md)** - Detailed coding standards and common mistakes
+- **[PSR-12 Standard](https://www.php-fig.org/psr/psr-12/)** - PHP coding style guide
+- **[Laravel Documentation](https://laravel.com/docs)** - Framework documentation
+- **[Pest Documentation](https://pestphp.com)** - Testing framework guide
+- **[Laravel Scout Documentation](https://laravel.com/docs/scout)** - Search integration
+
+---
+
+**Version:** 2.0.0  
+**Maintained By:** Laravel ERP Development Team  
+**Last Updated:** November 10, 2025
