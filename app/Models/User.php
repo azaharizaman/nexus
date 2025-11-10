@@ -8,6 +8,7 @@ namespace App\Models;
 use App\Domains\Core\Enums\UserStatus;
 use App\Domains\Core\Traits\BelongsToTenant;
 use App\Support\Traits\HasActivityLogging;
+use App\Support\Traits\HasPermissions;
 use App\Support\Traits\HasTokens;
 use App\Support\Traits\IsSearchable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -18,7 +19,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use BelongsToTenant, HasActivityLogging, HasFactory, HasTokens, HasUuids, IsSearchable, Notifiable;
+    use BelongsToTenant, HasActivityLogging, HasFactory, HasPermissions, HasTokens, HasUuids, IsSearchable, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -194,5 +195,18 @@ class User extends Authenticatable
                 'created_at',
             ],
         ];
+    }
+
+    /**
+     * Get the team ID for permission scoping.
+     *
+     * This method is used by Spatie Permission to scope roles and permissions
+     * to the user's tenant, ensuring multi-tenant isolation.
+     *
+     * @return int|string|null The tenant ID for permission scoping
+     */
+    public function getPermissionTeamId(): int|string|null
+    {
+        return $this->tenant_id;
     }
 }

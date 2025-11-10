@@ -12,7 +12,8 @@
         "laravel/scout": "^10.0",
         "laravel/tinker": "^2.10.1",
         "lorisleiva/laravel-actions": "^2.0",
-        "spatie/laravel-activitylog": "^4.0"
+        "spatie/laravel-activitylog": "^4.0",
+        "spatie/laravel-permission": "^6.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -2508,6 +2508,357 @@ Before submitting code for review, ensure:
 
 ---
 
+## PR Review Learnings: Spatie Permission Integration (November 2025)
+
+This section documents critical learnings from the Spatie Permission integration PR review. These patterns apply to all future package integrations and demonstrate proper package decoupling implementation.
+
+### 1. Direct Package Usage in Tests Must Be Abstracted
+
+**Issue:** Test files directly imported and used `Spatie\Permission\Models\Permission` and `Spatie\Permission\Models\Role`, creating vendor lock-in even in tests.
+
+#### ❌ Incorrect
+```php
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
+test('user can be assigned a role', function () {
+    $role = Role::create(['name' => 'admin', 'team_id' => $this->tenant->id]);
+    $this->user->assignRole($role);
+    expect($this->user->hasRole('admin'))->toBeTrue();
+});
+```
+
+**Problems:**
+- Tests are tightly coupled to Spatie package
+- Replacing the permission package requires rewriting all tests
+- Cannot easily mock or stub package behavior
+- Violates package decoupling strategy
+
+#### ✅ Correct
+```php
+use App\Support\Contracts\PermissionServiceContract;
+
+test('user can be assigned a role', function () {
+    $permissionService = app(PermissionServiceContract::class);
+    
+    $role = $permissionService->createRole('admin', $this->tenant->id);
+    $permissionService->assignRole($this->user, $role);
+    
+    expect($permissionService->hasRole($this->user, 'admin'))->toBeTrue();
+});
+```
+
+**Benefits:**
+- Tests use our abstraction layer
+- Easy to mock PermissionServiceContract for unit tests
+- Tests remain valid if we switch permission packages
+- Follows established pattern used in ActivityLogger and SearchService tests
+
+**Rule:** NEVER import external package classes directly in test files. Always use your contracts and service abstractions.
+
+---
+
+### 2. Model Traits Must Use Wrapper Pattern
+
+**Issue:** User model directly used `Spatie\Permission\Traits\HasRoles`, creating tight coupling to the package.
+
+#### ❌ Incorrect
+```php
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable
+{
+    use HasRoles;
+}
+```
+
+**Problems:**
+- Model is tightly coupled to Spatie package
+- Cannot easily switch to alternative permission system
+- Violates package decoupling (CRITICAL) guideline
+- Inconsistent with HasActivityLogging, IsSearchable, HasTokens patterns
+
+#### ✅ Correct
+```php
+use App\Support\Traits\HasPermissions;
+
+class User extends Authenticatable
+{
+    use HasPermissions;  // Our wrapper trait
+}
+```
+
+**Wrapper Trait Implementation:**
+```php
+// app/Support/Traits/HasPermissions.php
+namespace App\Support\Traits;
+
+use Spatie\Permission\Traits\HasRoles;
+
+trait HasPermissions
+{
+    use HasRoles;  // Internal use of Spatie trait
+    
+    // Add convenience methods
+    public function getUserRoles(): Collection
+    {
+        return $this->roles;
+    }
+    
+    public function getUserPermissions(): Collection
+    {
+        return $this->getAllPermissions();
+    }
+}
+```
+
+**Benefits:**
+- Business logic depends on OUR trait, not Spatie's
+- Can add custom convenience methods
+- Switching packages only requires updating the wrapper
+- Follows established pattern in the codebase
+
+**Rule:** NEVER use external package traits directly in models. Always create a wrapper trait in `app/Support/Traits/` that internally uses the package trait.
+
+---
+
+### 3. Complete Package Decoupling Requires Three Components
+
+**Lesson:** Full package decoupling requires creating three components:
+
+#### Component 1: Contract Interface
+```php
+// app/Support/Contracts/PermissionServiceContract.php
+interface PermissionServiceContract
+{
+    public function createRole(string $name, string|int|null $teamId = null): mixed;
+    public function assignRole(Model $user, string|object $role): void;
+    public function hasRole(Model $user, string $role): bool;
+    // ... other methods
+}
+```
+
+#### Component 2: Adapter Implementation
+```php
+// app/Support/Services/Permission/SpatiePermissionService.php
+class SpatiePermissionService implements PermissionServiceContract
+{
+    public function createRole(string $name, string|int|null $teamId = null): mixed
+    {
+        return Role::create([
+            'name' => $name,
+            'team_id' => $teamId,
+        ]);
+    }
+    
+    public function assignRole(Model $user, string|object $role): void
+    {
+        $user->assignRole($role);
+    }
+    
+    // ... other methods
+}
+```
+
+#### Component 3: Service Provider Binding
+```php
+// app/Providers/PermissionServiceProvider.php
+class PermissionServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(
+            PermissionServiceContract::class,
+            SpatiePermissionService::class
+        );
+    }
+}
+```
+
+**Complete Integration Checklist:**
+- [ ] Create contract in `app/Support/Contracts/`
+- [ ] Create adapter in `app/Support/Services/{Category}/`
+- [ ] Create wrapper trait in `app/Support/Traits/` (for model-level features)
+- [ ] Create service provider in `app/Providers/`
+- [ ] Register service provider in `bootstrap/providers.php`
+- [ ] Update models to use wrapper trait (not package trait)
+- [ ] Update business logic to inject contract (not use package directly)
+- [ ] Update tests to use contract (not package classes)
+- [ ] Add comprehensive integration tests
+- [ ] Document in CODING_GUIDELINES.md
+
+**Rule:** All three components (Contract, Adapter, Provider) are REQUIRED for proper package decoupling. Missing any one creates incomplete abstraction.
+
+---
+
+### 4. PHPDoc @return Tags Are Mandatory
+
+**Issue:** Method had return type declaration but was missing required `@return` tag in PHPDoc block.
+
+#### ❌ Incorrect
+```php
+/**
+ * Get the team ID for permission scoping.
+ *
+ * This method is used by Spatie Permission to scope roles and permissions
+ * to the user's tenant, ensuring multi-tenant isolation.
+ */
+public function getPermissionTeamId(): int|string|null
+{
+    return $this->tenant_id;
+}
+```
+
+#### ✅ Correct
+```php
+/**
+ * Get the team ID for permission scoping.
+ *
+ * This method is used by Spatie Permission to scope roles and permissions
+ * to the user's tenant, ensuring multi-tenant isolation.
+ *
+ * @return int|string|null The tenant ID for permission scoping
+ */
+public function getPermissionTeamId(): int|string|null
+{
+    return $this->tenant_id;
+}
+```
+
+**Rule:** ALL public and protected methods MUST have both:
+1. Return type declaration (e.g., `: int|string|null`)
+2. PHPDoc `@return` tag with description
+
+This is required even when the return type is declared, as the PHPDoc provides additional context and documentation.
+
+---
+
+### 5. Comments Must Match Configuration Values
+
+**Issue:** Configuration file had a comment stating "24 hours" but the actual value was "1 hour", causing confusion.
+
+#### ❌ Incorrect
+```php
+/*
+ * By default all permissions are cached for 24 hours to speed up performance.
+ * When permissions or roles are updated the cache is flushed automatically.
+ */
+'expiration_time' => \DateInterval::createFromDateString('1 hour'),
+```
+
+#### ✅ Correct
+```php
+/*
+ * By default all permissions are cached for 1 hour to speed up performance.
+ * When permissions or roles are updated the cache is flushed automatically.
+ */
+'expiration_time' => \DateInterval::createFromDateString('1 hour'),
+```
+
+**Rule:** Configuration comments MUST accurately describe the actual configured value. When changing values, always update corresponding comments.
+
+---
+
+### 6. Missing Facade Imports Cause Fatal Errors
+
+**Issue:** Test used `Schema::hasTable()` but forgot to import the Schema facade.
+
+#### ❌ Incorrect
+```php
+<?php
+
+declare(strict_types=1);
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+test('permission tables exist', function () {
+    expect(Schema::hasTable('permissions'))->toBeTrue();  // Fatal error!
+});
+```
+
+#### ✅ Correct
+```php
+<?php
+
+declare(strict_types=1);
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;  // Added
+
+test('permission tables exist', function () {
+    expect(Schema::hasTable('permissions'))->toBeTrue();  // Works!
+});
+```
+
+**Rule:** All facades used in tests (Schema, DB, Cache, etc.) MUST be explicitly imported. Never rely on global facade access in strict typed files.
+
+---
+
+### 7. Package Decoupling Priority List
+
+Based on the PACKAGE-DECOUPLING-STRATEGY.md document, external packages should be decoupled in this priority order:
+
+**HIGH Priority (MUST decouple immediately):**
+1. `spatie/laravel-activitylog` → ActivityLoggerContract ✅ DONE
+2. `laravel/scout` → SearchServiceContract ✅ DONE
+3. `laravel/sanctum` → TokenServiceContract ✅ DONE
+4. `spatie/laravel-permission` → PermissionServiceContract ✅ DONE (this PR)
+
+**MEDIUM Priority (decouple when implemented):**
+5. `spatie/laravel-model-status` → StatusServiceContract (when used)
+6. `lorisleiva/laravel-actions` → Keep as-is (trait-based pattern, low risk)
+
+**LOW Priority (utility libraries, no decoupling needed):**
+- `brick/math` - Utility library
+- `pestphp/pest` - Testing framework
+- `laravel/tinker` - Development tool
+
+**Rule:** All HIGH priority packages MUST be decoupled before using them in business logic. MEDIUM priority packages should be decoupled when first introduced. LOW priority packages do not require decoupling.
+
+---
+
+### 8. Decoupling Prevents Breaking Changes
+
+**Key Insight:** The main benefit of package decoupling became clear during this PR review:
+
+**Without Decoupling:**
+```
+Spatie Permission v7.0 released with breaking changes
+↓
+Must update 47 files across the codebase
+↓
+3-5 days of refactoring work
+↓
+High risk of introducing bugs
+↓
+Comprehensive testing required
+```
+
+**With Decoupling:**
+```
+Spatie Permission v7.0 released with breaking changes
+↓
+Update only SpatiePermissionService adapter
+↓
+30 minutes of focused work
+↓
+Low risk (changes isolated to one file)
+↓
+Existing tests verify behavior unchanged
+```
+
+**Rule:** Package decoupling is an investment that pays off when:
+- Package releases breaking changes
+- Need to switch to alternative package
+- Want to mock package behavior in tests
+- Package becomes unmaintained
+
+The upfront cost (creating contract + adapter + provider) is recovered after the first breaking change or when writing tests.
+
+---
+
 ## Questions or Suggestions
 
 If you have questions about these guidelines or suggestions for improvements, please:

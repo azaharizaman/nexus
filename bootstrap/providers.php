@@ -6,5 +6,6 @@ return [
     App\Providers\CoreServiceProvider::class,
     App\Providers\EventServiceProvider::class,
     App\Providers\LoggingServiceProvider::class,
+    App\Providers\PermissionServiceProvider::class,
     App\Providers\SearchServiceProvider::class,
 ];
