@@ -69,24 +69,22 @@ This implementation plan establishes a comprehensive, hierarchical settings mana
 
 ## 2. Implementation Steps
 
-### Implementation Phase 1: Database Schema
+> **Note:** This implementation has been condensed from 15 phases into 6 logical phases for better manageability while preserving all 162 tasks and key details. Related components have been grouped together based on architectural layers and functional cohesion.
 
-- GOAL-001: Create settings table with support for all scopes and data types
+### Implementation Phase 1: Foundation (Database & Core Models)
+
+- GOAL-001: Create settings table, model, enums, and seed default data
+- **Combines:** Database Schema + Setting Model + Settings Seeder
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
+| **Database Schema** | | | |
 | TASK-001 | Create settings table migration with columns: id, scope (enum: global/tenant/user), tenant_id (nullable FK), user_id (nullable FK), group, key, value (text), type (enum: string/integer/float/boolean/json/array), is_encrypted (boolean), created_at, updated_at | | |
 | TASK-002 | Add unique constraint on (scope, tenant_id, user_id, key) to prevent duplicates | | |
 | TASK-003 | Add indexes: (scope, key), (tenant_id, key), (user_id, key), group | | |
 | TASK-004 | Create SettingScope enum in app/Domains/Core/Enums/SettingScope.php with values: GLOBAL, TENANT, USER | | |
 | TASK-005 | Create SettingType enum in app/Domains/Core/Enums/SettingType.php with values: STRING, INTEGER, FLOAT, BOOLEAN, JSON, ARRAY | | |
-
-### Implementation Phase 2: Setting Model
-
-- GOAL-002: Create Setting Eloquent model with casts and relationships
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
+| **Setting Model** | | | |
 | TASK-006 | Create Setting model in app/Domains/Core/Models/Setting.php | | |
 | TASK-007 | Add fillable fields: scope, tenant_id, user_id, group, key, value, type, is_encrypted | | |
 | TASK-008 | Add casts: scope (SettingScope enum), type (SettingType enum), is_encrypted (boolean) | | |
@@ -96,215 +94,211 @@ This implementation plan establishes a comprehensive, hierarchical settings mana
 | TASK-012 | Add relationships: tenant() belongsTo, user() belongsTo | | |
 | TASK-013 | Add LogsActivity trait for audit trail | | |
 | TASK-014 | Add scope methods: scopeGlobal(), scopeTenant(), scopeUser() | | |
+| **Settings Seeder** | | | |
+| TASK-015 | Create SettingsSeeder in database/seeders/SettingsSeeder.php | | |
+| TASK-016 | Seed global system settings with default values from schema | | |
+| TASK-017 | Seed common tenant settings template | | |
+| TASK-018 | Seed default user preferences template | | |
+| TASK-019 | Apply scope and group correctly for each setting | | |
+| TASK-020 | Call SettingsSeeder from DatabaseSeeder | | |
 
-### Implementation Phase 3: Setting Repository
+### Implementation Phase 2: Data Access Layer (Repository & Service)
 
-- GOAL-003: Build repository for settings data access with hierarchy support
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-015 | Create SettingsRepositoryContract in app/Domains/Core/Contracts/SettingsRepositoryContract.php | | |
-| TASK-016 | Define methods: get(), set(), has(), forget(), all(), allByGroup(), getWithHierarchy() | | |
-| TASK-017 | Implement SettingsRepository in app/Domains/Core/Repositories/SettingsRepository.php | | |
-| TASK-018 | Implement get() method with scope parameter: look up user → tenant → global order | | |
-| TASK-019 | Implement set() method to create or update setting | | |
-| TASK-020 | Implement has() method to check if setting exists in hierarchy | | |
-| TASK-021 | Implement forget() method to delete setting (soft delete if audit required) | | |
-| TASK-022 | Implement all() method returning all settings for scope | | |
-| TASK-023 | Implement allByGroup() method filtering by group | | |
-| TASK-024 | Implement getWithHierarchy() to show effective value with source scope | | |
-| TASK-025 | Apply caching with cache tags for efficient invalidation | | |
-| TASK-026 | Bind SettingsRepositoryContract to SettingsRepository in service provider | | |
-
-### Implementation Phase 4: Settings Service
-
-- GOAL-004: Create high-level settings service with fluent API
+- GOAL-002: Build repository, service layer, facade, and helper function
+- **Combines:** Setting Repository + Settings Service + Settings Facade & Helper
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-027 | Create SettingsService in app/Domains/Core/Services/SettingsService.php | | |
-| TASK-028 | Inject SettingsRepository via constructor | | |
-| TASK-029 | Implement get() method with default value support and dot notation parsing | | |
-| TASK-030 | Implement set() method with validation against defined schema | | |
-| TASK-031 | Implement has() method | | |
-| TASK-032 | Implement forget() method | | |
-| TASK-033 | Implement global() method to switch to global scope | | |
-| TASK-034 | Implement tenant() method to switch to tenant scope | | |
-| TASK-035 | Implement user() method to switch to user scope | | |
-| TASK-036 | Implement group() method to filter by group | | |
-| TASK-037 | Implement all() method returning collection of settings | | |
-| TASK-038 | Implement cache invalidation on set/forget operations | | |
+| **Setting Repository** | | | |
+| TASK-021 | Create SettingsRepositoryContract in app/Domains/Core/Contracts/SettingsRepositoryContract.php | | |
+| TASK-022 | Define methods: get(), set(), has(), forget(), all(), allByGroup(), getWithHierarchy() | | |
+| TASK-023 | Implement SettingsRepository in app/Domains/Core/Repositories/SettingsRepository.php | | |
+| TASK-024 | Implement get() method with scope parameter: look up user → tenant → global order | | |
+| TASK-025 | Implement set() method to create or update setting | | |
+| TASK-026 | Implement has() method to check if setting exists in hierarchy | | |
+| TASK-027 | Implement forget() method to delete setting (soft delete if audit required) | | |
+| TASK-028 | Implement all() method returning all settings for scope | | |
+| TASK-029 | Implement allByGroup() method filtering by group | | |
+| TASK-030 | Implement getWithHierarchy() to show effective value with source scope | | |
+| TASK-031 | Apply caching with cache tags for efficient invalidation | | |
+| TASK-032 | Bind SettingsRepositoryContract to SettingsRepository in service provider | | |
+| **Settings Service** | | | |
+| TASK-033 | Create SettingsService in app/Domains/Core/Services/SettingsService.php | | |
+| TASK-034 | Inject SettingsRepository via constructor | | |
+| TASK-035 | Implement get() method with default value support and dot notation parsing | | |
+| TASK-036 | Implement set() method with validation against defined schema | | |
+| TASK-037 | Implement has() method | | |
+| TASK-038 | Implement forget() method | | |
+| TASK-039 | Implement global() method to switch to global scope | | |
+| TASK-040 | Implement tenant() method to switch to tenant scope | | |
+| TASK-041 | Implement user() method to switch to user scope | | |
+| TASK-042 | Implement group() method to filter by group | | |
+| TASK-043 | Implement all() method returning collection of settings | | |
+| TASK-044 | Implement cache invalidation on set/forget operations | | |
+| **Settings Facade & Helper** | | | |
+| TASK-045 | Create Settings facade in app/Facades/Settings.php | | |
+| TASK-046 | Link facade to SettingsService | | |
+| TASK-047 | Register facade in config/app.php aliases | | |
+| TASK-048 | Create settings() helper function in app/Support/Helpers/settings.php | | |
+| TASK-049 | Helper returns SettingsService instance or calls get() if key provided | | |
+| TASK-050 | Support fluent usage: settings()->tenant()->get('key') | | |
+| TASK-051 | Support simple usage: settings('key', 'default') | | |
 
-### Implementation Phase 5: Settings Facade & Helper
+### Implementation Phase 3: Configuration & Validation
 
-- GOAL-005: Create convenient facade and helper function for settings access
+- GOAL-003: Define setting schemas, implement validation, and configure caching
+- **Combines:** Setting Schema Definition + Setting Validation + Cache Implementation
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-039 | Create Settings facade in app/Facades/Settings.php | | |
-| TASK-040 | Link facade to SettingsService | | |
-| TASK-041 | Register facade in config/app.php aliases | | |
-| TASK-042 | Create settings() helper function in app/Support/Helpers/settings.php | | |
-| TASK-043 | Helper returns SettingsService instance or calls get() if key provided | | |
-| TASK-044 | Support fluent usage: settings()->tenant()->get('key') | | |
-| TASK-045 | Support simple usage: settings('key', 'default') | | |
-
-### Implementation Phase 6: Setting Schema Definition
-
-- GOAL-006: Define setting schemas with validation rules and defaults
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-046 | Create config/settings.php for setting schema definitions | | |
-| TASK-047 | Define structure: ['key' => ['type' => 'string', 'default' => 'value', 'rules' => ['required', 'min:3'], 'encrypted' => false, 'group' => 'system']] | | |
+| **Setting Schema Definition** | | | |
+| TASK-052 | Create config/settings.php for setting schema definitions | | |
+| TASK-053 | Define structure: ['key' => ['type' => 'string', 'default' => 'value', 'rules' => ['required', 'min:3'], 'encrypted' => false, 'group' => 'system']] | | |
 |         | **Note:** The structure above uses PHP array syntax and is intended for the `config/settings.php` file. | | |
-| TASK-048 | Define system settings: app.name, app.timezone, app.locale, app.date_format, maintenance.enabled | | |
-| TASK-049 | Define tenant settings: company.name, company.logo, company.primary_color, company.default_currency, company.tax_rate | | |
-| TASK-050 | Define module settings: inventory.valuation_method, inventory.default_warehouse, sales.tax_enabled, sales.discount_allowed | | |
-| TASK-051 | Define integration settings: mail.provider, mail.api_key (encrypted), sms.provider, sms.api_key (encrypted) | | |
-| TASK-052 | Define user preferences: ui.language, ui.theme, ui.dashboard_layout, notifications.email_enabled, notifications.sms_enabled | | |
-| TASK-053 | Add validation rules for each setting | | |
+| TASK-054 | Define system settings: app.name, app.timezone, app.locale, app.date_format, maintenance.enabled | | |
+| TASK-055 | Define tenant settings: company.name, company.logo, company.primary_color, company.default_currency, company.tax_rate | | |
+| TASK-056 | Define module settings: inventory.valuation_method, inventory.default_warehouse, sales.tax_enabled, sales.discount_allowed | | |
+| TASK-057 | Define integration settings: mail.provider, mail.api_key (encrypted), sms.provider, sms.api_key (encrypted) | | |
+| TASK-058 | Define user preferences: ui.language, ui.theme, ui.dashboard_layout, notifications.email_enabled, notifications.sms_enabled | | |
+| TASK-059 | Add validation rules for each setting | | |
+| **Setting Validation** | | | |
+| TASK-060 | Create ValidateSettingAction in app/Domains/Core/Actions/Settings/ValidateSettingAction.php | | |
+| TASK-061 | Load setting schema from config/settings.php | | |
+| TASK-062 | Validate type matches schema definition | | |
+| TASK-063 | Apply Laravel validation rules from schema | | |
+| TASK-064 | Validate enum values if restricted set defined | | |
+| TASK-065 | Return validation errors with field-specific messages | | |
+| TASK-066 | Call ValidateSettingAction in SettingsService.set() method | | |
+| TASK-067 | Throw SettingValidationException on validation failure | | |
+| **Cache Implementation** | | | |
+| TASK-068 | Use Cache::tags(['settings', 'settings:{scope}', 'settings:{tenant_id}']) for organized caching | | |
+| TASK-069 | Cache settings on first retrieval with 1-hour TTL | | |
+| TASK-070 | Invalidate specific setting cache on update/delete | | |
+| TASK-071 | Invalidate tenant settings cache tag when any tenant setting changes | | |
+| TASK-072 | Invalidate user settings cache tag when any user setting changes | | |
+| TASK-073 | Implement cache warming for global settings on application boot | | |
+| TASK-074 | Add cache:clear-settings command for manual cache clearing | | |
 
-### Implementation Phase 7: Setting Validation
+### Implementation Phase 4: API Layer (Endpoints & Resources)
 
-- GOAL-007: Implement validation for setting values against schema
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-054 | Create ValidateSettingAction in app/Domains/Core/Actions/Settings/ValidateSettingAction.php | | |
-| TASK-055 | Load setting schema from config/settings.php | | |
-| TASK-056 | Validate type matches schema definition | | |
-| TASK-057 | Apply Laravel validation rules from schema | | |
-| TASK-058 | Validate enum values if restricted set defined | | |
-| TASK-059 | Return validation errors with field-specific messages | | |
-| TASK-060 | Call ValidateSettingAction in SettingsService.set() method | | |
-| TASK-061 | Throw SettingValidationException on validation failure | | |
-
-### Implementation Phase 8: Settings Seeder
-
-- GOAL-008: Seed default settings for fresh installations
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-062 | Create SettingsSeeder in database/seeders/SettingsSeeder.php | | |
-| TASK-063 | Seed global system settings with default values from schema | | |
-| TASK-064 | Seed common tenant settings template | | |
-| TASK-065 | Seed default user preferences template | | |
-| TASK-066 | Apply scope and group correctly for each setting | | |
-| TASK-067 | Call SettingsSeeder from DatabaseSeeder | | |
-
-### Implementation Phase 9: API Endpoints
-
-- GOAL-009: Build RESTful API endpoints for settings management
+- GOAL-004: Build RESTful API endpoints, routes, and authorization policies
+- **Combines:** API Endpoints + Routes Definition + Authorization Policies
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-068 | Create SettingsController in app/Http/Controllers/Api/V1/SettingsController.php | | |
-| TASK-069 | Implement index() method listing settings by scope and group with filtering | | |
-| TASK-070 | Implement show() method returning single setting by key | | |
-| TASK-071 | Implement store() method creating new setting | | |
-| TASK-072 | Implement update() method updating setting value | | |
-| TASK-073 | Implement destroy() method deleting setting | | |
-| TASK-074 | Implement bulkUpdate() method for updating multiple settings at once | | |
-| TASK-075 | Create SettingResource in app/Http/Resources/SettingResource.php | | |
-| TASK-076 | Hide encrypted values in API responses (show masked value or indicator) | | |
-| TASK-077 | Include effective value with source scope information | | |
-| TASK-078 | Create StoreSettingRequest in app/Http/Requests/StoreSettingRequest.php | | |
-| TASK-079 | Create UpdateSettingRequest in app/Http/Requests/UpdateSettingRequest.php | | |
-| TASK-080 | Apply validation using ValidateSettingAction | | |
+| **API Endpoints** | | | |
+| TASK-075 | Create SettingsController in app/Http/Controllers/Api/V1/SettingsController.php | | |
+| TASK-076 | Implement index() method listing settings by scope and group with filtering | | |
+| TASK-077 | Implement show() method returning single setting by key | | |
+| TASK-078 | Implement store() method creating new setting | | |
+| TASK-079 | Implement update() method updating setting value | | |
+| TASK-080 | Implement destroy() method deleting setting | | |
+| TASK-081 | Implement bulkUpdate() method for updating multiple settings at once | | |
+| TASK-082 | Create SettingResource in app/Http/Resources/SettingResource.php | | |
+| TASK-083 | Hide encrypted values in API responses (show masked value or indicator) | | |
+| TASK-084 | Include effective value with source scope information | | |
+| TASK-085 | Create StoreSettingRequest in app/Http/Requests/StoreSettingRequest.php | | |
+| TASK-086 | Create UpdateSettingRequest in app/Http/Requests/UpdateSettingRequest.php | | |
+| TASK-087 | Apply validation using ValidateSettingAction | | |
+| **Routes Definition** | | | |
+| TASK-088 | Define routes in routes/api.php under /api/v1/settings prefix | | |
+| TASK-089 | GET /api/v1/settings - List settings with filters | | |
+| TASK-090 | GET /api/v1/settings/{key} - Get single setting | | |
+| TASK-091 | POST /api/v1/settings - Create setting | | |
+| TASK-092 | PUT /api/v1/settings/{key} - Update setting | | |
+| TASK-093 | DELETE /api/v1/settings/{key} - Delete setting | | |
+| TASK-094 | POST /api/v1/settings/bulk - Bulk update settings | | |
+| TASK-095 | GET /api/v1/settings/export - Export settings | | |
+| TASK-096 | POST /api/v1/settings/import - Import settings | | |
+| TASK-097 | Apply auth:sanctum middleware to all routes | | |
+| **Authorization Policies** | | | |
+| TASK-098 | Create SettingPolicy in app/Domains/Core/Policies/SettingPolicy.php | | |
+| TASK-099 | Implement viewAny() checking scope: global requires 'manage global settings' permission, tenant requires 'manage tenant settings' | | |
+| TASK-100 | Implement view() checking setting scope and user permissions | | |
+| TASK-101 | Implement create() checking scope-appropriate permission | | |
+| TASK-102 | Implement update() checking scope and same tenant | | |
+| TASK-103 | Implement delete() checking scope and permissions | | |
+| TASK-104 | Implement special check: users can always manage own user-scoped settings | | |
+| TASK-105 | Register SettingPolicy in AuthServiceProvider | | |
+| TASK-106 | Apply policy checks in SettingsController | | |
 
-### Implementation Phase 10: Settings Import/Export
+### Implementation Phase 5: Bulk Operations & CLI
 
-- GOAL-010: Implement bulk import and export functionality
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-081 | Create ExportSettingsAction in app/Domains/Core/Actions/Settings/ExportSettingsAction.php | | |
-| TASK-082 | Accept scope and group filters | | |
-| TASK-083 | Export to JSON format with structure: {key: value} | | |
-| TASK-084 | Mask encrypted settings in export | | |
-| TASK-085 | Create ImportSettingsAction in app/Domains/Core/Actions/Settings/ImportSettingsAction.php | | |
-| TASK-086 | Accept JSON file and scope parameter | | |
-| TASK-087 | Validate each setting against schema | | |
-| TASK-088 | Bulk upsert settings | | |
-| TASK-089 | Return import summary: created, updated, failed counts | | |
-| TASK-090 | Add export endpoint: GET /api/v1/settings/export | | |
-| TASK-091 | Add import endpoint: POST /api/v1/settings/import | | |
-
-### Implementation Phase 11: CLI Commands
-
-- GOAL-011: Create CLI commands for settings operations
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-092 | Create ListSettingsCommand in app/Console/Commands/Settings/ListSettingsCommand.php with signature erp:settings:list | | |
-| TASK-093 | Add options: --scope, --group, --tenant | | |
-| TASK-094 | Display table with columns: Key, Value, Type, Scope, Group | | |
-| TASK-095 | Mask encrypted values in output | | |
-| TASK-096 | Create GetSettingCommand in app/Console/Commands/Settings/GetSettingCommand.php with signature erp:settings:get {key} | | |
-| TASK-097 | Display setting value, type, scope, and effective source | | |
-| TASK-098 | Create SetSettingCommand in app/Console/Commands/Settings/SetSettingCommand.php with signature erp:settings:set {key} {value} | | |
-| TASK-099 | Add options: --scope, --type, --encrypted, --tenant, --user | | |
-| TASK-100 | Validate value against schema | | |
-| TASK-101 | Display confirmation of setting update | | |
-| TASK-102 | Create ExportSettingsCommand in app/Console/Commands/Settings/ExportSettingsCommand.php with signature erp:settings:export {file} | | |
-| TASK-103 | Add options: --scope, --group, --tenant | | |
-| TASK-104 | Export to specified JSON file | | |
-| TASK-105 | Create ImportSettingsCommand in app/Console/Commands/Settings/ImportSettingsCommand.php with signature erp:settings:import {file} | | |
-| TASK-106 | Add options: --scope, --tenant, --dry-run | | |
-| TASK-107 | Import from JSON file and display summary | | |
-| TASK-108 | Register commands in app/Console/Kernel.php | | |
-
-### Implementation Phase 12: Authorization Policies
-
-- GOAL-012: Implement authorization for settings access
+- GOAL-005: Implement import/export and CLI commands for settings management
+- **Combines:** Settings Import/Export + CLI Commands
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-109 | Create SettingPolicy in app/Domains/Core/Policies/SettingPolicy.php | | |
-| TASK-110 | Implement viewAny() checking scope: global requires 'manage global settings' permission, tenant requires 'manage tenant settings' | | |
-| TASK-111 | Implement view() checking setting scope and user permissions | | |
-| TASK-112 | Implement create() checking scope-appropriate permission | | |
-| TASK-113 | Implement update() checking scope and same tenant | | |
-| TASK-114 | Implement delete() checking scope and permissions | | |
-| TASK-115 | Implement special check: users can always manage own user-scoped settings | | |
-| TASK-116 | Register SettingPolicy in AuthServiceProvider | | |
-| TASK-117 | Apply policy checks in SettingsController | | |
+| **Settings Import/Export** | | | |
+| TASK-107 | Create ExportSettingsAction in app/Domains/Core/Actions/Settings/ExportSettingsAction.php | | |
+| TASK-108 | Accept scope and group filters | | |
+| TASK-109 | Export to JSON format with structure: {key: value} | | |
+| TASK-110 | Mask encrypted settings in export | | |
+| TASK-111 | Create ImportSettingsAction in app/Domains/Core/Actions/Settings/ImportSettingsAction.php | | |
+| TASK-112 | Accept JSON file and scope parameter | | |
+| TASK-113 | Validate each setting against schema | | |
+| TASK-114 | Bulk upsert settings | | |
+| TASK-115 | Return import summary: created, updated, failed counts | | |
+| TASK-116 | Add export endpoint: GET /api/v1/settings/export | | |
+| TASK-117 | Add import endpoint: POST /api/v1/settings/import | | |
+| **CLI Commands** | | | |
+| TASK-118 | Create ListSettingsCommand in app/Console/Commands/Settings/ListSettingsCommand.php with signature erp:settings:list | | |
+| TASK-119 | Add options: --scope, --group, --tenant | | |
+| TASK-120 | Display table with columns: Key, Value, Type, Scope, Group | | |
+| TASK-121 | Mask encrypted values in output | | |
+| TASK-122 | Create GetSettingCommand in app/Console/Commands/Settings/GetSettingCommand.php with signature erp:settings:get {key} | | |
+| TASK-123 | Display setting value, type, scope, and effective source | | |
+| TASK-124 | Create SetSettingCommand in app/Console/Commands/Settings/SetSettingCommand.php with signature erp:settings:set {key} {value} | | |
+| TASK-125 | Add options: --scope, --type, --encrypted, --tenant, --user | | |
+| TASK-126 | Validate value against schema | | |
+| TASK-127 | Display confirmation of setting update | | |
+| TASK-128 | Create ExportSettingsCommand in app/Console/Commands/Settings/ExportSettingsCommand.php with signature erp:settings:export {file} | | |
+| TASK-129 | Add options: --scope, --group, --tenant | | |
+| TASK-130 | Export to specified JSON file | | |
+| TASK-131 | Create ImportSettingsCommand in app/Console/Commands/Settings/ImportSettingsCommand.php with signature erp:settings:import {file} | | |
+| TASK-132 | Add options: --scope, --tenant, --dry-run | | |
+| TASK-133 | Import from JSON file and display summary | | |
+| TASK-134 | Register commands in app/Console/Kernel.php | | |
 
-### Implementation Phase 13: Cache Implementation
+### Implementation Phase 6: Testing & Verification
 
-- GOAL-013: Implement efficient caching with invalidation
+- GOAL-006: Create comprehensive test suite for settings system
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-118 | Use Cache::tags(['settings', 'settings:{scope}', 'settings:{tenant_id}']) for organized caching | | |
-| TASK-119 | Cache settings on first retrieval with 1-hour TTL | | |
-| TASK-120 | Invalidate specific setting cache on update/delete | | |
-| TASK-121 | Invalidate tenant settings cache tag when any tenant setting changes | | |
-| TASK-122 | Invalidate user settings cache tag when any user setting changes | | |
-| TASK-123 | Implement cache warming for global settings on application boot | | |
-| TASK-124 | Add cache:clear-settings command for manual cache clearing | | |
-
-### Implementation Phase 14: Routes Definition
-
-- GOAL-014: Define settings API routes
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-125 | Define routes in routes/api.php under /api/v1/settings prefix | | |
-| TASK-126 | GET /api/v1/settings - List settings with filters | | |
-| TASK-127 | GET /api/v1/settings/{key} - Get single setting | | |
-| TASK-128 | POST /api/v1/settings - Create setting | | |
-| TASK-129 | PUT /api/v1/settings/{key} - Update setting | | |
-| TASK-130 | DELETE /api/v1/settings/{key} - Delete setting | | |
-| TASK-131 | POST /api/v1/settings/bulk - Bulk update settings | | |
-| TASK-132 | GET /api/v1/settings/export - Export settings | | |
-| TASK-133 | POST /api/v1/settings/import - Import settings | | |
-| TASK-134 | Apply auth:sanctum middleware to all routes | | |
-
-### Implementation Phase 15: Testing
-
-- GOAL-015: Create comprehensive test suite for settings system
+| **Unit Tests** | | | |
+| TASK-135 | Create SettingsTest feature test in tests/Feature/Core/SettingsTest.php | | |
+| TASK-136 | Test settings() helper returns SettingsService instance | | |
+| TASK-137 | Test get() with hierarchy: user setting overrides tenant overrides global | | |
+| TASK-138 | Test set() creates new setting | | |
+| TASK-139 | Test set() updates existing setting | | |
+| TASK-140 | Test set() validates value against schema | | |
+| TASK-141 | Test encrypted setting stores encrypted value | | |
+| TASK-142 | Test encrypted setting retrieves decrypted value | | |
+| TASK-143 | Test has() returns true for existing setting | | |
+| TASK-144 | Test forget() deletes setting | | |
+| TASK-145 | Test dot notation for nested JSON settings | | |
+| **API Tests** | | | |
+| TASK-146 | Test GET /api/v1/settings returns settings list | | |
+| TASK-147 | Test filtering by scope and group | | |
+| TASK-148 | Test PUT /api/v1/settings/{key} updates setting | | |
+| TASK-149 | Test unauthorized user cannot modify global settings (403) | | |
+| TASK-150 | Test tenant admin can modify tenant settings | | |
+| TASK-151 | Test user can modify own user settings | | |
+| TASK-152 | Test settings export generates JSON | | |
+| TASK-153 | Test settings import updates settings | | |
+| **Repository & Service Tests** | | | |
+| TASK-154 | Create SettingsRepositoryTest unit test in tests/Unit/Core/SettingsRepositoryTest.php | | |
+| TASK-155 | Test hierarchy resolution logic | | |
+| TASK-156 | Test caching behavior | | |
+| TASK-157 | Test cache invalidation on update | | |
+| **CLI Tests** | | | |
+| TASK-158 | Test CLI command php artisan erp:settings:list | | |
+| TASK-159 | Test CLI command php artisan erp:settings:set | | |
+| **Integration Tests** | | | |
+| TASK-160 | Test settings hierarchy across all three scopes | | |
+| TASK-161 | Test settings audit logging captures changes | | |
+| TASK-162 | Test cache performance improvement | | |
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
@@ -434,6 +428,14 @@ This implementation plan establishes a comprehensive, hierarchical settings mana
 - **TEST-031**: Test settings hierarchy across all three scopes
 - **TEST-032**: Test settings audit logging captures changes
 - **TEST-033**: Test cache performance improvement
+
+**Test Coverage by Phase:**
+- **Phase 1 (Foundation):** TEST-001, TEST-002, TEST-003
+- **Phase 2 (Data Access Layer):** TEST-004, TEST-005, TEST-006, TEST-009, TEST-010, TEST-011, TEST-012, TEST-013
+- **Phase 3 (Configuration & Validation):** TEST-007, TEST-008, TEST-016
+- **Phase 4 (API Layer):** TEST-020, TEST-021, TEST-022, TEST-023, TEST-024, TEST-025, TEST-026
+- **Phase 5 (Bulk Operations & CLI):** TEST-027, TEST-028, TEST-029, TEST-030
+- **Phase 6 (Testing & Verification):** TEST-014, TEST-015, TEST-017, TEST-018, TEST-019, TEST-031, TEST-032, TEST-033
 
 ## 7. Risks & Assumptions
 

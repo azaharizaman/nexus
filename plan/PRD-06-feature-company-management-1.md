@@ -55,25 +55,23 @@ This implementation plan details the integration of the Company Management syste
 
 ## 2. Implementation Steps
 
-### Implementation Phase 1: Package Installation & Configuration
+> **Note:** This implementation has been condensed from 12 phases into 6 logical phases for better manageability while preserving all tasks and key details. Related components have been grouped together based on architectural layers and functional cohesion.
 
-- GOAL-001: Install and configure laravel-backoffice package
+### Implementation Phase 1: Package Setup & Database
+
+- GOAL-001: Install laravel-backoffice package and extend database schema for tenant isolation
+- **Combines:** Package Installation & Configuration + Database Schema Extension
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
+| **Package Installation & Configuration** | | | |
 | TASK-001 | Add `azaharizaman/laravel-backoffice` package to composer.json with `"dev-main"` stability | | |
 | TASK-002 | Run `composer update` to install the package | | |
 | TASK-003 | Publish package migrations using `php artisan vendor:publish` | | |
 | TASK-004 | Review published migration files for companies table structure | | |
 | TASK-005 | Publish package configuration file if available | | |
 | TASK-006 | Review and customize package configuration for tenant-aware usage | | |
-
-### Implementation Phase 2: Database Schema Extension
-
-- GOAL-002: Extend package schema to support tenant isolation and ERP requirements
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
+| **Database Schema Extension** | | | |
 | TASK-007 | Create migration to add tenant_id column to companies table with foreign key constraint | | |
 | TASK-008 | Create index on companies(tenant_id, status) for optimized filtering | | |
 | TASK-009 | Create migration to add ERP-specific columns: registration_number, tax_id, fiscal_year_start, currency_code | | |
@@ -81,12 +79,14 @@ This implementation plan details the integration of the Company Management syste
 | TASK-011 | Add is_active boolean column with default true | | |
 | TASK-012 | Run migrations to update database schema | | |
 
-### Implementation Phase 3: Model Extension & Trait Integration
+### Implementation Phase 2: Model & Repository Layer
 
-- GOAL-003: Extend package Company model with tenant isolation and ERP features
+- GOAL-002: Extend package Company model and implement repository pattern
+- **Combines:** Model Extension & Trait Integration + Repository Layer
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
+| **Model Extension & Trait Integration** | | | |
 | TASK-013 | Create ErpCompany model extending package Company model in app/Domains/Backoffice/Models/Company.php | | |
 | TASK-014 | Add BelongsToTenant trait to Company model | | |
 | TASK-015 | Add LogsActivity trait for audit logging | | |
@@ -97,13 +97,7 @@ This implementation plan details the integration of the Company Management syste
 | TASK-020 | Implement getAncestorsAttribute() accessor for retrieving parent hierarchy | | |
 | TASK-021 | Add scopeActive() query scope to filter active companies | | |
 | TASK-022 | Add scopeRootCompanies() query scope to retrieve top-level companies | | |
-
-### Implementation Phase 4: Repository Layer
-
-- GOAL-004: Implement repository pattern for company data access
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
+| **Repository Layer** | | | |
 | TASK-023 | Create CompanyRepositoryInterface in app/Domains/Backoffice/Contracts/CompanyRepositoryInterface.php | | |
 | TASK-024 | Define methods: findById(), findByTenantId(), create(), update(), delete(), getHierarchy() | | |
 | TASK-025 | Create CompanyRepository in app/Domains/Backoffice/Repositories/CompanyRepository.php | | |
@@ -116,12 +110,14 @@ This implementation plan details the integration of the Company Management syste
 | TASK-032 | Implement getChildren() method to retrieve direct children of a company | | |
 | TASK-033 | Bind CompanyRepositoryInterface to CompanyRepository in BackofficeServiceProvider | | |
 
-### Implementation Phase 5: Action Classes
+### Implementation Phase 3: Business Logic Layer
 
-- GOAL-005: Create action classes for company operations using Laravel Actions
+- GOAL-003: Implement action classes, events, and service provider configuration
+- **Combines:** Action Classes + Events & Listeners + Service Provider Configuration
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
+| **Action Classes** | | | |
 | TASK-034 | Create CreateCompanyAction in app/Domains/Backoffice/Actions/CreateCompanyAction.php | | |
 | TASK-035 | Implement handle() method with validation, tenant assignment, and audit logging | | |
 | TASK-036 | Add asController() method for HTTP request handling | | |
@@ -132,105 +128,125 @@ This implementation plan details the integration of the Company Management syste
 | TASK-041 | Implement handle() method with dependency checking (child companies, offices) | | |
 | TASK-042 | Create GetCompanyHierarchyAction in app/Domains/Backoffice/Actions/GetCompanyHierarchyAction.php | | |
 | TASK-043 | Implement handle() method to build hierarchical tree structure | | |
+| **Events & Listeners** | | | |
+| TASK-044 | Create CompanyCreatedEvent in app/Domains/Backoffice/Events/CompanyCreatedEvent.php | | |
+| TASK-045 | Create CompanyUpdatedEvent in app/Domains/Backoffice/Events/CompanyUpdatedEvent.php | | |
+| TASK-046 | Create CompanyDeletedEvent in app/Domains/Backoffice/Events/CompanyDeletedEvent.php | | |
+| TASK-047 | Dispatch events from respective action classes | | |
+| TASK-048 | Create LogCompanyActivityListener for audit trail | | |
+| TASK-049 | Register events and listeners in EventServiceProvider | | |
+| **Service Provider Configuration** | | | |
+| TASK-050 | Create BackofficeServiceProvider in app/Providers/BackofficeServiceProvider.php if not exists | | |
+| TASK-051 | Register CompanyRepository binding in register() method | | |
+| TASK-052 | Load routes from routes/backoffice.php in boot() method | | |
+| TASK-053 | Register policies in boot() method | | |
+| TASK-054 | Add BackofficeServiceProvider to config/app.php providers array | | |
 
-### Implementation Phase 6: API Controllers & Routes
+### Implementation Phase 4: API Layer
 
-- GOAL-006: Implement RESTful API endpoints for company management
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-044 | Create CompanyController in app/Http/Controllers/Api/V1/Backoffice/CompanyController.php | | |
-| TASK-045 | Implement index() method with filtering, sorting, and pagination | | |
-| TASK-046 | Implement store() method using CreateCompanyAction | | |
-| TASK-047 | Implement show() method to retrieve single company with relationships | | |
-| TASK-048 | Implement update() method using UpdateCompanyAction | | |
-| TASK-049 | Implement destroy() method using DeleteCompanyAction | | |
-| TASK-050 | Implement children() method to retrieve child companies | | |
-| TASK-051 | Create routes in routes/api.php under /api/v1/backoffice/companies prefix | | |
-| TASK-052 | Apply auth:sanctum middleware to all company routes | | |
-| TASK-053 | Apply can:manage-companies middleware to modification routes | | |
-
-### Implementation Phase 7: Request Validation
-
-- GOAL-007: Implement form request classes for input validation
+- GOAL-004: Build RESTful API with controllers, validation, resources, and authorization
+- **Combines:** API Controllers & Routes + Request Validation + API Resources + Authorization Policies
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-054 | Create StoreCompanyRequest in app/Http/Requests/Backoffice/StoreCompanyRequest.php | | |
-| TASK-055 | Define validation rules for required fields: name, registration_number | | |
-| TASK-056 | Add validation rules for optional fields: parent_id, tax_id, logo_path | | |
-| TASK-057 | Implement authorize() method with policy check | | |
-| TASK-058 | Create UpdateCompanyRequest in app/Http/Requests/Backoffice/UpdateCompanyRequest.php | | |
-| TASK-059 | Define validation rules allowing partial updates | | |
-| TASK-060 | Add custom validation rule to prevent circular parent relationships | | |
-| TASK-061 | Implement messages() method for custom validation messages | | |
+| **API Controllers & Routes** | | | |
+| TASK-055 | Create CompanyController in app/Http/Controllers/Api/V1/Backoffice/CompanyController.php | | |
+| TASK-056 | Implement index() method with filtering, sorting, and pagination | | |
+| TASK-057 | Implement store() method using CreateCompanyAction | | |
+| TASK-058 | Implement show() method to retrieve single company with relationships | | |
+| TASK-059 | Implement update() method using UpdateCompanyAction | | |
+| TASK-060 | Implement destroy() method using DeleteCompanyAction | | |
+| TASK-061 | Implement children() method to retrieve child companies | | |
+| TASK-062 | Create routes in routes/api.php under /api/v1/backoffice/companies prefix | | |
+| TASK-063 | Apply auth:sanctum middleware to all company routes | | |
+| TASK-064 | Apply can:manage-companies middleware to modification routes | | |
+| **Request Validation** | | | |
+| TASK-065 | Create StoreCompanyRequest in app/Http/Requests/Backoffice/StoreCompanyRequest.php | | |
+| TASK-066 | Define validation rules for required fields: name, registration_number | | |
+| TASK-067 | Add validation rules for optional fields: parent_id, tax_id, logo_path | | |
+| TASK-068 | Implement authorize() method with policy check | | |
+| TASK-069 | Create UpdateCompanyRequest in app/Http/Requests/Backoffice/UpdateCompanyRequest.php | | |
+| TASK-070 | Define validation rules allowing partial updates | | |
+| TASK-071 | Add custom validation rule to prevent circular parent relationships | | |
+| TASK-072 | Implement messages() method for custom validation messages | | |
+| **API Resources** | | | |
+| TASK-073 | Create CompanyResource in app/Http/Resources/Backoffice/CompanyResource.php | | |
+| TASK-074 | Define toArray() method returning company attributes | | |
+| TASK-075 | Include parent company data conditionally using whenLoaded() | | |
+| TASK-076 | Include children count using $this->children()->count() | | |
+| TASK-077 | Add HATEOAS links for self and related resources | | |
+| TASK-078 | Create CompanyCollection resource for paginated lists | | |
+| **Authorization Policies** | | | |
+| TASK-079 | Create CompanyPolicy in app/Domains/Backoffice/Policies/CompanyPolicy.php | | |
+| TASK-080 | Implement viewAny() method checking manage-companies permission | | |
+| TASK-081 | Implement view() method checking tenant ownership | | |
+| TASK-082 | Implement create() method checking manage-companies permission | | |
+| TASK-083 | Implement update() method checking both permission and tenant ownership | | |
+| TASK-084 | Implement delete() method with additional checks for child companies | | |
+| TASK-085 | Register CompanyPolicy in AuthServiceProvider | | |
 
-### Implementation Phase 8: API Resources
+### Implementation Phase 5: CLI Commands
 
-- GOAL-008: Create API resource transformers for consistent response format
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-062 | Create CompanyResource in app/Http/Resources/Backoffice/CompanyResource.php | | |
-| TASK-063 | Define toArray() method returning company attributes | | |
-| TASK-064 | Include parent company data conditionally using whenLoaded() | | |
-| TASK-065 | Include children count using $this->children()->count() | | |
-| TASK-066 | Add HATEOAS links for self and related resources | | |
-| TASK-067 | Create CompanyCollection resource for paginated lists | | |
-
-### Implementation Phase 9: Authorization Policies
-
-- GOAL-009: Implement authorization policies for company operations
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-068 | Create CompanyPolicy in app/Domains/Backoffice/Policies/CompanyPolicy.php | | |
-| TASK-069 | Implement viewAny() method checking manage-companies permission | | |
-| TASK-070 | Implement view() method checking tenant ownership | | |
-| TASK-071 | Implement create() method checking manage-companies permission | | |
-| TASK-072 | Implement update() method checking both permission and tenant ownership | | |
-| TASK-073 | Implement delete() method with additional checks for child companies | | |
-| TASK-074 | Register CompanyPolicy in AuthServiceProvider | | |
-
-### Implementation Phase 10: CLI Commands
-
-- GOAL-010: Create artisan commands for company management operations
-
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-075 | Create CreateCompanyCommand in app/Console/Commands/Backoffice/CreateCompanyCommand.php | | |
-| TASK-076 | Implement handle() method with interactive prompts for company data | | |
-| TASK-077 | Add options for tenant-id, name, parent-id, registration-number | | |
-| TASK-078 | Create ListCompaniesCommand in app/Console/Commands/Backoffice/ListCompaniesCommand.php | | |
-| TASK-079 | Implement handle() method displaying companies in table format | | |
-| TASK-080 | Add options for filtering by tenant, status, parent company | | |
-| TASK-081 | Create CompanyHierarchyCommand showing tree structure | | |
-| TASK-082 | Register commands in app/Console/Kernel.php | | |
-
-### Implementation Phase 11: Events & Listeners
-
-- GOAL-011: Implement events for company lifecycle operations
+- GOAL-005: Create artisan commands for company management operations
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-083 | Create CompanyCreatedEvent in app/Domains/Backoffice/Events/CompanyCreatedEvent.php | | |
-| TASK-084 | Create CompanyUpdatedEvent in app/Domains/Backoffice/Events/CompanyUpdatedEvent.php | | |
-| TASK-085 | Create CompanyDeletedEvent in app/Domains/Backoffice/Events/CompanyDeletedEvent.php | | |
-| TASK-086 | Dispatch events from respective action classes | | |
-| TASK-087 | Create LogCompanyActivityListener for audit trail | | |
-| TASK-088 | Register events and listeners in EventServiceProvider | | |
+| TASK-086 | Create CreateCompanyCommand in app/Console/Commands/Backoffice/CreateCompanyCommand.php | | |
+| TASK-087 | Implement handle() method with interactive prompts for company data | | |
+| TASK-088 | Add options for tenant-id, name, parent-id, registration-number | | |
+| TASK-089 | Create ListCompaniesCommand in app/Console/Commands/Backoffice/ListCompaniesCommand.php | | |
+| TASK-090 | Implement handle() method displaying companies in table format | | |
+| TASK-091 | Add options for filtering by tenant, status, parent company | | |
+| TASK-092 | Create CompanyHierarchyCommand showing tree structure | | |
+| TASK-093 | Register commands in app/Console/Kernel.php | | |
 
-### Implementation Phase 12: Service Provider Configuration
+### Implementation Phase 6: Testing & Verification
 
-- GOAL-012: Configure service provider for dependency injection
+### Implementation Phase 6: Testing & Verification
+
+- GOAL-006: Create comprehensive test suite for company management system
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-089 | Create BackofficeServiceProvider in app/Providers/BackofficeServiceProvider.php if not exists | | |
-| TASK-090 | Register CompanyRepository binding in register() method | | |
-| TASK-091 | Load routes from routes/backoffice.php in boot() method | | |
-| TASK-092 | Register policies in boot() method | | |
-| TASK-093 | Add BackofficeServiceProvider to config/app.php providers array | | |
+| **Unit Tests** | | | |
+| TASK-094 | Create CreateCompanyActionTest in tests/Unit/Domains/Backoffice/Actions/CreateCompanyActionTest.php | | |
+| TASK-095 | Test CreateCompanyAction successfully creates company with valid data | | |
+| TASK-096 | Test CreateCompanyAction validates required fields (name, registration_number) | | |
+| TASK-097 | Test CreateCompanyAction automatically assigns tenant_id from context | | |
+| TASK-098 | Test CreateCompanyAction creates audit log entry on creation | | |
+| TASK-099 | Create UpdateCompanyActionTest and test update operations | | |
+| TASK-100 | Test UpdateCompanyAction prevents circular parent relationships | | |
+| TASK-101 | Create DeleteCompanyActionTest and test deletion with child company checks | | |
+| TASK-102 | Create CompanyRepositoryTest in tests/Unit/Domains/Backoffice/Repositories/CompanyRepositoryTest.php | | |
+| TASK-103 | Test CompanyRepository getHierarchy() returns correct tree structure | | |
+| TASK-104 | Test CompanyRepository findByTenantId() filters by tenant correctly | | |
+| **Feature Tests - API** | | | |
+| TASK-105 | Create CompanyControllerTest in tests/Feature/Api/V1/Backoffice/CompanyControllerTest.php | | |
+| TASK-106 | Test POST /api/v1/backoffice/companies creates company and returns 201 | | |
+| TASK-107 | Test GET /api/v1/backoffice/companies lists companies with pagination | | |
+| TASK-108 | Test GET /api/v1/backoffice/companies/{id} returns single company with 200 | | |
+| TASK-109 | Test PATCH /api/v1/backoffice/companies/{id} updates company and returns 200 | | |
+| TASK-110 | Test DELETE /api/v1/backoffice/companies/{id} soft deletes company and returns 204 | | |
+| TASK-111 | Test GET /api/v1/backoffice/companies/{id}/children returns child companies | | |
+| TASK-112 | Test API enforces authentication with 401 for unauthenticated requests | | |
+| TASK-113 | Test API enforces authorization with 403 for unauthorized users | | |
+| TASK-114 | Test API prevents cross-tenant access returning 404 for other tenant's companies | | |
+| TASK-115 | Test API validates request data returning 422 for invalid input | | |
+| **Feature Tests - CLI** | | | |
+| TASK-116 | Create CreateCompanyCommandTest in tests/Feature/Console/Commands/CreateCompanyCommandTest.php | | |
+| TASK-117 | Test CLI command creates company successfully via artisan | | |
+| **Integration Tests** | | | |
+| TASK-118 | Test creating company triggers CompanyCreatedEvent | | |
+| TASK-119 | Test updating company triggers CompanyUpdatedEvent | | |
+| TASK-120 | Test deleting company triggers CompanyDeletedEvent | | |
+| TASK-121 | Test company creation is logged in activity log | | |
+| TASK-122 | Test company hierarchy query with 3 levels completes in under 50ms | | |
+| TASK-123 | Test BelongsToTenant trait automatically filters companies by tenant | | |
+| TASK-124 | Test package Company model can be extended without breaking functionality | | |
+| TASK-125 | Test company with logo uploads and stores file correctly | | |
+| TASK-126 | Test parent-child relationships maintain referential integrity | | |
+| **Test Setup** | | | |
+| TASK-127 | Create CompanyFactory in database/factories/CompanyFactory.php for test data generation | | |
 
 ## 3. Alternatives Considered
 
