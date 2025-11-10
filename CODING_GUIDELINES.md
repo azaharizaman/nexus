@@ -9,6 +9,7 @@ This document outlines the coding standards and best practices for the Laravel E
 - [PHPDoc Documentation](#phpdoc-documentation)
 - [Testing Standards](#testing-standards)
 - [Migration Standards](#migration-standards)
+- [Package Decoupling](#package-decoupling)
 - [Common Mistakes and How to Avoid Them](#common-mistakes-and-how-to-avoid-them)
 
 ---
@@ -970,9 +971,128 @@ class TenantManager
 
 ---
 
+## Package Decoupling
+
+### 9. Design for Decoupling (Package-as-a-Service)
+
+**✅ REQUIRED:** All external package dependencies MUST be abstracted behind contracts to enable easy replacement, testing, and prevent vendor lock-in.
+
+#### Core Principle
+
+Never directly depend on external package implementations in business logic. Always wrap external packages behind contracts/interfaces that we control.
+
+#### ❌ Incorrect
+
+```php
+// Direct package dependency in business logic
+use Spatie\Activitylog\Traits\LogsActivity;
+use Laravel\Scout\Searchable;
+
+class Tenant extends Model
+{
+    use LogsActivity, Searchable; // Direct package coupling
+}
+
+// Direct package usage in service
+class TenantManager
+{
+    public function create(array $data): Tenant
+    {
+        $tenant = $this->repository->create($data);
+        
+        // Direct Spatie API usage
+        activity()
+            ->performedOn($tenant)
+            ->causedBy(auth()->user())
+            ->log('Tenant created');
+        
+        return $tenant;
+    }
+}
+```
+
+#### ✅ Correct
+
+```php
+// Our contract
+interface ActivityLoggerContract
+{
+    public function log(string $description, Model $subject, ?Model $causer = null): void;
+    public function getActivities(Model $subject): Collection;
+}
+
+// Package adapter (isolated)
+class SpatieActivityLogger implements ActivityLoggerContract
+{
+    public function log(string $description, Model $subject, ?Model $causer = null): void
+    {
+        activity()
+            ->performedOn($subject)
+            ->causedBy($causer ?? auth()->user())
+            ->log($description);
+    }
+}
+
+// Business code uses our contract
+class TenantManager
+{
+    public function __construct(
+        private readonly TenantRepositoryContract $repository,
+        private readonly ActivityLoggerContract $activityLogger
+    ) {}
+    
+    public function create(array $data): Tenant
+    {
+        $tenant = $this->repository->create($data);
+        
+        // Use our contract, not package directly
+        $this->activityLogger->log('Tenant created', $tenant);
+        
+        return $tenant;
+    }
+}
+
+// Service provider binding
+class LoggingServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(
+            ActivityLoggerContract::class,
+            SpatieActivityLogger::class
+        );
+    }
+}
+```
+
+**Why:** This approach provides:
+- **Swappability:** Replace packages without changing business logic
+- **Testability:** Mock contracts easily without package-specific mocks
+- **Maintainability:** Isolate package-specific code to adapters
+- **Vendor Lock-in Prevention:** Not tied to specific package APIs
+
+**Critical Packages to Decouple:**
+1. **spatie/laravel-activitylog** - Activity logging (HIGH priority)
+2. **laravel/scout** - Search functionality (HIGH priority)
+3. **laravel/sanctum** - API authentication (HIGH priority)
+4. **spatie/laravel-permission** - Authorization (MEDIUM priority)
+
+**Implementation Pattern:**
+1. Create contract in `app/Support/Contracts/{ServiceName}Contract.php`
+   - **Note:** `{ServiceName}` should be a descriptive name representing the service functionality (e.g., `ActivityLogger`, `SearchService`, `TokenService`), not the literal package name.
+   - **Example:** For activity logging, use `ActivityLoggerContract.php` (not `ActivitylogContract.php`).
+2. Create adapter in `app/Support/Services/{Category}/{ServiceName}Service.php`
+3. Bind in appropriate service provider
+4. Update business code to inject contract
+5. Add tests with mocked contract
+
+**See:** [docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md](docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md) for comprehensive decoupling guide.
+
+---
+
 ## Security Best Practices
 
-### 9. Authentication and Authorization
+### 10. Authentication and Authorization
 
 **✅ REQUIRED:** All operations that require authentication MUST check for authenticated users. All privileged operations MUST check authorization.
 

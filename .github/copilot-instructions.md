@@ -230,6 +230,64 @@ class CreatePurchaseOrderAction
 }
 ```
 
+### 6. Package Decoupling (CRITICAL)
+
+**MANDATORY:** All external package dependencies MUST be abstracted behind contracts to prevent vendor lock-in and improve testability.
+
+**Never use external packages directly in business logic:**
+
+```php
+// ❌ WRONG - Direct package dependency
+use Spatie\Activitylog\Traits\LogsActivity;
+
+class TenantManager
+{
+    public function create(array $data): Tenant
+    {
+        $tenant = $this->repository->create($data);
+        
+        // Direct Spatie API usage
+        activity()->performedOn($tenant)->log('Created');
+        
+        return $tenant;
+    }
+}
+
+// ✅ CORRECT - Use our contract
+class TenantManager
+{
+    public function __construct(
+        private readonly TenantRepositoryContract $repository,
+        private readonly ActivityLoggerContract $activityLogger
+    ) {}
+    
+    public function create(array $data): Tenant
+    {
+        $tenant = $this->repository->create($data);
+        
+        // Use our abstraction
+        $this->activityLogger->log('Tenant created', $tenant);
+        
+        return $tenant;
+    }
+}
+```
+
+**Critical packages requiring decoupling:**
+1. **spatie/laravel-activitylog** → `ActivityLoggerContract`
+2. **laravel/scout** → `SearchServiceContract`
+3. **laravel/sanctum** → `TokenServiceContract`
+4. **spatie/laravel-permission** → `PermissionServiceContract`
+
+**See:** [docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md](../docs/architecture/PACKAGE-DECOUPLING-STRATEGY.md) for complete implementation guide.
+
+**Pattern:**
+1. Create contract in `app/Support/Contracts/`
+2. Create adapter in `app/Support/Services/{Category}/`
+3. Bind in service provider
+4. Inject contract in business code
+5. Never import package classes in domain code
+
 ---
 
 ## Mandatory Tool Integration
