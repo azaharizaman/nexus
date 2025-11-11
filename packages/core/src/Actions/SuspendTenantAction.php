@@ -6,18 +6,18 @@ namespace Azaharizaman\Erp\Core\Actions;
 
 use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
 use Azaharizaman\Erp\Core\Enums\TenantStatus;
-use Azaharizaman\Erp\Core\Events\TenantArchivedEvent;
+use Azaharizaman\Erp\Core\Events\TenantSuspendedEvent;
 use Azaharizaman\Erp\Core\Models\Tenant;
 use App\Support\Contracts\ActivityLoggerContract;
 use Illuminate\Console\Command;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 /**
- * Archive Tenant Action
+ * Suspend Tenant Action
  *
- * Archives a tenant with a reason and audit logging.
+ * Suspends an active tenant with a reason and audit logging.
  */
-class ArchiveTenantAction
+class SuspendTenantAction
 {
     use AsAction;
 
@@ -35,22 +35,22 @@ class ArchiveTenantAction
     /**
      * Handle the action
      *
-     * @param  Tenant  $tenant  The tenant to archive
-     * @param  string  $reason  The reason for archiving
-     * @return Tenant The archived tenant
+     * @param  Tenant  $tenant  The tenant to suspend
+     * @param  string  $reason  The reason for suspension
+     * @return Tenant The suspended tenant
      *
-     * @throws \InvalidArgumentException If tenant is already archived
+     * @throws \InvalidArgumentException If tenant is not active
      */
     public function handle(Tenant $tenant, string $reason): Tenant
     {
-        // Check if tenant is not already archived
-        if ($tenant->isArchived()) {
-            throw new \InvalidArgumentException('Tenant is already archived');
+        // Check if tenant is active
+        if (! $tenant->isActive()) {
+            throw new \InvalidArgumentException('Only active tenants can be suspended');
         }
 
         // Update tenant status
         $this->repository->update($tenant, [
-            'status' => TenantStatus::ARCHIVED,
+            'status' => TenantStatus::SUSPENDED,
         ]);
 
         // Refresh the model
@@ -58,14 +58,14 @@ class ArchiveTenantAction
 
         // Log activity with reason
         $this->activityLogger->log(
-            'Tenant archived',
+            'Tenant suspended',
             $tenant,
             auth()->check() ? auth()->user() : null,
             ['reason' => $reason]
         );
 
         // Dispatch event
-        event(new TenantArchivedEvent($tenant));
+        event(new TenantSuspendedEvent($tenant, $reason));
 
         return $tenant;
     }
@@ -73,8 +73,8 @@ class ArchiveTenantAction
     /**
      * Make action available as a job
      *
-     * @param  Tenant  $tenant  The tenant to archive
-     * @param  string  $reason  The reason for archiving
+     * @param  Tenant  $tenant  The tenant to suspend
+     * @param  string  $reason  The reason for suspension
      */
     public function asJob(Tenant $tenant, string $reason): void
     {
@@ -100,8 +100,8 @@ class ArchiveTenantAction
         }
 
         try {
-            $archivedTenant = $this->handle($tenant, $reason);
-            $command->info("Tenant archived successfully: {$archivedTenant->name} ({$archivedTenant->id})");
+            $suspendedTenant = $this->handle($tenant, $reason);
+            $command->info("Tenant suspended successfully: {$suspendedTenant->name} ({$suspendedTenant->id})");
         } catch (\InvalidArgumentException $e) {
             $command->error($e->getMessage());
         }
