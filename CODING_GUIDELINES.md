@@ -3199,6 +3199,179 @@ The upfront cost (creating contract + adapter + provider) is recovered after the
 
 ---
 
+## Authentication Best Practices
+
+### Authentication Actions Pattern
+
+All authentication operations MUST use Laravel Actions pattern with proper dependency injection.
+
+#### ✅ Correct Pattern
+
+```php
+use Lorisleiva\Actions\Concerns\AsAction;
+
+class LoginAction
+{
+    use AsAction;
+    
+    public function __construct(
+        private readonly UserRepositoryContract $userRepository
+    ) {}
+    
+    public function handle(string $email, string $password, string $deviceName, string $tenantId): array
+    {
+        // 1. Find user
+        $user = $this->userRepository->findByEmail($email, $tenantId);
+        
+        // 2. Validate credentials
+        if (!$user || !Hash::check($password, $user->password)) {
+            throw ValidationException::withMessages(['email' => ['Invalid credentials']]);
+        }
+        
+        // 3. Check account status
+        if ($user->isLocked()) {
+            throw new AccountLockedException('Account is locked');
+        }
+        
+        // 4. Reset failed attempts
+        $user->resetFailedLoginAttempts();
+        
+        // 5. Generate token
+        $token = $user->createApiToken($deviceName);
+        
+        // 6. Dispatch event
+        event(new UserLoggedInEvent($user, $token->plainTextToken, $deviceName));
+        
+        return ['token' => $token->plainTextToken, 'user' => $user];
+    }
+}
+```
+
+### API Resources for Authentication
+
+Use API Resources to transform authentication responses:
+
+```php
+class TokenResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'token' => $this->resource['token'],
+            'token_type' => 'Bearer',
+            'expires_at' => $this->resource['expires_at']->toIso8601String(),
+            'user' => new UserResource($this->resource['user']),
+        ];
+    }
+}
+```
+
+### Rate Limiting Configuration
+
+Configure rate limiters in AppServiceProvider:
+
+```php
+protected function configureRateLimiting(): void
+{
+    // Authentication endpoints: 5 attempts per minute
+    RateLimiter::for('auth', function (Request $request): Limit {
+        return Limit::perMinute(5)->by($request->input('email', $request->ip()));
+    });
+    
+    // API endpoints: 60 requests per minute per user
+    RateLimiter::for('api', function (Request $request): Limit {
+        return $request->user()
+            ? Limit::perMinute(60)->by($request->user()->id)
+            : Limit::perMinute(60)->by($request->ip());
+    });
+}
+```
+
+### Security Middleware
+
+Apply security middleware in the correct order:
+
+```php
+// In Controller using attributes
+#[Middleware(['auth:sanctum', 'auth.locked', 'sanctum.validate'])]
+public function protectedEndpoint(): JsonResponse
+{
+    // auth:sanctum - Authenticates the user
+    // auth.locked - Checks if account is locked
+    // sanctum.validate - Validates token expiration with caching
+}
+```
+
+### Account Lockout Implementation
+
+User model MUST implement these methods:
+
+```php
+public function isLocked(): bool
+{
+    if ($this->status === UserStatus::LOCKED) {
+        return true;
+    }
+    
+    if ($this->locked_until && $this->locked_until->isFuture()) {
+        return true;
+    }
+    
+    return false;
+}
+
+public function incrementFailedLoginAttempts(): void
+{
+    $this->failed_login_attempts++;
+    
+    if ($this->failed_login_attempts >= 5) {
+        $this->locked_until = now()->addMinutes(30);
+    }
+    
+    $this->save();
+}
+
+public function resetFailedLoginAttempts(): void
+{
+    $this->failed_login_attempts = 0;
+    $this->locked_until = null;
+    $this->save();
+}
+```
+
+### Event-Driven Authentication
+
+Dispatch events for all authentication activities:
+
+```php
+// After successful login
+event(new UserLoggedInEvent($user, $token, $deviceName));
+
+// After failed login
+event(new LoginFailedEvent($email, $tenantId, $attemptsRemaining));
+
+// After logout
+event(new UserLoggedOutEvent($user, $tokenId));
+```
+
+Listen to events using attributes:
+
+```php
+class LogAuthenticationSuccessListener
+{
+    #[Listen(UserLoggedInEvent::class)]
+    public function handle(UserLoggedInEvent $event): void
+    {
+        Log::info('User logged in', [
+            'user_id' => $event->user->id,
+            'device' => $event->deviceName,
+        ]);
+    }
+}
+```
+
+---
+
 ## Questions or Suggestions
 
 If you have questions about these guidelines or suggestions for improvements, please:
@@ -3206,4 +3379,4 @@ If you have questions about these guidelines or suggestions for improvements, pl
 2. Discuss in the team chat
 3. Propose changes via pull request
 
-**Last Updated:** November 10, 2025
+**Last Updated:** November 11, 2025

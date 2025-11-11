@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Domains\Core\Middleware\IdentifyTenant;
+use App\Http\Middleware\EnsureAccountNotLocked;
+use App\Http\Middleware\ValidateSanctumToken;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Register IdentifyTenant middleware for API routes
+        // Register middleware aliases for convenient use in routes
+        $middleware->alias([
+            'auth.locked' => EnsureAccountNotLocked::class,
+            'sanctum.validate' => ValidateSanctumToken::class,
+        ]);
+
+        // Register middleware for API routes
         // This runs after auth:sanctum middleware to ensure user is authenticated first
         $middleware->api(append: [
             IdentifyTenant::class,
