@@ -1379,31 +1379,31 @@ The MVP is structured around 25 distinct modules, each detailed in its own Sub-P
 
 | ID | Module Description | Sub-PRD File |
 | :---- | :---- | :---- |
-| **SUB01** | MULTITENANCY | PRD01-SUB01-MULTITENANCY.md |
-| **SUB02** | AUTHENTICATION | PRD01-SUB02-AUTHENTICATION.md |
-| **SUB03** | AUDIT LOGGING | PRD01-SUB03-AUDIT-LOGGING.md |
-| **SUB04** | SERIAL NUMBERING | PRD01-SUB04-SERIAL-NUMBERING.md |
-| **SUB05** | SETTINGS MANAGEMENT | PRD01-SUB05-SETTINGS-MANAGEMENT.md |
-| **SUB06** | UNIT OF MEASURE (UOM) | PRD01-SUB06-UOM.md |
-| **SUB07** | CHART OF ACCOUNTS (COA) | PRD01-SUB07-CHART-OF-ACCOUNTS.md |
-| **SUB08** | GENERAL LEDGER (GL) | PRD01-SUB08-GENERAL-LEDGER.md |
-| **SUB09** | JOURNAL ENTRIES (JE) | PRD01-SUB09-JOURNAL-ENTRIES.md |
-| **SUB10** | BANKING | PRD01-SUB10-BANKING.md |
-| **SUB11** | ACCOUNTS PAYABLE (AP) | PRD01-SUB11-ACCOUNTS-PAYABLE.md |
-| **SUB12** | ACCOUNTS RECEIVABLE (AR) | PRD01-SUB12-ACCOUNTS-RECEIVABLE.md |
-| **SUB13** | HUMAN CAPITAL MGMT (HCM) | PRD01-SUB13-HCM.md |
-| **SUB14** | INVENTORY MANAGEMENT | PRD01-SUB14-INVENTORY-MANAGEMENT.md |
-| **SUB15** | BACKOFFICE | PRD01-SUB15-BACKOFFICE.md |
-| **SUB16** | PURCHASING | PRD01-SUB16-PURCHASING.md |
-| **SUB17** | SALES | PRD01-SUB17-SALES.md |
-| **SUB18** | MASTER DATA MGMT (MDM) | PRD01-SUB18-MASTER-DATA-MANAGEMENT.md |
-| **SUB19** | TAXATION | PRD01-SUB19-TAXATION.md |
-| **SUB20** | FINANCIAL REPORTING (FR) | PRD01-SUB20-FINANCIAL-REPORTING.md |
-| **SUB21** | WORKFLOW ENGINE (WF) | PRD01-SUB21-WORKFLOW-ENGINE.md |
-| **SUB22** | NOTIFICATIONS & EVENTS | PRD01-SUB22-NOTIFICATIONS-EVENTS.md |
-| **SUB23** | API GATEWAY & DOCS | PRD01-SUB23-API-GATEWAY-AND-DOCUMENTATION.md |
-| **SUB24** | INTEGRATION CONNECTORS | PRD01-SUB24-INTEGRATION-CONNECTORS.md |
-| **SUB25** | LOCALIZATION | PRD01-SUB25-LOCALIZATION.md |
+| **SUB01** | Tenant isolation infrastructure enabling secure data segregation across organizations with configurable settings and middleware-based context resolution | PRD01-SUB01-MULTITENANCY.md |
+| **SUB02** | Stateless API authentication using Laravel Sanctum with personal access tokens, role-based permissions, and security controls | PRD01-SUB02-AUTHENTICATION.md |
+| **SUB03** | Comprehensive activity logging system tracking all critical operations with event-based recording and searchable audit trails | PRD01-SUB03-AUDIT-LOGGING.md |
+| **SUB04** | Automated document numbering system with configurable patterns, tenant-specific sequences, and collision-free ID generation | PRD01-SUB04-SERIAL-NUMBERING.md |
+| **SUB05** | Hierarchical configuration management supporting system-level, tenant-level, and module-level settings with encryption and caching | PRD01-SUB05-SETTINGS-MANAGEMENT.md |
+| **SUB06** | Unit of Measure management with precision conversion factors, automatic unit conversion logic, and rounding accuracy controls | PRD01-SUB06-UOM.md |
+| **SUB07** | Hierarchical chart of accounts structure with account types, categories, and reporting groups for financial classification | PRD01-SUB07-CHART-OF-ACCOUNTS.md |
+| **SUB08** | Core general ledger system with automatic posting from submodules, multi-currency support, and balanced entry enforcement | PRD01-SUB08-GENERAL-LEDGER.md |
+| **SUB09** | Manual and automated journal entry management with recurring journals, reversing entries, templates, and approval workflows | PRD01-SUB09-JOURNAL-ENTRIES.md |
+| **SUB10** | Bank account management with automated statement reconciliation, transaction matching, and secure credential handling | PRD01-SUB10-BANKING.md |
+| **SUB11** | Accounts payable processing with automatic AP entry generation from purchase orders, payment processing, and vendor management | PRD01-SUB11-ACCOUNTS-PAYABLE.md |
+| **SUB12** | Accounts receivable management with automatic AR entry generation from sales orders, receipt processing, and customer credit control | PRD01-SUB12-ACCOUNTS-RECEIVABLE.md |
+| **SUB13** | Human capital management covering employee master data, job information, organizational hierarchy, and payroll integration | PRD01-SUB13-HCM.md |
+| **SUB14** | Multi-warehouse inventory tracking with stock movements, costing methods, negative stock controls, and comprehensive stock ledgers | PRD01-SUB14-INVENTORY-MANAGEMENT.md |
+| **SUB15** | Core backoffice operations including company setup, fiscal year management, currency configuration, and document templates | PRD01-SUB15-BACKOFFICE.md |
+| **SUB16** | Purchase order management with multi-level approvals, supplier evaluation, inventory receipt integration, and AP invoice matching | PRD01-SUB16-PURCHASING.md |
+| **SUB17** | Sales order processing with approval workflows, fulfillment tracking, inventory reservation, credit limit checks, and invoicing | PRD01-SUB17-SALES.md |
+| **SUB18** | Master data management providing real-time reporting APIs, analytics offload, and materialized views for performance optimization | PRD01-SUB18-MASTER-DATA-MANAGEMENT.md |
+| **SUB19** | Tax calculation engine supporting multiple tax jurisdictions, configurable tax rules, automatic tax computation, and compliance reporting | PRD01-SUB19-TAXATION.md |
+| **SUB20** | Financial reporting infrastructure with data aggregation, ETL pipelines, compliance policies (SOX, ISO), and data warehouse integration | PRD01-SUB20-FINANCIAL-REPORTING.md |
+| **SUB21** | Configurable workflow engine with approval chains, escalation rules, parallel/sequential routing, and event-driven execution | PRD01-SUB21-WORKFLOW-ENGINE.md |
+| **SUB22** | Event-driven notification system delivering alerts via email, webhooks, and system feeds with asynchronous queue processing | PRD01-SUB22-NOTIFICATIONS-EVENTS.md |
+| **SUB23** | Unified API gateway for external integrations with authentication, rate limiting, versioning, and auto-generated API documentation | PRD01-SUB23-API-GATEWAY-AND-DOCUMENTATION.md |
+| **SUB24** | Pre-built integration connectors for third-party systems with event-driven synchronization and dynamic connector registration | PRD01-SUB24-INTEGRATION-CONNECTORS.md |
+| **SUB25** | Internationalization support with multi-language interfaces, multi-currency transactions, exchange rate management, and regional formatting | PRD01-SUB25-LOCALIZATION.md |
 
 #### F.2.2 **Sub-PRD to Implementation Plan Mapping**
 
