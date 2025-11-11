@@ -19,14 +19,14 @@
 
 This section clearly defines the pain points and positions the Laravel ERP as the solution.
 
-#### 2.2.1. Problem Statement: Limitations of Current ERPs
+#### B.2.1. Problem Statement: Limitations of Current ERPs
 Traditional ERP solutions create significant pain points for modern businesses and developers:
 * **Vendor Lock-in & High TCO:** Expensive proprietary licensing, high implementation costs (6-12 months), and complex, costly customization.
 * **Monolithic Rigidity:** Tightly coupled UI and business logic hinder innovation, prevent adoption of modern frontends, and limit scalability.
 * **Poor Developer Experience:** Outdated technology stacks, complex APIs, and minimal, closed documentation severely limit system integration and extension.
 * **Industry Inflexibility:** One-size-fits-all architectures fail to accommodate the unique, high-value workflows required by different industry verticals.
 
-#### 2.2.2. Market Opportunity and Unique Value Proposition (UVP)
+#### B.2.2. Market Opportunity and Unique Value Proposition (UVP)
 The market is demanding a modern, API-centric alternative:
 * **API Economy:** 83% of enterprises prioritize API-first strategies, creating a demand for a truly headless ERP core.
 * **Open Source Growth:** 78% of enterprises use open source for core applications, confirming a willingness to adopt community-driven enterprise software.
@@ -37,7 +37,7 @@ The market is demanding a modern, API-centric alternative:
 
 These metrics measure product health, community engagement, and market adoption.
 
-#### 2.3.1. Primary Success Metrics (Year 1: Foundation & MVP)
+#### B.3.1. Primary Success Metrics (Year 1: Foundation & MVP)
 | Category | Metric | Target | Rationale |
 | :--- | :--- | :--- | :--- |
 | **Product Health** | API Test Coverage | $95\%$ | Ensures core business logic integrity and reliability. |
@@ -46,7 +46,7 @@ These metrics measure product health, community engagement, and market adoption.
 | **Performance** | API Response Time | $<200\text{ms}$ average | Non-functional quality benchmark for $95\%$ of endpoints. |
 | **Features** | MVP Module Completion | $100\%$ (SUB01-SUB17) | Achievement of the initial functional scope. |
 
-#### 2.3.2. Secondary Success Metrics (Year 2: Ecosystem & Scaling)
+#### B.3.2. Secondary Success Metrics (Year 2: Ecosystem & Scaling)
 | Category | Metric | Target | Rationale |
 | :--- | :--- | :--- | :--- |
 | **Ecosystem** | Community Contributors | $100+$ | Measure of collaborative health and platform extensibility. |
@@ -109,7 +109,7 @@ laravel-erp-monorepo/
 │   │   ├── src/
 │   │   ├── tests/
 │   │   └── composer.json
-│   └── ... (15+ other module packages)
+│   └── ... (20+ other module packages)
 ├── composer.json                   ← Root composer.json
 └── README.md
 ```
@@ -122,7 +122,7 @@ The main application's `composer.json` uses Composer's `"type": "path"` reposito
 {
     "name": "azaharizaman/headless-erp-app",
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "laravel/framework": "^12.0",
         "azaharizaman/erp-core": "dev-main",
         "azaharizaman/erp-accounting": "dev-main",
@@ -158,9 +158,9 @@ This strategy remains the key to modularity and enables independent distribution
 
 **Requirement C.3.1:** All core ERP functionalities (e.g., Core, Accounting, Inventory) MUST be developed as individual, version-controlled Composer packages living in the `packages/` directory.
 
-**Requirement C.3.2:** The "default" standalone headless ERP product (in `apps/headless-erp-app`) will be a minimal Laravel 12 application that simply requires these packages as dependencies.
+**Requirement C.3.2:** The "default" standalone headless ERP product (in `apps/headless-erp-app`) will be a minimal Laravel v12 application that simply requires these packages as dependencies.
 
-**Requirement C.3.3:** Any module MUST be independently installable in an external Laravel 12 application via Composer (once published to a repository like Packagist).
+**Requirement C.3.3:** Any module MUST be independently installable in an external Laravel v12 application via Composer (once published to a repository like Packagist).
 
 **Benefits:**
 - Developers get the "feel" of a single bundled application during development
@@ -209,7 +209,7 @@ The system leverages modern, battle-tested technologies from the Laravel ecosyst
 #### C.6.1. Core Framework and Language
 | Component | Version | Purpose |
 |-----------|---------|---------|
-| **PHP** | ≥ 8.3 | Primary language with modern type system and performance |
+| **PHP** | ≥ 8.2 | Primary language with modern type system and performance |
 | **Laravel Framework** | v12.x (latest stable) | Core framework providing routing, ORM, validation, and architectural patterns |
 | **Composer** | Latest | Dependency management and package ecosystem |
 
@@ -1462,7 +1462,7 @@ SQL Database \- Core
 
 | Requirement Codes | Description | Classification | Progress | Date | Issue \# |
 | :---- | :---- | :---- | :---- | :---- | :---- |
-| FR-AA-002 | Implement API Authentication using **token-based (JWT)** access control. | FR | Planned | TBD | N/A |
+| FR-AA-002 | Implement API Authentication using **token-based** access control (Laravel Sanctum). | FR | Planned | TBD | N/A |
 | FR-AA-003 | Develop a **Role-Based Access Control (RBAC)** system. | FR | Planned | TBD | N/A |
 | FR-AA-006 | Enforce **Password Security** through salted hashing using Argon2 or bcrypt. | FR | Planned | TBD | N/A |
 | FR-AA-008 | Enable **Account Lockout** after repeated failed login attempts. | FR | Planned | TBD | N/A |
