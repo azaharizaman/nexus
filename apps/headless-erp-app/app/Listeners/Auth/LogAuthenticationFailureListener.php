@@ -24,8 +24,8 @@ class LogAuthenticationFailureListener
     #[Listen(LoginFailedEvent::class)]
     public function handle(LoginFailedEvent $event): void
     {
-        // Log to security channel
-        Log::channel('security')->warning('Failed login attempt', [
+        // Log to default channel
+        Log::warning('Failed login attempt', [
             'email' => $event->email,
             'tenant_id' => $event->tenantId,
             'attempts_remaining' => $event->attemptsRemaining,

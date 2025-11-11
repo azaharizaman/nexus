@@ -31,11 +31,12 @@ class ResetPasswordAction
      * @param  string  $email  User's email address
      * @param  string  $token  Password reset token
      * @param  string  $newPassword  New password
+     * @param  string  $tenantId  Tenant ID for tenant-scoped user lookup
      * @return bool True if password reset successful
      *
      * @throws \RuntimeException If token is invalid or expired
      */
-    public function handle(string $email, string $token, string $newPassword): bool
+    public function handle(string $email, string $token, string $newPassword, string $tenantId): bool
     {
         // Find token record
         $resetRecord = DB::table('password_reset_tokens')
@@ -52,21 +53,15 @@ class ResetPasswordAction
         }
 
         // Check if token is expired (1 hour)
-        $expiresAt = now()->subHour();
-        if ($resetRecord->created_at < $expiresAt) {
+        $createdAt = \Carbon\Carbon::parse($resetRecord->created_at);
+        if ($createdAt->addHour()->isPast()) {
             // Delete expired token
             DB::table('password_reset_tokens')->where('email', $email)->delete();
             throw new \RuntimeException('Reset token has expired');
         }
 
-        // Find user (using first available tenant for this email)
-        $user = DB::table('users')->where('email', $email)->first();
-        
-        if (! $user) {
-            throw new \RuntimeException('User not found');
-        }
-
-        $userModel = $this->userRepository->findById($user->id);
+        // Find user using tenant-scoped repository method
+        $userModel = $this->userRepository->findByEmail($email, $tenantId);
 
         if (! $userModel) {
             throw new \RuntimeException('User not found');

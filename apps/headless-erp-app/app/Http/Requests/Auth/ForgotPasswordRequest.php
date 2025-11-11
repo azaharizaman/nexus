@@ -30,7 +30,7 @@ class ForgotPasswordRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email', 'max:255'],
-            'tenant_id' => ['required', 'string', 'uuid'],
+            'tenant_id' => ['required', 'string', 'uuid', 'exists:tenants,id'],
         ];
     }
 

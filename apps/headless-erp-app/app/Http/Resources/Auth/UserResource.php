@@ -57,10 +57,13 @@ class UserResource extends JsonResource
                 fn () => $this->resource->getAllPermissions()->pluck('name')
             ),
             
-            // Links
-            'links' => [
-                'self' => route('api.v1.users.show', ['user' => $this->resource->id]),
-            ],
+            // Links - conditionally include if route exists
+            'links' => $this->when(
+                \Illuminate\Support\Facades\Route::has('api.v1.users.show'),
+                fn () => [
+                    'self' => route('api.v1.users.show', ['user' => $this->resource->id]),
+                ]
+            ),
         ];
     }
 }

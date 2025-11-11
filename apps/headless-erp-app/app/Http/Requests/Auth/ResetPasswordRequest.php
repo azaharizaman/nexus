@@ -33,6 +33,7 @@ class ResetPasswordRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255'],
             'token' => ['required', 'string', 'size:64'],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
+            'tenant_id' => ['required', 'string', 'uuid', 'exists:tenants,id'],
         ];
     }
 

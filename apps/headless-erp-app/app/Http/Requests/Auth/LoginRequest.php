@@ -32,7 +32,7 @@ class LoginRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string'],
             'device_name' => ['required', 'string', 'max:255'],
-            'tenant_id' => ['required', 'string', 'uuid'],
+            'tenant_id' => ['required', 'string', 'uuid', 'exists:tenants,id'],
         ];
     }
 

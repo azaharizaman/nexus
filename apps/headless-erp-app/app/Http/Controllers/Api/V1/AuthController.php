@@ -77,7 +77,7 @@ class AuthController extends Controller
      * @return JsonResponse
      */
     #[Post('/logout', name: 'api.v1.auth.logout')]
-    #[Middleware(['auth:sanctum'])]
+    #[Middleware(['auth:sanctum', 'auth.locked'])]
     public function logout(): JsonResponse
     {
         $user = auth()->user();
@@ -121,7 +121,7 @@ class AuthController extends Controller
      * @return JsonResponse
      */
     #[Get('/me', name: 'api.v1.auth.me')]
-    #[Middleware(['auth:sanctum'])]
+    #[Middleware(['auth:sanctum', 'auth.locked'])]
     public function me(): JsonResponse
     {
         $user = auth()->user();
@@ -181,7 +181,8 @@ class AuthController extends Controller
             ResetPasswordAction::run(
                 email: $request->input('email'),
                 token: $request->input('token'),
-                newPassword: $request->input('password')
+                newPassword: $request->input('password'),
+                tenantId: $request->input('tenant_id')
             );
 
             return response()->json([
