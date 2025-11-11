@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Azaharizaman\Erp\Core\Actions;
 
+use App\Support\Contracts\ActivityLoggerContract;
 use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
 use Azaharizaman\Erp\Core\Enums\TenantStatus;
 use Azaharizaman\Erp\Core\Events\TenantActivatedEvent;
 use Azaharizaman\Erp\Core\Models\Tenant;
-use App\Support\Contracts\ActivityLoggerContract;
 use Illuminate\Console\Command;
 use Lorisleiva\Actions\Concerns\AsAction;
 

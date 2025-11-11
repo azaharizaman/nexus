@@ -20,7 +20,6 @@ class TenantResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  Request  $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -40,7 +39,7 @@ class TenantResource extends JsonResource
             'contact_phone' => $this->resource->contact_phone,
             'created_at' => $this->resource->created_at?->toISOString(),
             'updated_at' => $this->resource->updated_at?->toISOString(),
-            
+
             // Conditionally include configuration only for admins
             $this->mergeWhen(
                 $request->user()?->hasRole('admin') ?? false,
@@ -54,7 +53,6 @@ class TenantResource extends JsonResource
     /**
      * Get additional data that should be returned with the resource array.
      *
-     * @param  Request  $request
      * @return array<string, mixed>
      */
     public function with(Request $request): array

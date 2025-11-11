@@ -40,7 +40,6 @@ class TenantController extends Controller
     /**
      * Display a listing of tenants
      *
-     * @param  Request  $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index(Request $request)
@@ -65,10 +64,6 @@ class TenantController extends Controller
 
     /**
      * Store a newly created tenant
-     *
-     * @param  StoreTenantRequest  $request
-     * @param  CreateTenantAction  $action
-     * @return JsonResponse
      */
     public function store(StoreTenantRequest $request, CreateTenantAction $action): JsonResponse
     {
@@ -81,9 +76,6 @@ class TenantController extends Controller
 
     /**
      * Display the specified tenant
-     *
-     * @param  Tenant  $tenant
-     * @return TenantResource
      */
     public function show(Tenant $tenant): TenantResource
     {
@@ -92,11 +84,6 @@ class TenantController extends Controller
 
     /**
      * Update the specified tenant
-     *
-     * @param  UpdateTenantRequest  $request
-     * @param  Tenant  $tenant
-     * @param  UpdateTenantAction  $action
-     * @return TenantResource
      */
     public function update(UpdateTenantRequest $request, Tenant $tenant, UpdateTenantAction $action): TenantResource
     {
@@ -107,10 +94,6 @@ class TenantController extends Controller
 
     /**
      * Remove the specified tenant
-     *
-     * @param  Tenant  $tenant
-     * @param  DeleteTenantAction  $action
-     * @return JsonResponse
      */
     public function destroy(Tenant $tenant, DeleteTenantAction $action): JsonResponse
     {
@@ -121,11 +104,6 @@ class TenantController extends Controller
 
     /**
      * Suspend the specified tenant
-     *
-     * @param  Request  $request
-     * @param  Tenant  $tenant
-     * @param  SuspendTenantAction  $action
-     * @return TenantResource
      */
     public function suspend(Request $request, Tenant $tenant, SuspendTenantAction $action): TenantResource
     {
@@ -140,10 +118,6 @@ class TenantController extends Controller
 
     /**
      * Activate the specified tenant
-     *
-     * @param  Tenant  $tenant
-     * @param  ActivateTenantAction  $action
-     * @return TenantResource
      */
     public function activate(Tenant $tenant, ActivateTenantAction $action): TenantResource
     {
@@ -154,11 +128,6 @@ class TenantController extends Controller
 
     /**
      * Archive the specified tenant
-     *
-     * @param  Request  $request
-     * @param  Tenant  $tenant
-     * @param  ArchiveTenantAction  $action
-     * @return TenantResource
      */
     public function archive(Request $request, Tenant $tenant, ArchiveTenantAction $action): TenantResource
     {
@@ -173,11 +142,6 @@ class TenantController extends Controller
 
     /**
      * Start impersonating the specified tenant
-     *
-     * @param  Request  $request
-     * @param  Tenant  $tenant
-     * @param  StartImpersonationAction  $action
-     * @return JsonResponse
      */
     public function impersonate(Request $request, Tenant $tenant, StartImpersonationAction $action): JsonResponse
     {
@@ -195,10 +159,6 @@ class TenantController extends Controller
 
     /**
      * End the current impersonation session
-     *
-     * @param  Request  $request
-     * @param  EndImpersonationAction  $action
-     * @return JsonResponse
      */
     public function endImpersonation(Request $request, EndImpersonationAction $action): JsonResponse
     {

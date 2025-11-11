@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Azaharizaman\Erp\Core\Middleware;
 
 use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
+use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,6 +18,23 @@ use Symfony\Component\HttpFoundation\Response;
  * Resolves the current tenant from the authenticated user and injects it
  * into the request lifecycle. Sets tenant context in TenantManager for
  * use throughout the application.
+ *
+ * This middleware implements cache-first tenant loading with Redis for
+ * improved performance. Cached tenants have a configurable TTL.
+ *
+ * Error Response Codes:
+ * - 401 Unauthenticated: if no user is authenticated
+ * - 403 Forbidden: if user has no tenant_id
+ * - 404 Not Found: if tenant cannot be resolved from database
+ *
+ * Middleware Ordering:
+ * This middleware MUST be applied after authentication middleware (e.g., auth:sanctum)
+ * to ensure the user is authenticated before resolving tenant context.
+ *
+ * Usage Example:
+ * Route::middleware(['auth:sanctum', 'tenant'])->group(function () {
+ *     Route::get('/dashboard', [DashboardController::class, 'index']);
+ * });
  */
 class IdentifyTenant
 {
@@ -22,7 +42,8 @@ class IdentifyTenant
      * Create a new middleware instance
      */
     public function __construct(
-        protected readonly TenantManagerContract $tenantManager
+        protected readonly TenantManagerContract $tenantManager,
+        protected readonly TenantRepositoryContract $tenantRepository
     ) {}
 
     /**
@@ -62,11 +83,11 @@ class IdentifyTenant
             ], 403);
         }
 
-        // Resolve tenant from user using direct query to avoid N+1
-        $tenant = \App\Domains\Core\Models\Tenant::find($user->tenant_id);
+        // Load tenant with cache-first strategy
+        $tenant = $this->loadTenantFromCacheOrDatabase($user->tenant_id);
 
         // Handle missing tenant gracefully
-        if (! $tenant) {
+        if ($tenant === null) {
             return response()->json([
                 'message' => 'Tenant not found.',
             ], 404);
@@ -77,6 +98,38 @@ class IdentifyTenant
 
         // Continue with request
         return $next($request);
+    }
+
+    /**
+     * Load tenant from cache first, fall back to database if not cached
+     *
+     * @param  string  $tenantId  The tenant ID
+     * @return \Azaharizaman\Erp\Core\Models\Tenant|null
+     */
+    protected function loadTenantFromCacheOrDatabase(string $tenantId)
+    {
+        $cacheKey = "tenant:{$tenantId}";
+        $cacheTtl = config('erp-core.tenant_cache_ttl', 3600);
+
+        // Try to get tenant from cache first
+        $tenant = Cache::get($cacheKey);
+
+        if ($tenant !== null) {
+            // Cache hit - return cached tenant
+            return $tenant;
+        }
+
+        // Cache miss - load from database
+        Log::warning("Tenant cache miss for ID: {$tenantId}");
+
+        $tenant = $this->tenantRepository->findById($tenantId);
+
+        // Store in cache if tenant was found
+        if ($tenant !== null) {
+            Cache::put($cacheKey, $tenant, $cacheTtl);
+        }
+
+        return $tenant;
     }
 
     /**

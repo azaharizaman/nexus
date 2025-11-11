@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Azaharizaman\Erp\Core\Services;
 
+use App\Models\User;
+use App\Support\Contracts\ActivityLoggerContract;
 use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
 use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
 use Azaharizaman\Erp\Core\Events\TenantImpersonationEndedEvent;
 use Azaharizaman\Erp\Core\Events\TenantImpersonationStartedEvent;
 use Azaharizaman\Erp\Core\Models\Tenant;
-use App\Models\User;
-use App\Support\Contracts\ActivityLoggerContract;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
@@ -176,6 +176,6 @@ class ImpersonationService
      */
     protected function getCacheKey(int $userId): string
     {
-        return self::CACHE_PREFIX . $userId;
+        return self::CACHE_PREFIX.$userId;
     }
 }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Azaharizaman\Erp\Core\Actions;
 
+use App\Models\User;
 use Azaharizaman\Erp\Core\Models\Tenant;
 use Azaharizaman\Erp\Core\Services\ImpersonationService;
-use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 

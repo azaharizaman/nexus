@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Azaharizaman\Erp\Core\Policies;
 
-use Azaharizaman\Erp\Core\Models\Tenant;
 use App\Models\User;
+use Azaharizaman\Erp\Core\Models\Tenant;
 
 /**
  * Tenant Policy

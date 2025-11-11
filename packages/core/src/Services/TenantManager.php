@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Azaharizaman\Erp\Core\Services;
 
+use App\Support\Contracts\ActivityLoggerContract;
 use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
 use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
 use Azaharizaman\Erp\Core\Enums\TenantStatus;
 use Azaharizaman\Erp\Core\Models\Tenant;
-use App\Support\Contracts\ActivityLoggerContract;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;

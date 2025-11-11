@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Azaharizaman\Erp\Core\Actions;
 
+use App\Support\Contracts\ActivityLoggerContract;
 use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
 use Azaharizaman\Erp\Core\Events\TenantDeletedEvent;
 use Azaharizaman\Erp\Core\Models\Tenant;
-use App\Support\Contracts\ActivityLoggerContract;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -73,7 +73,7 @@ class DeleteTenantAction
         // Clear tenant-specific cache keys
         Cache::forget("tenant:{$tenant->id}");
         Cache::forget("tenant:domain:{$tenant->domain}");
-        
+
         // Clear any other tenant-related cache tags if using cache tagging
         if (config('cache.default') === 'redis') {
             Cache::tags(['tenants', "tenant:{$tenant->id}"])->flush();

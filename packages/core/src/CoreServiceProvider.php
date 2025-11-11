@@ -25,8 +25,6 @@ class CoreServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -48,8 +46,6 @@ class CoreServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap services.
-     *
-     * @return void
      */
     public function boot(): void
     {
@@ -60,7 +56,7 @@ class CoreServiceProvider extends ServiceProvider
 
         // Load migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        
+
         // Load routes
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
@@ -68,6 +64,7 @@ class CoreServiceProvider extends ServiceProvider
         $router = $this->app['router'];
         $router->aliasMiddleware('tenant', IdentifyTenant::class);
         $router->aliasMiddleware('tenant.active', EnsureTenantActive::class);
+        $router->aliasMiddleware('impersonation', \Azaharizaman\Erp\Core\Http\Middleware\ImpersonationMiddleware::class);
 
         // Define Gate for tenant impersonation
         Gate::define('impersonate-tenant', function ($user, Tenant $tenant) {
