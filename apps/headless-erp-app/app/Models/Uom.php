@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\UomCategory;
-use App\Support\Traits\BelongsToTenant;
 use App\Support\Traits\HasActivityLogging;
+use Azaharizaman\Erp\Core\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -151,18 +151,5 @@ class Uom extends Model
         return bccomp($this->conversion_factor, '1', 10) === 0;
     }
 
-    /**
-     * Check if this UOM is in use (referenced by other models)
-     *
-     * This method should be called before deletion to prevent breaking references.
-     * Overridden from repository pattern.
-     *
-     * @return bool
-     */
-    public function isInUse(): bool
-    {
-        // Check if this UOM is referenced in inventory items, purchase orders, etc.
-        // This is determined by the repository's isInUse() method in real implementation
-        return false; // Placeholder - actual logic in repository
-    }
+
 }

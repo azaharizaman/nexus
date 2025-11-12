@@ -63,7 +63,7 @@ class UomSeeder extends Seeder
 
         foreach ($units as $unit) {
             Uom::updateOrCreate(
-                ['code' => $unit['code']],
+                ['tenant_id' => null, 'code' => $unit['code']],
                 [
                     'name' => $unit['name'],
                     'symbol' => $unit['symbol'],
@@ -93,7 +93,7 @@ class UomSeeder extends Seeder
 
         foreach ($units as $unit) {
             Uom::updateOrCreate(
-                ['code' => $unit['code']],
+                ['tenant_id' => null, 'code' => $unit['code']],
                 [
                     'name' => $unit['name'],
                     'symbol' => $unit['symbol'],
@@ -124,7 +124,7 @@ class UomSeeder extends Seeder
 
         foreach ($units as $unit) {
             Uom::updateOrCreate(
-                ['code' => $unit['code']],
+                ['tenant_id' => null, 'code' => $unit['code']],
                 [
                     'name' => $unit['name'],
                     'symbol' => $unit['symbol'],
@@ -155,7 +155,7 @@ class UomSeeder extends Seeder
 
         foreach ($units as $unit) {
             Uom::updateOrCreate(
-                ['code' => $unit['code']],
+                ['tenant_id' => null, 'code' => $unit['code']],
                 [
                     'name' => $unit['name'],
                     'symbol' => $unit['symbol'],
@@ -183,7 +183,7 @@ class UomSeeder extends Seeder
 
         foreach ($units as $unit) {
             Uom::updateOrCreate(
-                ['code' => $unit['code']],
+                ['tenant_id' => null, 'code' => $unit['code']],
                 [
                     'name' => $unit['name'],
                     'symbol' => $unit['symbol'],
@@ -211,7 +211,7 @@ class UomSeeder extends Seeder
 
         foreach ($units as $unit) {
             Uom::updateOrCreate(
-                ['code' => $unit['code']],
+                ['tenant_id' => null, 'code' => $unit['code']],
                 [
                     'name' => $unit['name'],
                     'symbol' => $unit['symbol'],

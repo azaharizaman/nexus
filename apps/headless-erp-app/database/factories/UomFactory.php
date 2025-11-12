@@ -28,7 +28,7 @@ class UomFactory extends Factory
             'tenant_id' => null, // Will be set by withTenant() state
             'code' => strtoupper($this->faker->unique()->bothify('???-##')),
             'name' => $this->faker->words(2, true),
-            'symbol' => strtoupper($this->faker->lexeme()),
+            'symbol' => strtoupper($this->faker->lexify('???')),
             'category' => $category,
             'conversion_factor' => '1.0000000000',
             'is_system' => false,
