@@ -3372,6 +3372,488 @@ class LogAuthenticationSuccessListener
 
 ---
 
+## Lessons Learned from PR Reviews
+
+### PR #99: Multi-Tenancy API Implementation
+
+This section documents important lessons learned from code review feedback on the multi-tenancy API implementation. These patterns should be followed in all future development.
+
+#### 1. Controllers MUST Use Repository Pattern
+
+**❌ NEVER do this:**
+
+```php
+class TenantController extends Controller
+{
+    public function index(Request $request)
+    {
+        // Direct model access in controller - VIOLATION!
+        $tenants = Tenant::query()
+            ->when($request->input('status'), function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->paginate(15);
+            
+        return TenantResource::collection($tenants);
+    }
+}
+```
+
+**✅ ALWAYS do this:**
+
+```php
+class TenantController extends Controller
+{
+    public function __construct(
+        protected readonly TenantRepositoryContract $repository
+    ) {}
+    
+    public function index(Request $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    {
+        $validated = $request->validate([
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'status' => ['nullable', 'string', Rule::in(TenantStatus::values())],
+            'search' => ['nullable', 'string', 'max:255'],
+        ]);
+        
+        $tenants = $this->repository->paginate(
+            $validated['per_page'] ?? 15,
+            $validated
+        );
+        
+        return TenantResource::collection($tenants);
+    }
+}
+```
+
+**Repository Contract:**
+
+```php
+interface TenantRepositoryContract
+{
+    /**
+     * Get paginated tenants with optional filters
+     *
+     * @param  int  $perPage  Number of items per page
+     * @param  array<string, mixed>  $filters  Filter criteria (status, search)
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function paginate(int $perPage = 15, array $filters = []);
+}
+```
+
+**Why:** Controllers should be thin layers that delegate to repositories and actions. Direct model access in controllers violates separation of concerns and makes testing harder.
+
+#### 2. ALL Controller Methods MUST Have Authorization Checks
+
+**❌ Missing authorization:**
+
+```php
+public function index(Request $request)
+{
+    // No authorization check - anyone authenticated can list tenants!
+    $tenants = $this->repository->paginate(15);
+    return TenantResource::collection($tenants);
+}
+
+public function show(Tenant $tenant): TenantResource
+{
+    // No authorization - users can view any tenant!
+    return TenantResource::make($tenant);
+}
+
+public function suspend(Request $request, Tenant $tenant, SuspendTenantAction $action)
+{
+    // No authorization - any user can suspend tenants!
+    $tenant = $action->handle($tenant, $request->input('reason'));
+    return TenantResource::make($tenant);
+}
+```
+
+**✅ With proper authorization:**
+
+```php
+public function index(Request $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+{
+    // Check authorization for listing tenants
+    if (! auth()->user()->can('view-tenants')) {
+        abort(403, 'Unauthorized to view tenants');
+    }
+    
+    $tenants = $this->repository->paginate(15);
+    return TenantResource::collection($tenants);
+}
+
+public function show(Tenant $tenant): TenantResource
+{
+    // Check authorization for viewing specific tenant
+    $this->authorize('view-tenant', $tenant);
+    return TenantResource::make($tenant);
+}
+
+public function suspend(Request $request, Tenant $tenant, SuspendTenantAction $action): TenantResource
+{
+    // Check authorization for suspending tenant
+    $this->authorize('suspend-tenant', $tenant);
+    
+    $request->validate([
+        'reason' => ['required', 'string', 'max:500'],
+    ]);
+    
+    $tenant = $action->handle($tenant, $request->input('reason'));
+    return TenantResource::make($tenant);
+}
+```
+
+**Define Gates in Service Provider:**
+
+```php
+// In CoreServiceProvider::boot()
+Gate::define('view-tenants', fn($user) => $user->hasRole('admin'));
+Gate::define('view-tenant', fn($user, Tenant $tenant) => $user->hasRole('admin'));
+Gate::define('suspend-tenant', fn($user, Tenant $tenant) => $user->hasRole('admin'));
+Gate::define('activate-tenant', fn($user, Tenant $tenant) => $user->hasRole('admin'));
+Gate::define('archive-tenant', fn($user, Tenant $tenant) => $user->hasRole('admin'));
+Gate::define('delete-tenant', fn($user, Tenant $tenant) => $user->hasRole('admin'));
+```
+
+**Why:** Authorization is a security requirement. Every controller method that accesses resources must verify the user has permission.
+
+#### 3. ALL Controller Methods MUST Have Return Type Declarations
+
+**❌ Missing return type:**
+
+```php
+public function index(Request $request)  // Missing return type
+{
+    return TenantResource::collection($tenants);
+}
+```
+
+**✅ With return type:**
+
+```php
+public function index(Request $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+{
+    return TenantResource::collection($tenants);
+}
+```
+
+**Why:** Strict typing requirements apply to ALL methods including controllers. Return types improve IDE support and catch errors early.
+
+#### 4. Controller Input MUST Be Validated
+
+**❌ Unvalidated input:**
+
+```php
+public function index(Request $request)
+{
+    // No validation - user can request 999999 items per page!
+    $perPage = $request->input('per_page', 15);
+    
+    // No validation - user can inject SQL or cause errors
+    $status = $request->input('status');
+    
+    $tenants = $this->repository->paginate($perPage, ['status' => $status]);
+    return TenantResource::collection($tenants);
+}
+```
+
+**✅ With validation:**
+
+```php
+public function index(Request $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+{
+    $validated = $request->validate([
+        'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        'status' => ['nullable', 'string', Rule::in(TenantStatus::values())],
+        'search' => ['nullable', 'string', 'max:255'],
+    ]);
+    
+    $perPage = $validated['per_page'] ?? 15;
+    $filters = [
+        'status' => $validated['status'] ?? null,
+        'search' => $validated['search'] ?? null,
+    ];
+    
+    $tenants = $this->repository->paginate($perPage, $filters);
+    return TenantResource::collection($tenants);
+}
+```
+
+**Why:** Unvalidated input can cause performance issues, SQL injection, or application errors. Always validate all user input.
+
+#### 5. Service Methods MUST Handle Edge Cases
+
+**❌ Missing error handling:**
+
+```php
+public function endImpersonation(User $user): void
+{
+    $impersonationData = Cache::get($cacheKey);
+    
+    // What if target tenant was deleted during impersonation?
+    $targetTenant = $this->repository->findById($impersonationData['target_tenant_id']);
+    
+    // This will fail silently if tenant is null!
+    $this->activityLogger->log('Impersonation ended', $targetTenant, $user);
+    
+    // Event won't be dispatched if tenant is null!
+    event(new TenantImpersonationEndedEvent($targetTenant, $user->id, $duration));
+}
+```
+
+**✅ With proper error handling:**
+
+```php
+public function endImpersonation(User $user): void
+{
+    $impersonationData = Cache::get($cacheKey);
+    
+    if ($impersonationData === null) {
+        // No active impersonation
+        return;
+    }
+    
+    // Get target tenant for event
+    $targetTenant = $this->repository->findById($impersonationData['target_tenant_id']);
+    
+    if ($targetTenant === null) {
+        // Log error - target tenant was deleted during impersonation
+        Log::error('Target tenant not found when ending impersonation', [
+            'tenant_id' => $impersonationData['target_tenant_id'],
+            'user_id' => $user->id,
+        ]);
+    }
+    
+    // Restore original tenant if it existed
+    if ($impersonationData['original_tenant_id'] !== null) {
+        $originalTenant = $this->repository->findById($impersonationData['original_tenant_id']);
+        if ($originalTenant !== null) {
+            $this->tenantManager->setActive($originalTenant);
+        } else {
+            // Log warning: original tenant not found
+            Log::warning('Original tenant not found during impersonation end', [
+                'tenant_id' => $impersonationData['original_tenant_id'],
+                'user_id' => $user->id,
+            ]);
+        }
+    }
+    
+    // Clear impersonation cache regardless
+    Cache::forget($cacheKey);
+    
+    // Log activity and dispatch event only if tenant still exists
+    if ($targetTenant !== null) {
+        $this->activityLogger->log('Impersonation ended', $targetTenant, $user);
+        event(new TenantImpersonationEndedEvent($targetTenant, $user->id, $duration));
+    }
+}
+```
+
+**Why:** Edge cases like deleted records must be handled gracefully. Log errors and continue execution rather than failing silently.
+
+#### 6. Type Consistency in Cache Storage
+
+**❌ Inconsistent types:**
+
+```php
+// Store as integer
+$impersonationData = [
+    'original_tenant_id' => $user->tenant_id,  // May be int
+    'target_tenant_id' => $tenant->id,         // UUID string
+];
+
+Cache::put($cacheKey, $impersonationData, $timeout);
+
+// Later: Cast every time
+$originalTenant = $this->repository->findById((string) $impersonationData['original_tenant_id']);
+$targetTenant = $this->repository->findById((string) $impersonationData['target_tenant_id']);
+```
+
+**✅ Type consistency:**
+
+```php
+// Cast on storage
+$impersonationData = [
+    'original_tenant_id' => $user->tenant_id !== null ? (string) $user->tenant_id : null,
+    'target_tenant_id' => (string) $tenant->id,
+    'reason' => $reason,
+    'started_at' => now()->timestamp,
+    'user_id' => $user->id,
+];
+
+Cache::put($cacheKey, $impersonationData, $timeout);
+
+// Later: No casting needed
+$originalTenant = $this->repository->findById($impersonationData['original_tenant_id']);
+$targetTenant = $this->repository->findById($impersonationData['target_tenant_id']);
+```
+
+**Why:** Cast types once at storage time rather than on every retrieval. This matches contract signatures and reduces repetitive casting.
+
+#### 7. Event Properties MUST Match Implementation
+
+**❌ Misleading nullable type:**
+
+```php
+class TenantImpersonationEndedEvent
+{
+    public function __construct(
+        public readonly Tenant $tenant,
+        public readonly int $userId,
+        public readonly ?int $duration = null  // Nullable but never null in practice
+    ) {}
+}
+
+// Implementation always calculates duration
+$duration = now()->timestamp - $impersonationData['started_at'];
+event(new TenantImpersonationEndedEvent($targetTenant, $user->id, $duration));
+```
+
+**✅ Accurate type declaration:**
+
+```php
+class TenantImpersonationEndedEvent
+{
+    /**
+     * Create a new event instance
+     *
+     * @param  Tenant  $tenant  The tenant that was being impersonated
+     * @param  int  $userId  The user ending the impersonation
+     * @param  int  $duration  Duration of impersonation in seconds
+     */
+    public function __construct(
+        public readonly Tenant $tenant,
+        public readonly int $userId,
+        public readonly int $duration  // Non-nullable - always calculated
+    ) {}
+}
+```
+
+**Why:** Type declarations should accurately reflect usage. If a property is never null in practice, don't make it nullable.
+
+#### 8. Cache Invalidation on Updates
+
+**❌ Missing cache invalidation:**
+
+```php
+public function handle(Tenant $tenant, array $data): Tenant
+{
+    $this->repository->update($tenant, $data);
+    
+    // Cache not invalidated - stale data will be served!
+    $tenant->refresh();
+    
+    return $tenant;
+}
+```
+
+**✅ With cache invalidation:**
+
+```php
+public function handle(Tenant $tenant, array $data): Tenant
+{
+    $this->repository->update($tenant, $data);
+    
+    // Clear tenant cache immediately after update
+    $this->clearTenantCache($tenant);
+    
+    $tenant->refresh();
+    
+    return $tenant;
+}
+
+protected function clearTenantCache(Tenant $tenant): void
+{
+    Cache::forget("tenant:{$tenant->id}");
+    Cache::forget("tenant:domain:{$tenant->domain}");
+    
+    if (config('cache.default') === 'redis') {
+        Cache::tags(['tenants', "tenant:{$tenant->id}"])->flush();
+    }
+}
+```
+
+**Why:** Updated data must invalidate caches to prevent serving stale data. Implement cache invalidation in update and delete operations.
+
+#### 9. Remove Truly Redundant Code
+
+**❌ Middleware that does nothing:**
+
+```php
+class ImpersonationMiddleware
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        if (auth()->check()) {
+            $user = auth()->user();
+            
+            // Check if impersonating
+            if ($this->impersonationService->isImpersonating($user)) {
+                // The Redis TTL handles timeout automatically
+                // No additional action needed here - the TTL handles it
+            }
+        }
+        
+        return $next($request);  // Does nothing!
+    }
+}
+```
+
+**✅ Remove it:**
+
+```php
+// Delete the file entirely - Redis TTL handles timeout automatically
+// Unregister from service provider
+```
+
+**Why:** Code that serves no purpose adds confusion and maintenance burden. If Redis TTL truly handles everything automatically, the middleware is unnecessary.
+
+#### 10. Audit Consistency Across Actions
+
+**❌ Inconsistent audit patterns:**
+
+```php
+// SuspendTenantAction requires reason
+public function suspend(Request $request, Tenant $tenant): TenantResource
+{
+    $request->validate(['reason' => ['required', 'string', 'max:500']]);
+    $tenant = $action->handle($tenant, $request->input('reason'));
+    return TenantResource::make($tenant);
+}
+
+// ActivateTenantAction doesn't accept reason - inconsistent!
+public function activate(Tenant $tenant): TenantResource
+{
+    $tenant = $action->handle($tenant);  // No reason logged
+    return TenantResource::make($tenant);
+}
+```
+
+**✅ Consistent audit pattern:**
+
+```php
+// Both actions accept optional reason for audit trail
+public function suspend(Request $request, Tenant $tenant): TenantResource
+{
+    $request->validate(['reason' => ['required', 'string', 'max:500']]);
+    $tenant = $action->handle($tenant, $request->input('reason'));
+    return TenantResource::make($tenant);
+}
+
+public function activate(Request $request, Tenant $tenant): TenantResource
+{
+    $request->validate(['reason' => ['nullable', 'string', 'max:500']]);
+    $tenant = $action->handle($tenant, $request->input('reason', 'Manual activation'));
+    return TenantResource::make($tenant);
+}
+```
+
+**Why:** Consistent audit patterns across similar operations improve traceability. If one lifecycle action logs a reason, all should.
+
+---
+
 ## Questions or Suggestions
 
 If you have questions about these guidelines or suggestions for improvements, please:
@@ -3379,4 +3861,4 @@ If you have questions about these guidelines or suggestions for improvements, pl
 2. Discuss in the team chat
 3. Propose changes via pull request
 
-**Last Updated:** November 11, 2025
+**Last Updated:** November 12, 2025
