@@ -92,7 +92,7 @@ class DatabaseUomRepository implements UomRepositoryContract
 
         $uom = Uom::create($data);
 
-        return $uom;
+        return $uom->fresh();
     }
 
     /**
