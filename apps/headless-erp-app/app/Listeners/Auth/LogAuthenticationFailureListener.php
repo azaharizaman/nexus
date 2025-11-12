@@ -17,9 +17,6 @@ class LogAuthenticationFailureListener
 {
     /**
      * Handle the event
-     *
-     * @param  LoginFailedEvent  $event
-     * @return void
      */
     #[Listen(LoginFailedEvent::class)]
     public function handle(LoginFailedEvent $event): void

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Core\Services;
 
+use App\Models\User;
 use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
 use Azaharizaman\Erp\Core\Enums\TenantStatus;
 use Azaharizaman\Erp\Core\Models\Tenant;
 use Azaharizaman\Erp\Core\Services\TenantManager;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;

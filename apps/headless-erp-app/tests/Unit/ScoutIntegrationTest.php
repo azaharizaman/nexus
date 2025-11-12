@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
-use Azaharizaman\Erp\Core\Models\Tenant;
 use App\Models\User;
+use Azaharizaman\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Actions\Auth;
 
 use App\Contracts\UserRepositoryContract;
-use App\Events\Auth\UserLoggedInEvent;
 use App\Events\Auth\LoginFailedEvent;
+use App\Events\Auth\UserLoggedInEvent;
 use App\Exceptions\AccountLockedException;
 use App\Models\User;
-use Azaharizaman\Erp\Core\Enums\UserStatus;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -75,7 +74,7 @@ class LoginAction
         if (! Hash::check($password, $user->password)) {
             $user->incrementFailedLoginAttempts();
             $this->handleFailedLogin($email, $tenantId, $user);
-            
+
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -105,7 +104,6 @@ class LoginAction
      * @param  string  $email  User's email
      * @param  string  $tenantId  Tenant ID
      * @param  User|null  $user  User if found
-     * @return void
      */
     private function handleFailedLogin(string $email, string $tenantId, ?User $user = null): void
     {

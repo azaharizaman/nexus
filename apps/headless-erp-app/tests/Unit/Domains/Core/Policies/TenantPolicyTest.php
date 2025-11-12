@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Core\Policies;
 
+use App\Models\User;
 use Azaharizaman\Erp\Core\Models\Tenant;
 use Azaharizaman\Erp\Core\Policies\TenantPolicy;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

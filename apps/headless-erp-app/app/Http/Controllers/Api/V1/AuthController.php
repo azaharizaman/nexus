@@ -18,9 +18,9 @@ use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Resources\Auth\TokenResource;
 use App\Http\Resources\Auth\UserResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Attribute\Get;
 use Illuminate\Routing\Attribute\Middleware;
 use Illuminate\Routing\Attribute\Post;
-use Illuminate\Routing\Attribute\Get;
 use Illuminate\Routing\Attribute\Prefix;
 use Illuminate\Validation\ValidationException;
 
@@ -35,9 +35,6 @@ class AuthController extends Controller
 {
     /**
      * Login user and generate API token
-     *
-     * @param  LoginRequest  $request
-     * @return JsonResponse
      */
     #[Post('/login', name: 'api.v1.auth.login')]
     #[Middleware(['throttle:auth'])]
@@ -73,8 +70,6 @@ class AuthController extends Controller
 
     /**
      * Logout user and revoke token
-     *
-     * @return JsonResponse
      */
     #[Post('/logout', name: 'api.v1.auth.logout')]
     #[Middleware(['auth:sanctum', 'auth.locked'])]
@@ -93,9 +88,6 @@ class AuthController extends Controller
 
     /**
      * Register a new user account
-     *
-     * @param  RegisterRequest  $request
-     * @return JsonResponse
      */
     #[Post('/register', name: 'api.v1.auth.register')]
     #[Middleware(['throttle:auth'])]
@@ -117,8 +109,6 @@ class AuthController extends Controller
 
     /**
      * Get authenticated user profile
-     *
-     * @return JsonResponse
      */
     #[Get('/me', name: 'api.v1.auth.me')]
     #[Middleware(['auth:sanctum', 'auth.locked'])]
@@ -142,9 +132,6 @@ class AuthController extends Controller
 
     /**
      * Request password reset
-     *
-     * @param  ForgotPasswordRequest  $request
-     * @return JsonResponse
      */
     #[Post('/password/forgot', name: 'api.v1.auth.password.forgot')]
     #[Middleware(['throttle:auth'])]
@@ -169,9 +156,6 @@ class AuthController extends Controller
 
     /**
      * Reset password with token
-     *
-     * @param  ResetPasswordRequest  $request
-     * @return JsonResponse
      */
     #[Post('/password/reset', name: 'api.v1.auth.password.reset')]
     #[Middleware(['throttle:auth'])]

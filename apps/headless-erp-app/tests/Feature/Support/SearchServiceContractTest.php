@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\Core\Models\Tenant;
 use App\Support\Contracts\SearchServiceContract;
+use Azaharizaman\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 

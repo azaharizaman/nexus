@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Actions\Auth\LoginAction;
-use App\Contracts\UserRepositoryContract;
 use App\Exceptions\AccountLockedException;
 use App\Models\User;
 use Azaharizaman\Erp\Core\Enums\UserStatus;
@@ -14,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 beforeEach(function () {
     // Create a test tenant
     $this->tenant = Tenant::factory()->create();
-    
+
     // Create a test user
     $this->user = User::factory()->create([
         'tenant_id' => $this->tenant->id,

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use Azaharizaman\Erp\Core\Models\Tenant;
-use Azaharizaman\Erp\Core\Policies\TenantPolicy;
 use App\Models\User;
 use App\Support\Contracts\TokenServiceContract;
 use App\Support\Services\Auth\SanctumTokenService;
+use Azaharizaman\Erp\Core\Models\Tenant;
+use Azaharizaman\Erp\Core\Policies\TenantPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 

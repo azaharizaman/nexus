@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http\Controllers\Api\V1;
 
+use App\Models\User;
 use Azaharizaman\Erp\Core\Enums\TenantStatus;
 use Azaharizaman\Erp\Core\Models\Tenant;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
