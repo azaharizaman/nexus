@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 beforeEach(function () {
     // Create a test tenant
     $this->tenant = Tenant::factory()->create();
-    
+
     // Create a test user
     $this->user = User::factory()->create([
         'tenant_id' => $this->tenant->id,

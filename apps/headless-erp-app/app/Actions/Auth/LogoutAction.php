@@ -22,7 +22,6 @@ class LogoutAction
      *
      * @param  User  $user  The authenticated user
      * @param  int|null  $tokenId  Specific token ID to revoke (null for current token)
-     * @return void
      */
     public function handle(User $user, ?int $tokenId = null): void
     {

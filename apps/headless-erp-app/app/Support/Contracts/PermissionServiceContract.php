@@ -126,4 +126,34 @@ interface PermissionServiceContract
      * Get the current team/tenant context
      */
     public function getPermissionsTeamId(): string|int|null;
+
+    /**
+     * Check if a role exists
+     *
+     * @param  string  $name  The role name
+     * @param  string|int|null  $teamId  The team/tenant ID for scoping (optional)
+     */
+    public function roleExists(string $name, string|int|null $teamId = null): bool;
+
+    /**
+     * Get a role by name
+     *
+     * @param  string  $name  The role name
+     * @param  string|int|null  $teamId  The team/tenant ID for scoping (optional)
+     * @return mixed The role object or null if not found
+     */
+    public function getRoleByName(string $name, string|int|null $teamId = null): mixed;
+
+    /**
+     * Clear the permission cache
+     */
+    public function clearPermissionCache(): void;
+
+    /**
+     * Give multiple permissions to a role
+     *
+     * @param  mixed  $role  The role object
+     * @param  array  $permissions  Array of permission names or permission objects
+     */
+    public function givePermissionsToRole(mixed $role, array $permissions): void;
 }

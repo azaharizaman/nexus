@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use Azaharizaman\Erp\Core\Models\Tenant;
-use Azaharizaman\Erp\Core\Policies\TenantPolicy;
 use App\Models\User;
+use App\Policies\RolePolicy;
+use App\Policies\UserPolicy;
 use App\Support\Contracts\TokenServiceContract;
 use App\Support\Services\Auth\SanctumTokenService;
+use Azaharizaman\Erp\Core\Models\Tenant;
+use Azaharizaman\Erp\Core\Policies\TenantPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Spatie\Permission\Models\Role;
 
 /**
  * Auth Service Provider
@@ -26,6 +29,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Tenant::class => TenantPolicy::class,
+        User::class => UserPolicy::class,
+        Role::class => RolePolicy::class,
     ];
 
     /**
@@ -55,12 +60,26 @@ class AuthServiceProvider extends ServiceProvider
         // Register policies defined in the $policies array
         $this->registerPolicies();
 
-        // Define gate for tenant impersonation
-        // Only users with super admin privileges can impersonate tenants
-        Gate::define('impersonate-tenant', function (User $user, Tenant $tenant): bool {
-            // For now, only admins can impersonate tenants
-            // TODO: Replace with spatie/laravel-permission check when implemented
-            return $user->isAdmin();
+        // Super-admin bypass: Grant all permissions to super-admin
+        Gate::before(function (User $user, string $ability): ?bool {
+            if ($user->hasRole('super-admin')) {
+                return true; // Super-admin can do everything
+            }
+
+            return null; // Continue with normal authorization checks
         });
+
+        // Define gates for permission management
+        Gate::define('manage-roles', fn (User $user): bool => $user->hasPermissionTo('manage-roles'));
+        Gate::define('manage-permissions', fn (User $user): bool => $user->hasPermissionTo('manage-permissions'));
+        Gate::define('assign-roles', fn (User $user): bool => $user->hasPermissionTo('assign-roles'));
+
+        // Define gate for tenant impersonation
+        Gate::define('impersonate-tenant', function (User $user, Tenant $tenant): bool {
+            return $user->hasRole('super-admin') || $user->hasPermissionTo('impersonate-tenants');
+        });
+
+        // Define gate for user impersonation
+        Gate::define('impersonate-user', fn (User $user): bool => $user->hasRole('super-admin'));
     }
 }

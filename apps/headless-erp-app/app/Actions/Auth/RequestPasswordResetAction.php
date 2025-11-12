@@ -31,7 +31,6 @@ class RequestPasswordResetAction
      *
      * @param  string  $email  User's email address
      * @param  string  $tenantId  UUID of the tenant
-     * @return void
      *
      * @throws \RuntimeException If user not found
      */

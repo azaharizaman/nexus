@@ -20,7 +20,6 @@ class UserResource extends JsonResource
     /**
      * Transform the resource into an array
      *
-     * @param  Request  $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -37,7 +36,7 @@ class UserResource extends JsonResource
             'last_login_at' => $this->resource->last_login_at?->toIso8601String(),
             'created_at' => $this->resource->created_at->toIso8601String(),
             'updated_at' => $this->resource->updated_at->toIso8601String(),
-            
+
             // Conditional fields
             'tenant' => $this->when(
                 $this->resource->relationLoaded('tenant'),
@@ -46,17 +45,17 @@ class UserResource extends JsonResource
                     'name' => $this->resource->tenant->name,
                 ]
             ),
-            
+
             'roles' => $this->when(
                 $this->resource->relationLoaded('roles'),
                 fn () => $this->resource->roles->pluck('name')
             ),
-            
+
             'permissions' => $this->when(
                 $this->resource->relationLoaded('permissions'),
                 fn () => $this->resource->getAllPermissions()->pluck('name')
             ),
-            
+
             // Links - conditionally include if route exists
             'links' => $this->when(
                 \Illuminate\Support\Facades\Route::has('api.v1.users.show'),

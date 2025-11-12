@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\Core\Models\Tenant;
 use App\Models\User;
 use App\Support\Contracts\ActivityLoggerContract;
+use Azaharizaman\Erp\Core\Models\Tenant;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;

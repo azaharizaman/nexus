@@ -17,9 +17,6 @@ class LogAuthenticationSuccessListener
 {
     /**
      * Handle the event
-     *
-     * @param  UserLoggedInEvent  $event
-     * @return void
      */
     #[Listen(UserLoggedInEvent::class)]
     public function handle(UserLoggedInEvent $event): void

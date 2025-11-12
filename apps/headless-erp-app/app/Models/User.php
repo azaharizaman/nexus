@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Azaharizaman\Erp\Core\Enums\UserStatus;
-use Azaharizaman\Erp\Core\Traits\BelongsToTenant;
 use App\Support\Traits\HasActivityLogging;
 use App\Support\Traits\HasPermissions;
 use App\Support\Traits\HasTokens;
 use App\Support\Traits\IsSearchable;
+use Azaharizaman\Erp\Core\Enums\UserStatus;
+use Azaharizaman\Erp\Core\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;

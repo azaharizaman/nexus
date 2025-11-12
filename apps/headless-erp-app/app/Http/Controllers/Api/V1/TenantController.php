@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTenantRequest;
+use App\Http\Requests\UpdateTenantRequest;
+use App\Http\Resources\TenantResource;
 use Azaharizaman\Erp\Core\Actions\ArchiveTenantAction;
 use Azaharizaman\Erp\Core\Actions\CreateTenantAction;
 use Azaharizaman\Erp\Core\Actions\UpdateTenantAction;
 use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
 use Azaharizaman\Erp\Core\Models\Tenant;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTenantRequest;
-use App\Http\Requests\UpdateTenantRequest;
-use App\Http\Resources\TenantResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
