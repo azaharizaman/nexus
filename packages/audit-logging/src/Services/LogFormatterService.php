@@ -192,19 +192,19 @@ class LogFormatterService implements LogFormatterContract
     {
         // Try to get tenant from model
         if ($model && isset($model->tenant_id)) {
-            return $model->tenant_id;
+            return (string) $model->tenant_id;
         }
 
         // Try to get tenant from authenticated user
         if (auth()->check() && isset(auth()->user()->tenant_id)) {
-            return auth()->user()->tenant_id;
+            return (string) auth()->user()->tenant_id;
         }
 
         // Try to get tenant from application container
         if (app()->bound('tenant.current')) {
             $tenant = app('tenant.current');
 
-            return $tenant?->id;
+            return $tenant?->id ? (string) $tenant->id : null;
         }
 
         return null;

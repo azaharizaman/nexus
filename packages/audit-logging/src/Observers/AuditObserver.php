@@ -144,7 +144,7 @@ class AuditObserver
         // Dispatch job to queue for asynchronous processing
         LogActivityJob::dispatch($logData)
             ->onQueue(config('audit-logging.queue_name', 'audit-logs'))
-            ->onConnection(config('audit-logging.queue_connection', 'redis'));
+            ->onConnection(config('audit-logging.queue_connection', config('queue.default')));
     }
 
     /**

@@ -20,9 +20,8 @@ abstract class TestCase extends BaseTestCase
      */
     public function createApplication()
     {
-        // This would be configured based on the Laravel application setup
-        // For now, we're creating a minimal structure for documentation
-        return require __DIR__.'/../../../../../apps/headless-erp-app/bootstrap/app.php';
+        // Use base_path() for flexible path resolution
+        return require base_path('apps/headless-erp-app/bootstrap/app.php');
     }
 
     /**

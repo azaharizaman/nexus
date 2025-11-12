@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 /**
@@ -41,7 +40,7 @@ class AuditLogController extends Controller
     {
         Gate::authorize('viewAny', \Spatie\Activitylog\Models\Activity::class);
 
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'causer_id' => ['nullable', 'integer'],
             'event' => ['nullable', 'string', Rule::in(['created', 'updated', 'deleted'])],
             'subject_type' => ['nullable', 'string'],
@@ -53,15 +52,8 @@ class AuditLogController extends Controller
             'per_page' => ['nullable', 'integer', 'min:1', 'max:1000'],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         // Build filters array
-        $filters = $validator->validated();
+        $filters = $validated;
 
         // Auto-inject tenant_id from authenticated user
         if (auth()->check() && isset(auth()->user()->tenant_id)) {
@@ -113,7 +105,7 @@ class AuditLogController extends Controller
     {
         Gate::authorize('export', \Spatie\Activitylog\Models\Activity::class);
 
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'format' => ['required', 'string', Rule::in(['csv', 'json', 'pdf'])],
             'causer_id' => ['nullable', 'integer'],
             'event' => ['nullable', 'string', Rule::in(['created', 'updated', 'deleted'])],
@@ -123,14 +115,6 @@ class AuditLogController extends Controller
             'max_records' => ['nullable', 'integer', 'min:1'],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $validated = $validator->validated();
         $format = $validated['format'];
         unset($validated['format']);
 
@@ -190,20 +174,13 @@ class AuditLogController extends Controller
     {
         Gate::authorize('viewAny', \Spatie\Activitylog\Models\Activity::class);
 
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
             'log_name' => ['nullable', 'string'],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $filters = $validator->validated();
+        $filters = $validated;
 
         // Auto-inject tenant_id from authenticated user
         if (auth()->check() && isset(auth()->user()->tenant_id)) {

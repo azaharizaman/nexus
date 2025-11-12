@@ -21,9 +21,10 @@ return [
     |
     | Configure the queue connection and queue name for asynchronous logging.
     | Async logging prevents performance impact on request processing.
+    | Falls back to application's default queue connection if not specified.
     |
     */
-    'queue_connection' => env('AUDIT_LOGGING_QUEUE_CONNECTION', 'redis'),
+    'queue_connection' => env('AUDIT_LOGGING_QUEUE_CONNECTION', config('queue.default')),
     'queue_name' => env('AUDIT_LOGGING_QUEUE_NAME', 'audit-logs'),
 
     /*

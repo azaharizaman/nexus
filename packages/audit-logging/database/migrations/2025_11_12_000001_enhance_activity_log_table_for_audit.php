@@ -35,8 +35,9 @@ return new class extends Migration
     {
         Schema::table(config('activitylog.table_name', 'activity_log'), function (Blueprint $table) {
             // Add tenant_id for multi-tenancy support
+            // Using string type to support both UUID and integer-based tenant systems
             // Nullable to support system-level logs without tenant context
-            $table->uuid('tenant_id')->nullable()->after('id');
+            $table->string('tenant_id')->nullable()->after('id');
 
             // Add event type column for filtering (created, updated, deleted, etc.)
             if (! Schema::hasColumn(config('activitylog.table_name', 'activity_log'), 'event')) {

@@ -8,6 +8,7 @@ use Azaharizaman\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
 use Azaharizaman\Erp\AuditLogging\Events\LogRetentionExpiredEvent;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Purge Expired Logs Command
@@ -108,15 +109,13 @@ class PurgeExpiredLogsCommand extends Command
             cutoffDate: $cutoffDate
         ));
 
-        // Log the purge action itself
-        activity()
-            ->withProperties([
-                'retention_days' => $retentionDays,
-                'cutoff_date' => $cutoffDate->toDateTimeString(),
-                'purged_count' => $purgedCount,
-                'tenant_id' => $tenantId,
-            ])
-            ->log('Purged expired audit logs');
+        // Log the purge action using Laravel's standard logging to avoid circular dependency
+        Log::info('Purged expired audit logs', [
+            'retention_days' => $retentionDays,
+            'cutoff_date' => $cutoffDate->toDateTimeString(),
+            'purged_count' => $purgedCount,
+            'tenant_id' => $tenantId,
+        ]);
 
         return self::SUCCESS;
     }

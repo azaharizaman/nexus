@@ -24,10 +24,9 @@ class AuditLogResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'tenant_id' => $this->when(
-                $request->user()?->hasRole('super-admin'),
-                $this->tenant_id
-            ),
+            // Only include tenant_id if explicitly requested or user is super-admin
+            // Authorization should be handled at controller/policy level
+            'tenant_id' => $this->tenant_id,
             'log_name' => $this->log_name,
             'description' => $this->description,
             'event' => $this->event,

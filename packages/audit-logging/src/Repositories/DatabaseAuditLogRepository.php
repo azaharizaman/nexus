@@ -116,9 +116,12 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
 
         // Full-text search in description
         if (isset($filters['search_query']) && ! empty($filters['search_query'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('description', 'like', '%'.$filters['search_query'].'%')
-                    ->orWhereJsonContains('properties', $filters['search_query']);
+            // Escape SQL wildcards to prevent injection
+            $searchQuery = str_replace(['%', '_'], ['\\%', '\\_'], $filters['search_query']);
+            
+            $query->where(function ($q) use ($searchQuery) {
+                $q->where('description', 'like', '%'.$searchQuery.'%')
+                    ->orWhereJsonContains('properties', $searchQuery);
             });
         }
 

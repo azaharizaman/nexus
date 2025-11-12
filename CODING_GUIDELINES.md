@@ -4178,6 +4178,418 @@ Review comment suggested using `app(PermissionServiceContract::class)->hasRole()
 
 ---
 
+## Security and Best Practices from Code Reviews
+
+This section documents security vulnerabilities, type safety issues, and best practices identified during code reviews.
+
+### 1. Type Safety: Explicit Type Casting for Return Values
+
+**Issue:** Return type annotations may not match actual return types when dealing with dynamic model attributes.
+
+#### ❌ Incorrect
+```php
+public function getTenantContext(?Model $model = null): ?string
+{
+    if ($model && isset($model->tenant_id)) {
+        return $model->tenant_id;  // May return int, string, or other types
+    }
+    
+    if (auth()->check() && isset(auth()->user()->tenant_id)) {
+        return auth()->user()->tenant_id;  // Type violation risk
+    }
+    
+    return null;
+}
+```
+
+**Problems:**
+- `tenant_id` may be integer, UUID string, or other types depending on database schema
+- Return type `?string` expects string or null, but may return integer
+- Type violations can occur silently in strict mode
+
+#### ✅ Correct
+```php
+public function getTenantContext(?Model $model = null): ?string
+{
+    if ($model && isset($model->tenant_id)) {
+        return (string) $model->tenant_id;  // Explicit cast
+    }
+    
+    if (auth()->check() && isset(auth()->user()->tenant_id)) {
+        return (string) auth()->user()->tenant_id;  // Explicit cast
+    }
+    
+    if (app()->bound('tenant.current')) {
+        $tenant = app('tenant.current');
+        return $tenant?->id ? (string) $tenant->id : null;  // Cast with null check
+    }
+    
+    return null;
+}
+```
+
+**Rule:** ALWAYS explicitly cast values to match return type declarations, especially when working with model attributes that may have varying types.
+
+---
+
+### 2. SQL Injection: Escape Wildcards in LIKE Queries
+
+**Issue:** User input in LIKE queries can be exploited using SQL wildcard characters (`%` and `_`).
+
+#### ❌ Incorrect
+```php
+if (isset($filters['search_query']) && !empty($filters['search_query'])) {
+    $query->where(function ($q) use ($filters) {
+        $q->where('description', 'like', '%'.$filters['search_query'].'%')
+          ->orWhereJsonContains('properties', $filters['search_query']);
+    });
+}
+```
+
+**Problems:**
+- User input `%` will match everything
+- User input `_` will match any single character
+- Allows unintended wildcard pattern matching
+
+#### ✅ Correct
+```php
+if (isset($filters['search_query']) && !empty($filters['search_query'])) {
+    // Escape SQL wildcards to prevent injection
+    $searchQuery = str_replace(['%', '_'], ['\\%', '\\_'], $filters['search_query']);
+    
+    $query->where(function ($q) use ($searchQuery) {
+        $q->where('description', 'like', '%'.$searchQuery.'%')
+          ->orWhereJsonContains('properties', $searchQuery);
+    });
+}
+```
+
+**Rule:** ALWAYS escape `%` and `_` characters in user input before using in LIKE queries. Laravel's parameter binding protects against SQL injection but not wildcard exploitation.
+
+---
+
+### 3. Code Duplication: Use Laravel's Built-in Validation
+
+**Issue:** Manual validation with `Validator::make()` and explicit error handling creates code duplication.
+
+#### ❌ Incorrect
+```php
+public function index(Request $request): JsonResponse
+{
+    $validator = Validator::make($request->all(), [
+        'event' => ['nullable', 'string', Rule::in(['created', 'updated'])],
+        'date_from' => ['nullable', 'date'],
+    ]);
+    
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+    
+    $validated = $validator->validated();
+    // ... rest of method
+}
+
+public function export(Request $request): Response
+{
+    $validator = Validator::make($request->all(), [
+        'format' => ['required', 'string'],
+    ]);
+    
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+    // ... duplicate error handling
+}
+```
+
+**Problems:**
+- Duplicate validation error handling in every method
+- Inconsistent error responses
+- More code to maintain
+
+#### ✅ Correct
+```php
+public function index(Request $request): JsonResponse
+{
+    $validated = $request->validate([
+        'event' => ['nullable', 'string', Rule::in(['created', 'updated'])],
+        'date_from' => ['nullable', 'date'],
+    ]);
+    // Automatically returns 422 on validation failure
+    
+    // ... rest of method
+}
+
+public function export(Request $request): Response
+{
+    $validated = $request->validate([
+        'format' => ['required', 'string'],
+    ]);
+    // Consistent error handling
+    
+    // ... rest of method
+}
+```
+
+**Rule:** Use `$request->validate()` instead of manual `Validator::make()` in controllers. Laravel automatically returns proper 422 JSON responses for API requests.
+
+---
+
+### 4. Circular Dependencies: Avoid Self-Referential Logging
+
+**Issue:** Logging system logging its own operations creates circular dependency risks.
+
+#### ❌ Incorrect
+```php
+// In PurgeExpiredLogsCommand
+$purgedCount = $repository->purgeExpired($cutoffDate);
+
+// Log the purge action using the audit system
+activity()
+    ->withProperties(['purged_count' => $purgedCount])
+    ->log('Purged expired audit logs');
+```
+
+**Problems:**
+- If audit logging fails, purge command fails
+- Creates circular dependency (audit system logs itself)
+- Inconsistent state if logging fails after successful purge
+
+#### ✅ Correct
+```php
+// In PurgeExpiredLogsCommand
+$purgedCount = $repository->purgeExpired($cutoffDate);
+
+// Use Laravel's standard logging to avoid circular dependency
+Log::info('Purged expired audit logs', [
+    'purged_count' => $purgedCount,
+    'cutoff_date' => $cutoffDate->toDateTimeString(),
+]);
+```
+
+**Rule:** System components that manage logging MUST use Laravel's standard `Log` facade, not the audit logging system they manage. Avoid circular dependencies.
+
+---
+
+### 5. Database Schema: Use Flexible Column Types
+
+**Issue:** Hardcoded column types (like UUID) limit database compatibility and system flexibility.
+
+#### ❌ Incorrect
+```php
+Schema::table('activity_log', function (Blueprint $table) {
+    $table->uuid('tenant_id')->nullable()->after('id');
+});
+```
+
+**Problems:**
+- Assumes all tenants use UUID primary keys
+- Incompatible with integer-based tenant systems
+- Reduces system flexibility and portability
+
+#### ✅ Correct
+```php
+Schema::table('activity_log', function (Blueprint $table) {
+    // Using string type supports both UUID and integer-based tenant systems
+    $table->string('tenant_id')->nullable()->after('id');
+});
+```
+
+**Rule:** Use flexible column types (`string` instead of `uuid`, `bigInteger` with nullable for IDs) to support multiple database schemas and deployment scenarios.
+
+---
+
+### 6. Configuration: Fallback to Application Defaults
+
+**Issue:** Hardcoded configuration defaults assume specific infrastructure availability.
+
+#### ❌ Incorrect
+```php
+// config/audit-logging.php
+return [
+    'queue_connection' => env('AUDIT_LOGGING_QUEUE_CONNECTION', 'redis'),
+];
+
+// In code
+LogActivityJob::dispatch($data)
+    ->onConnection(config('audit-logging.queue_connection', 'redis'));
+```
+
+**Problems:**
+- Assumes Redis is available
+- Fails if Redis not configured
+- Not portable across environments
+
+#### ✅ Correct
+```php
+// config/audit-logging.php
+return [
+    'queue_connection' => env('AUDIT_LOGGING_QUEUE_CONNECTION', config('queue.default')),
+];
+
+// In code
+LogActivityJob::dispatch($data)
+    ->onConnection(config('audit-logging.queue_connection', config('queue.default')));
+```
+
+**Rule:** Configuration defaults MUST fall back to application's configured defaults using `config('*.default')`, not hardcoded infrastructure assumptions.
+
+---
+
+### 7. File Permissions: Secure Export Directories
+
+**Issue:** World-readable permissions on export directories expose sensitive audit data.
+
+#### ❌ Incorrect
+```php
+$fullPath = storage_path('app/exports/audit-logs');
+if (!is_dir($fullPath)) {
+    mkdir($fullPath, 0755, true);  // World-readable
+}
+```
+
+**Problems:**
+- `0755` allows world-read access
+- Audit logs contain sensitive information
+- Security vulnerability in shared hosting
+
+#### ✅ Correct
+```php
+$fullPath = storage_path('app/exports/audit-logs');
+if (!is_dir($fullPath)) {
+    mkdir($fullPath, 0700, true);  // Owner-only access
+}
+```
+
+**Rule:** Use `0700` or `0750` permissions for directories containing sensitive data. Avoid `0755` (world-readable) unless specifically required.
+
+---
+
+### 8. Path Resolution: Use Laravel Helpers
+
+**Issue:** Hardcoded relative paths with multiple parent directory traversals are fragile.
+
+#### ❌ Incorrect
+```php
+public function createApplication()
+{
+    return require __DIR__.'/../../../../../apps/headless-erp-app/bootstrap/app.php';
+}
+```
+
+**Problems:**
+- Breaks if package is moved
+- Breaks if directory structure changes
+- Not portable across installations
+
+#### ✅ Correct
+```php
+public function createApplication()
+{
+    return require base_path('apps/headless-erp-app/bootstrap/app.php');
+}
+```
+
+**Rule:** ALWAYS use Laravel path helpers (`base_path()`, `app_path()`, `storage_path()`, etc.) instead of relative paths with `../`.
+
+---
+
+### 9. Resource Classes: Separate Authorization from Transformation
+
+**Issue:** Authorization logic in resource classes mixes concerns and violates single responsibility.
+
+#### ❌ Incorrect
+```php
+// In AuditLogResource
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->id,
+        'tenant_id' => $this->when(
+            $request->user()?->hasRole('super-admin'),
+            $this->tenant_id
+        ),
+        // ...
+    ];
+}
+```
+
+**Problems:**
+- Authorization logic in presentation layer
+- Bypasses policy system
+- Difficult to test authorization separately
+- Violates separation of concerns
+
+#### ✅ Correct
+```php
+// Authorization in Policy
+public function view(User $user, Activity $activity): bool
+{
+    return $user->tenant_id === $activity->tenant_id || $user->hasRole('super-admin');
+}
+
+// Simple transformation in Resource
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->id,
+        'tenant_id' => $this->tenant_id,  // Authorization already handled
+        // ...
+    ];
+}
+```
+
+**Rule:** Resource classes should ONLY transform data, not perform authorization. Authorization belongs in policies, controllers, or middleware.
+
+---
+
+### 10. Queue Configuration: Environment Portability
+
+**Issue:** Assuming specific queue drivers reduces portability across development, staging, and production environments.
+
+**Bad Patterns:**
+- Hardcoding `'redis'` as queue connection
+- Not falling back to application defaults
+- Assuming specific queue infrastructure exists
+
+**Best Practice:**
+```php
+// Always fall back to configured default
+config('package.queue_connection', config('queue.default'))
+
+// Example environments:
+// - Development: 'sync' (no queue, immediate execution)
+// - Staging: 'database' (simple queue, no Redis needed)
+// - Production: 'redis' (high performance, scalable)
+```
+
+**Rule:** Package configurations for infrastructure (queue, cache, session) MUST fall back to `config('*.default')` to support all Laravel-compatible drivers.
+
+---
+
+### Summary: Security and Best Practices Quick Reference
+
+| Issue | Don't | Do |
+|-------|-------|-----|
+| **Type Safety** | Return dynamic types | Cast to declared return type: `(string) $value` |
+| **SQL Injection** | Use raw user input in LIKE | Escape wildcards: `str_replace(['%', '_'], ['\\%', '\\_'], $input)` |
+| **Validation** | Manual `Validator::make()` | Use `$request->validate()` for auto-422 |
+| **Circular Deps** | Log system logs itself | Use `Log::info()` in logging system |
+| **DB Schema** | Hardcode UUID/int types | Use flexible `string` type |
+| **Configuration** | Hardcode 'redis' default | Fallback: `config('queue.default')` |
+| **File Perms** | Use `0755` for sensitive | Use `0700` for owner-only |
+| **Paths** | Use `__DIR__.'/../../../'` | Use `base_path()`, `app_path()` |
+| **Authorization** | Check in Resource classes | Use Policies and middleware |
+| **Portability** | Assume infrastructure | Support all Laravel drivers |
+
+---
+
 ## Questions or Suggestions
 
 If you have questions about these guidelines or suggestions for improvements, please:

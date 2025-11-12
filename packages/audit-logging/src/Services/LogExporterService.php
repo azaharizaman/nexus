@@ -157,10 +157,10 @@ class LogExporterService implements LogExporterContract
         $disk = Storage::disk(config('audit-logging.export.disk', 'local'));
         $path = config('audit-logging.export.path', 'exports/audit-logs');
 
-        // Ensure directory exists
+        // Ensure directory exists with secure permissions
         $fullPath = storage_path('app/'.$path);
         if (! is_dir($fullPath)) {
-            mkdir($fullPath, 0755, true);
+            mkdir($fullPath, 0700, true);
         }
 
         return $fullPath.'/'.$filename;
