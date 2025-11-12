@@ -1,0 +1,171 @@
+{
+	"name": "Laravel ERP System",
+	// Using a more appropriate base image for Laravel development
+	"image": "mcr.microsoft.com/devcontainers/php:1-8.3-bookworm",
+
+	// Features to add to the dev container
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
+			"configureZshAsDefaultShell": true,
+			"installOhMyZsh": true,
+			"upgradePackages": true,
+			"username": "vscode"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "20",
+			"nodeGypDependencies": true,
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"azureDnsAutoDetection": true,
+			"installDockerBuildx": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "v2"
+		},
+		"ghcr.io/cirolosapio/devcontainers-features/alpine-php-composer:0": {
+			"version": "2.8"
+		}
+	},
+
+	// Configure tool-specific properties
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				// PHP Development
+				"bmewburn.vscode-intelephense-client",
+				"xdebug.php-debug",
+				"zobo.php-intellisense",
+				"devsense.phptools-vscode",
+				
+				// Laravel Specific
+				"onecentlin.laravel-blade",
+				"codingyu.laravel-goto-view",
+				"amiralizadeh9480.laravel-extra-intellisense",
+				"open-southeners.laravel-pint",
+				
+				// Testing
+				"m1guelpf.better-pest",
+				"recca0120.vscode-phpunit",
+				
+				// Code Quality
+				"editorconfig.editorconfig",
+				"ms-vscode.vscode-json",
+				"redhat.vscode-yaml",
+				"bradlc.vscode-tailwindcss",
+				
+				// Git
+				"eamodio.gitlens",
+				"github.vscode-github-actions",
+				"github.copilot",
+				"github.copilot-chat",
+				
+				// Productivity
+				"ms-vscode.vscode-todo-highlight",
+				"gruntfuggly.todo-tree",
+				"streetsidesoftware.code-spell-checker"
+			],
+			"settings": {
+				"php.validate.executablePath": "/usr/local/bin/php",
+				"php.debug.executablePath": "/usr/local/bin/php",
+				"intelephense.files.maxSize": 5000000,
+				"intelephense.telemetry.enabled": false,
+				"intelephense.format.enable": false,
+				"[php]": {
+					"editor.defaultFormatter": "open-southeners.laravel-pint",
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.fixAll": "explicit"
+					}
+				},
+				"files.associations": {
+					"*.blade.php": "blade"
+				},
+				"emmet.includeLanguages": {
+					"blade": "html"
+				},
+				"todo-tree.regex.regex": "((//|#|<!--|;|/\\*|^)\\s*($TAGS)|^\\s*- \\[ \\])",
+				"todo-tree.general.tags": [
+					"TODO",
+					"FIXME",
+					"BUG",
+					"HACK",
+					"NOTE",
+					"XXX",
+					"[ ]"
+				]
+			}
+		}
+	},
+
+	// Forward ports for Laravel development
+	"forwardPorts": [
+		8000,  // Laravel dev server
+		8080,  // Alternative web port
+		3000,  // Vite dev server
+		5173,  // Vite alternative port
+		3306,  // MySQL
+		5432,  // PostgreSQL
+		6379,  // Redis
+		9000   // Xdebug
+	],
+
+	// Port attributes
+	"portsAttributes": {
+		"8000": {
+			"label": "Laravel Application",
+			"onAutoForward": "notify"
+		},
+		"3000": {
+			"label": "Vite Dev Server",
+			"onAutoForward": "silent"
+		},
+		"5173": {
+			"label": "Vite Alt Port",
+			"onAutoForward": "silent"
+		}
+	},
+
+	// Mount the local directory and set up the workspace
+	"mounts": [
+		"source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+	],
+
+	// Environment variables for Laravel
+	"containerEnv": {
+		"APP_ENV": "local",
+		"APP_DEBUG": "true",
+		"DB_CONNECTION": "sqlite",
+		"DB_DATABASE": "/workspace/database/database.sqlite",
+		"CACHE_DRIVER": "file",
+		"SESSION_DRIVER": "file",
+		"QUEUE_CONNECTION": "sync",
+		"XDEBUG_MODE": "develop,debug",
+		"XDEBUG_CONFIG": "client_host=host.docker.internal"
+	},
+
+	// Run setup commands after container creation
+	"postCreateCommand": ".devcontainer/post-create.sh",
+
+	// Use 'postStartCommand' to run commands each time the container starts
+	"postStartCommand": ".devcontainer/post-start.sh",
+
+	// Lifecycle scripts
+	"initializeCommand": ".devcontainer/initialize.sh",
+
+	// Set the default user
+	"remoteUser": "vscode",
+
+	// Configure the workspace folder
+	"workspaceFolder": "/workspace",
+
+	// Additional runtime arguments
+	"runArgs": [
+		"--hostname=laravel-erp-dev"
+	]
+}
