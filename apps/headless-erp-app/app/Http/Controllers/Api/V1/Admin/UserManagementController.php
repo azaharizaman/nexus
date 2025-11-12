@@ -96,11 +96,9 @@ class UserManagementController extends Controller
             'status' => UserStatus::ACTIVE,
         ]);
 
-        // Assign roles if provided
+        // Assign roles if provided (using batch assignment for transactional safety)
         if (! empty($validated['roles'])) {
-            foreach ($validated['roles'] as $roleName) {
-                $this->permissionService->assignRole($user, $roleName);
-            }
+            $this->permissionService->assignRoles($user, $validated['roles']);
         }
 
         return UserResource::make($user)

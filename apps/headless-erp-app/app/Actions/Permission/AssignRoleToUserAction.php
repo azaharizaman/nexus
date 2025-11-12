@@ -10,7 +10,6 @@ use App\Support\Contracts\ActivityLoggerContract;
 use App\Support\Contracts\PermissionServiceContract;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Spatie\Permission\Models\Role;
 
 /**
  * Assign Role To User Action
@@ -75,9 +74,9 @@ class AssignRoleToUserAction
      */
     protected function validateTenantMatch(User $user, string|object $role): void
     {
-        // If role is a string, fetch the role object
+        // If role is a string, fetch the role object via contract
         if (is_string($role)) {
-            $roleObject = Role::findByName($role);
+            $roleObject = $this->permissionService->getRoleByName($role);
         } else {
             $roleObject = $role;
         }
@@ -102,9 +101,7 @@ class AssignRoleToUserAction
      */
     protected function clearUserPermissionCache(User $user): void
     {
-        // Spatie Permission has built-in cache clearing
-        // This is handled automatically when roles are assigned
-        // But we can also manually clear if needed
-        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        // Use contract method to maintain package decoupling
+        $this->permissionService->clearPermissionCache();
     }
 }

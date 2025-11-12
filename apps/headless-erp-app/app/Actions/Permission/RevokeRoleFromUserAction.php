@@ -45,8 +45,8 @@ class RevokeRoleFromUserAction
         // Revoke the role
         $this->permissionService->removeRole($user, $role);
 
-        // Clear user permission cache
-        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        // Clear user permission cache via contract
+        $this->permissionService->clearPermissionCache();
 
         // Log activity
         if (auth()->check()) {

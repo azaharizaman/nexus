@@ -9,7 +9,6 @@ use App\Support\Contracts\ActivityLoggerContract;
 use App\Support\Contracts\PermissionServiceContract;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Spatie\Permission\Models\Role;
 
 /**
  * Create Role Action
@@ -77,12 +76,8 @@ class CreateRoleAction
      */
     protected function validate(string $name, string|int|null $tenantId): void
     {
-        // Check if role already exists for this tenant
-        $existingRole = Role::where('name', $name)
-            ->where('team_id', $tenantId)
-            ->first();
-
-        if ($existingRole) {
+        // Check if role already exists for this tenant using contract
+        if ($this->permissionService->roleExists($name, $tenantId)) {
             throw ValidationException::withMessages([
                 'name' => ['A role with this name already exists for this tenant.'],
             ]);

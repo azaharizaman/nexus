@@ -35,12 +35,8 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        // Super admin can view any user
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
         // User can view users in their own tenant
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
         return $user->hasPermissionTo('view-users') && $user->tenant_id === $model->tenant_id;
     }
 
@@ -62,12 +58,8 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        // Super admin can update any user
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
         // User can update users in their own tenant
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
         return $user->hasPermissionTo('update-users') && $user->tenant_id === $model->tenant_id;
     }
 
@@ -79,12 +71,8 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        // Super admin can delete any user
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
         // User can delete users in their own tenant (but not themselves)
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
         return $user->hasPermissionTo('delete-users')
             && $user->tenant_id === $model->tenant_id
             && $user->id !== $model->id;
@@ -122,12 +110,8 @@ class UserPolicy
      */
     public function suspend(User $user, User $model): bool
     {
-        // Super admin can suspend any user
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
         // User can suspend users in their own tenant (but not themselves)
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
         return $user->hasPermissionTo('suspend-users')
             && $user->tenant_id === $model->tenant_id
             && $user->id !== $model->id;

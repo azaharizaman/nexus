@@ -3854,6 +3854,330 @@ public function activate(Request $request, Tenant $tenant): TenantResource
 
 ---
 
+## PR Review Learnings: RBAC Implementation (PR #101)
+
+### Key Lessons from Code Review
+
+#### 1. Avoid Redundant Authorization Checks with Gate::before()
+
+**Issue:** When using `Gate::before()` for universal super-admin bypass, explicit super-admin checks in policy methods create redundant authorization logic.
+
+**❌ Incorrect - Redundant Check:**
+```php
+class UserPolicy
+{
+    public function view(User $user, User $model): bool
+    {
+        // Redundant: Gate::before() already handles super-admin
+        if ($user->hasRole('super-admin')) {
+            return true;
+        }
+        
+        return $user->hasPermissionTo('view-users') 
+            && $user->tenant_id === $model->tenant_id;
+    }
+}
+```
+
+**✅ Correct - Let Gate::before() Handle It:**
+```php
+class UserPolicy
+{
+    public function view(User $user, User $model): bool
+    {
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
+        return $user->hasPermissionTo('view-users') 
+            && $user->tenant_id === $model->tenant_id;
+    }
+}
+
+// In AuthServiceProvider:
+Gate::before(function (User $user, string $ability): ?bool {
+    if ($user->hasRole('super-admin')) {
+        return true; // Universal bypass for all gates and policies
+    }
+    return null; // Continue with normal authorization
+});
+```
+
+**Why:** 
+- Eliminates code duplication across all policies
+- Single source of truth for super-admin bypass logic
+- Easier to modify bypass behavior globally
+- Policies focus on normal authorization logic only
+
+**Exception:** Keep explicit checks when you need to prevent even super-admins from certain actions:
+```php
+public function delete(User $user, Role $role): bool
+{
+    // Prevent deletion of super-admin role (even by super-admins)
+    if ($role->name === 'super-admin') {
+        return false; // This executes after Gate::before()
+    }
+    
+    return $user->hasPermissionTo('manage-roles');
+}
+```
+
+#### 2. Strict Package Decoupling in Actions
+
+**Issue:** Direct usage of Spatie Permission models in action classes violates package decoupling principles.
+
+**❌ Incorrect - Direct Spatie Access:**
+```php
+use Spatie\Permission\Models\Role;
+
+class CreateRoleAction
+{
+    protected function validate(string $name, string|int|null $tenantId): void
+    {
+        // Direct Spatie model access
+        $existingRole = Role::where('name', $name)
+            ->where('team_id', $tenantId)
+            ->first();
+            
+        if ($existingRole) {
+            throw ValidationException::withMessages([...]);
+        }
+    }
+}
+```
+
+**✅ Correct - Use Contract:**
+```php
+class CreateRoleAction
+{
+    public function __construct(
+        private readonly PermissionServiceContract $permissionService
+    ) {}
+    
+    protected function validate(string $name, string|int|null $tenantId): void
+    {
+        // Use contract method
+        if ($this->permissionService->roleExists($name, $tenantId)) {
+            throw ValidationException::withMessages([...]);
+        }
+    }
+}
+```
+
+**Why:**
+- Maintains abstraction from underlying package
+- Easier to swap implementations (e.g., from Spatie to custom solution)
+- Testable without mocking Spatie classes
+- Consistent with package decoupling strategy
+
+**Required Pattern:**
+1. Add method to `PermissionServiceContract`
+2. Implement in `SpatiePermissionService`
+3. Use contract in business logic
+4. Never import Spatie models/classes in domain code
+
+#### 3. Use Batch Operations for Multiple Related Actions
+
+**Issue:** Performing operations in loops without batch support can lead to inefficiency and lack of transactional safety.
+
+**❌ Incorrect - Loop Without Transaction:**
+```php
+// In controller
+if (!empty($validated['roles'])) {
+    foreach ($validated['roles'] as $roleName) {
+        $this->permissionService->assignRole($user, $roleName);
+    }
+}
+
+// In test
+$permissionService->givePermissionToRole($role, 'view-users');
+$permissionService->givePermissionToRole($role, 'create-users');
+$permissionService->givePermissionToRole($role, 'update-users');
+$permissionService->givePermissionToRole($role, 'delete-users');
+```
+
+**✅ Correct - Use Batch Methods:**
+```php
+// In controller
+if (!empty($validated['roles'])) {
+    $this->permissionService->assignRoles($user, $validated['roles']);
+}
+
+// In test
+$permissions = ['view-users', 'create-users', 'update-users', 'delete-users'];
+$permissionService->givePermissionsToRole($role, $permissions);
+```
+
+**Why:**
+- Single database transaction ensures atomicity
+- Better performance (fewer queries)
+- Cleaner, more readable code
+- Reduces risk of partial updates on failure
+
+**Implementation Pattern:**
+```php
+// Contract
+interface PermissionServiceContract
+{
+    public function assignRoles(Model $user, array $roles): void;
+    public function givePermissionsToRole(mixed $role, array $permissions): void;
+}
+
+// Implementation
+class SpatiePermissionService implements PermissionServiceContract
+{
+    public function assignRoles(Model $user, array $roles): void
+    {
+        $user->assignRole($roles); // Spatie handles batch internally
+    }
+    
+    public function givePermissionsToRole(mixed $role, array $permissions): void
+    {
+        $role->givePermissionTo($permissions); // Spatie handles batch internally
+    }
+}
+```
+
+#### 4. Clear Cache Through Contracts, Not Directly
+
+**Issue:** Directly accessing package internals for cache management violates encapsulation.
+
+**❌ Incorrect - Direct Cache Access:**
+```php
+class AssignRoleToUserAction
+{
+    protected function clearUserPermissionCache(User $user): void
+    {
+        // Direct Spatie internal access
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)
+            ->forgetCachedPermissions();
+    }
+}
+```
+
+**✅ Correct - Use Contract Method:**
+```php
+class AssignRoleToUserAction
+{
+    public function __construct(
+        private readonly PermissionServiceContract $permissionService
+    ) {}
+    
+    protected function clearUserPermissionCache(User $user): void
+    {
+        // Use contract method
+        $this->permissionService->clearPermissionCache();
+    }
+}
+
+// In contract:
+interface PermissionServiceContract
+{
+    public function clearPermissionCache(): void;
+}
+
+// In implementation:
+class SpatiePermissionService
+{
+    public function clearPermissionCache(): void
+    {
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)
+            ->forgetCachedPermissions();
+    }
+}
+```
+
+**Why:**
+- Keeps Spatie-specific code in one place (the adapter)
+- Actions remain package-agnostic
+- Easier to test with mocked contracts
+- Can add custom cache clearing logic in adapter if needed
+
+#### 5. Document Package Limitations in Code
+
+**Issue:** Requirements may specify features that the underlying package doesn't support out of the box.
+
+**❌ Incorrect - Silent Incompatibility:**
+```php
+public function run(): void
+{
+    // Create permissions (REQ-DR-AA-003 says we need description/category)
+    $permissions = ['view-users', 'create-users', ...];
+    // But we're not adding them...
+}
+```
+
+**✅ Correct - Document the Limitation:**
+```php
+/**
+ * Run the database seeds.
+ *
+ * Note: Spatie Permission package doesn't support description and category fields
+ * out of the box (REQ-DR-AA-003). To add these fields, you would need to:
+ * 1. Extend the Permission model
+ * 2. Add a migration for the new columns
+ * 3. Update the PermissionServiceContract
+ * For now, we use descriptive permission names that are self-documenting.
+ *
+ * @return void
+ */
+public function run(): void
+{
+    // Create permissions with self-documenting names
+    $permissions = ['view-users', 'create-users', ...];
+    // ...
+}
+```
+
+**Why:**
+- Makes the limitation explicit for future developers
+- References the requirement for traceability
+- Provides a path forward if the feature is needed later
+- Prevents confusion about why requirements aren't fully met
+
+**Best Practice:**
+- Document limitations in docblocks where the issue occurs
+- Reference the original requirement (e.g., REQ-DR-AA-003)
+- Suggest workarounds or implementation paths
+- Consider adding a TODO if it should be addressed later
+
+#### 6. False Positives in Code Reviews
+
+**Important:** Not all review comments are always correct. Some may be false positives.
+
+**Example False Positive:**
+Review comment suggested using `app(PermissionServiceContract::class)->hasRole()` in `AuthServiceProvider::boot()` instead of direct `$user->hasRole()`.
+
+**Why it's a False Positive:**
+- Service providers are integration points where some coupling is acceptable
+- The Gate::before() callback is a framework integration, not business logic
+- Adding contract indirection here adds unnecessary complexity
+- The pattern `$user->hasRole()` is idiomatic Laravel
+
+**When to Accept Coupling:**
+1. **Framework Integration Points** - Service providers, middleware registration
+2. **View Components** - Blade directives, view composers
+3. **Configuration Files** - When configuring packages directly
+4. **Migration Files** - Schema builder is tightly coupled to Laravel
+
+**When to Avoid Coupling:**
+1. **Business Logic** - Actions, services, repositories
+2. **Domain Models** - Keep models package-agnostic when possible
+3. **API Controllers** - Should use contracts for flexibility
+4. **Command Handlers** - Use contracts for testability
+
+### Summary: Quick Reference
+
+| Situation | Do | Don't |
+|-----------|-----|-------|
+| **Super-admin bypass** | Use `Gate::before()` once | Check `hasRole('super-admin')` in every policy |
+| **Package operations** | Use `PermissionServiceContract` | Import Spatie models in actions |
+| **Multiple operations** | Use batch methods (`assignRoles()`) | Loop with single operations |
+| **Cache clearing** | Call `$service->clearPermissionCache()` | Access `PermissionRegistrar` directly |
+| **Package limitations** | Document with workarounds | Silently skip requirements |
+| **Framework integration** | Direct usage is OK | Over-abstract service providers |
+
+**Remember:** Package decoupling is about business logic, not framework integration. Service providers, configuration, and framework callbacks can have direct coupling—that's their purpose.
+
+---
+
 ## Questions or Suggestions
 
 If you have questions about these guidelines or suggestions for improvements, please:

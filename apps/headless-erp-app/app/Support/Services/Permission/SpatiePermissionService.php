@@ -141,4 +141,44 @@ class SpatiePermissionService implements PermissionServiceContract
     {
         return getPermissionsTeamId();
     }
+
+    /**
+     * Check if a role exists
+     */
+    public function roleExists(string $name, string|int|null $teamId = null): bool
+    {
+        return Role::where('name', $name)
+            ->where('team_id', $teamId)
+            ->exists();
+    }
+
+    /**
+     * Get a role by name
+     */
+    public function getRoleByName(string $name, string|int|null $teamId = null): mixed
+    {
+        $query = Role::where('name', $name);
+
+        if ($teamId !== null) {
+            $query->where('team_id', $teamId);
+        }
+
+        return $query->first();
+    }
+
+    /**
+     * Clear the permission cache
+     */
+    public function clearPermissionCache(): void
+    {
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+    }
+
+    /**
+     * Give multiple permissions to a role
+     */
+    public function givePermissionsToRole(mixed $role, array $permissions): void
+    {
+        $role->givePermissionTo($permissions);
+    }
 }

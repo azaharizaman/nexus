@@ -17,12 +17,18 @@ class RolePermissionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * Note: Spatie Permission package doesn't support description and category fields
+     * out of the box (REQ-DR-AA-003). To add these fields, you would need to extend
+     * the Permission model and add a migration. For now, we use descriptive permission
+     * names that are self-documenting (e.g., 'view-users', 'create-users').
      */
     public function run(): void
     {
         $permissionService = app(PermissionServiceContract::class);
 
-        // Create permissions (name only - Spatie Permission doesn't have description/category fields)
+        // Create permissions with descriptive names
+        // (Spatie Permission doesn't natively support description/category fields - REQ-DR-AA-003)
         $permissionNames = [
             // User management permissions
             'view-users',

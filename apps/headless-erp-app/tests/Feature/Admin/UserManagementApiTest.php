@@ -26,11 +26,9 @@ beforeEach(function () {
     $permissionService->createPermission('suspend-users');
 
     $adminRole = $permissionService->createRole('admin', $this->tenant->id);
-    $permissionService->givePermissionToRole($adminRole, 'view-users');
-    $permissionService->givePermissionToRole($adminRole, 'create-users');
-    $permissionService->givePermissionToRole($adminRole, 'update-users');
-    $permissionService->givePermissionToRole($adminRole, 'delete-users');
-    $permissionService->givePermissionToRole($adminRole, 'suspend-users');
+    // Use batch permission assignment for efficiency
+    $permissions = ['view-users', 'create-users', 'update-users', 'delete-users', 'suspend-users'];
+    $permissionService->givePermissionsToRole($adminRole, $permissions);
     $permissionService->assignRole($this->admin, $adminRole);
 
     // Create test token for admin

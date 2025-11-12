@@ -36,12 +36,8 @@ class RolePolicy
      */
     public function view(User $user, Role $role): bool
     {
-        // Super admin can view any role
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
         // User can view roles in their own tenant or global roles (team_id is null)
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
         return $user->hasPermissionTo('view-roles')
             && ($role->team_id === null || $user->tenant_id === $role->team_id);
     }
@@ -64,17 +60,13 @@ class RolePolicy
      */
     public function update(User $user, Role $role): bool
     {
-        // Super admin can update any role
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
-        // Cannot update super-admin role
+        // Cannot update super-admin role (unless user is super-admin via Gate::before())
         if ($role->name === 'super-admin') {
             return false;
         }
 
         // User can update roles in their own tenant or global roles
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
         return $user->hasPermissionTo('manage-roles')
             && ($role->team_id === null || $user->tenant_id === $role->team_id);
     }
@@ -87,17 +79,13 @@ class RolePolicy
      */
     public function delete(User $user, Role $role): bool
     {
-        // Super admin can delete any role except super-admin itself
-        if ($user->hasRole('super-admin')) {
-            return $role->name !== 'super-admin';
-        }
-
         // Cannot delete super-admin role
         if ($role->name === 'super-admin') {
             return false;
         }
 
         // User can delete roles in their own tenant
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
         return $user->hasPermissionTo('manage-roles')
             && $user->tenant_id === $role->team_id;
     }
@@ -110,17 +98,13 @@ class RolePolicy
      */
     public function assign(User $user, Role $role): bool
     {
-        // Super admin can assign any role
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
-        // Cannot assign super-admin role
+        // Cannot assign super-admin role (unless user is super-admin via Gate::before())
         if ($role->name === 'super-admin') {
             return false;
         }
 
         // User can assign roles in their own tenant or global roles
+        // Note: Super-admin bypass handled by Gate::before() in AuthServiceProvider
         return $user->hasPermissionTo('assign-roles')
             && ($role->team_id === null || $user->tenant_id === $role->team_id);
     }
