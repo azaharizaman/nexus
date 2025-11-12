@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['api', 'auth:sanctum'])
+Route::middleware(['api', 'auth:sanctum', 'tenant.context'])
     ->prefix('api/v1/sequences')
     ->group(function () {
         // List all sequences for tenant

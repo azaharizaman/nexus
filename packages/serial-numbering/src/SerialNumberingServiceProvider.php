@@ -6,6 +6,7 @@ namespace Azaharizaman\Erp\SerialNumbering;
 
 use Azaharizaman\Erp\SerialNumbering\Contracts\PatternParserContract;
 use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Azaharizaman\Erp\SerialNumbering\Http\Middleware\InjectTenantContext;
 use Azaharizaman\Erp\SerialNumbering\Models\Sequence;
 use Azaharizaman\Erp\SerialNumbering\Policies\SequencePolicy;
 use Azaharizaman\Erp\SerialNumbering\Repositories\DatabaseSequenceRepository;
@@ -63,6 +64,10 @@ class SerialNumberingServiceProvider extends ServiceProvider
 
         // Load routes
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+
+        // Register middleware
+        $router = $this->app['router'];
+        $router->aliasMiddleware('tenant.context', InjectTenantContext::class);
 
         // Register policies
         Gate::policy(Sequence::class, SequencePolicy::class);
