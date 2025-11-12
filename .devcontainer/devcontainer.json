@@ -47,7 +47,6 @@
 				"onecentlin.laravel-blade",
 				"codingyu.laravel-goto-view",
 				"amiralizadeh9480.laravel-extra-intellisense",
-				"open-southeners.laravel-pint",
 				
 				// Testing
 				"m1guelpf.better-pest",
@@ -66,7 +65,7 @@
 				"github.copilot-chat",
 				
 				// Productivity
-				"ms-vscode.vscode-todo-highlight",
+				"wayou.vscode-todo-highlight",
 				"gruntfuggly.todo-tree",
 				"streetsidesoftware.code-spell-checker"
 			],
@@ -77,7 +76,7 @@
 				"intelephense.telemetry.enabled": false,
 				"intelephense.format.enable": false,
 				"[php]": {
-					"editor.defaultFormatter": "open-southeners.laravel-pint",
+					"editor.defaultFormatter": "DEVSENSE.phptools-vscode",
 					"editor.formatOnSave": true,
 					"editor.codeActionsOnSave": {
 						"source.fixAll": "explicit"
@@ -154,9 +153,6 @@
 
 	// Use 'postStartCommand' to run commands each time the container starts
 	"postStartCommand": ".devcontainer/post-start.sh",
-
-	// Lifecycle scripts
-	"initializeCommand": ".devcontainer/initialize.sh",
 
 	// Set the default user
 	"remoteUser": "vscode",
