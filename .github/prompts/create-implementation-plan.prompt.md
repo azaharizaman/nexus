@@ -28,7 +28,7 @@ Plans must consist of discrete, atomic goals containing executable tasks. Each g
 - Each goal must have measurable completion criteria
 - Each goal will be converted into issues later on so it must be order by execution, whereby goal that must be done first is listed first
 - To limit the complexity of each plan file, each plan must contain no more than 5 goals
-- If the requiremnets in the PRD or Sub PRD exceed what can be covered in 5 goals, create multiple plan files p to maximum 3 plan files per SUB-PRD
+- If the requiremnets in the PRD or Sub PRD exceed what can be covered in 5 goals, create multiple plan files p to maximum 4 plan files per SUB-PRD
 - Tasks within goals must be executable in parallel unless dependencies are specified
 - All task descriptions must include specific file paths, function names, and exact implementation details
 - No task should require human interpretation or decision-making
