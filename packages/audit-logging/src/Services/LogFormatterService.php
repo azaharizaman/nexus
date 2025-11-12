@@ -6,7 +6,6 @@ namespace Azaharizaman\Erp\AuditLogging\Services;
 
 use Azaharizaman\Erp\AuditLogging\Contracts\LogFormatterContract;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 /**
