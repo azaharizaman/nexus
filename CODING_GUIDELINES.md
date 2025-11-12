@@ -1390,6 +1390,20 @@ class LoggingServiceProvider extends ServiceProvider
 3. **laravel/sanctum** - API authentication (HIGH priority)
 4. **spatie/laravel-permission** - Authorization (MEDIUM priority)
 
+**Important Notes on Scope:**
+
+1. **Laravel Core Facades (Cache, Crypt, etc.)**: Laravel's built-in facades (Cache, Crypt, Storage, etc.) are NOT considered "external packages" and do NOT need to be abstracted. These are part of the Laravel framework core and are stable, well-tested, and unlikely to change.
+
+2. **Main App vs. Packages**: 
+   - **Main Application Code** (`apps/headless-erp-app/app/`): MUST use wrapper traits (`HasActivityLogging`, `IsSearchable`) instead of direct package traits.
+   - **Internal Packages** (`packages/*/src/`): MAY use package traits directly (e.g., `LogsActivity`, `Searchable`) since packages are self-contained units. However, prefer wrapper traits when possible for consistency.
+
+3. **Model Traits vs. Service Usage**:
+   - **Model Traits** (LogsActivity, Searchable): Can be used directly on models as they provide model-level functionality (automatic event listeners, search indexing). The decoupling applies to the trait wrapper, not individual model usage.
+   - **Service/Business Logic**: MUST use contracts and dependency injection. Never call package APIs directly (e.g., `activity()->log()`, `Model::search()`).
+
+4. **Private/Protected Methods**: Direct use of Laravel facades (Cache, Crypt) in private/protected helper methods is acceptable since they're internal implementation details, not part of the public API.
+
 **Implementation Pattern:**
 1. Create contract in `app/Support/Contracts/{ServiceName}Contract.php`
    - **Note:** `{ServiceName}` should be a descriptive name representing the service functionality (e.g., `ActivityLogger`, `SearchService`, `TokenService`), not the literal package name.
@@ -4587,6 +4601,127 @@ config('package.queue_connection', config('queue.default'))
 | **Paths** | Use `__DIR__.'/../../../'` | Use `base_path()`, `app_path()` |
 | **Authorization** | Check in Resource classes | Use Policies and middleware |
 | **Portability** | Assume infrastructure | Support all Laravel drivers |
+
+---
+
+## PR Review Learnings: Settings Management System
+
+This section documents key learnings from PR #131 (Settings Management System implementation) review process.
+
+### 1. Eloquent Scope Methods MUST Have Return Type Declarations
+
+**Issue:** Scope methods (e.g., `scopeOfScope`, `scopeForModule`) were missing explicit return type declarations.
+
+#### ❌ Incorrect
+```php
+public function scopeOfScope($query, string $scope)
+{
+    return $query->where('scope', $scope);
+}
+```
+
+#### ✅ Correct
+```php
+public function scopeOfScope($query, string $scope): \Illuminate\Database\Eloquent\Builder
+{
+    return $query->where('scope', $scope);
+}
+```
+
+**Why:** ALL methods MUST have return type declarations per PSR-12 and project standards, including Eloquent scope methods.
+
+**Common Scope Method Pattern:**
+```php
+/**
+ * Scope description
+ *
+ * @param \Illuminate\Database\Eloquent\Builder $query
+ * @param mixed $parameter
+ * @return \Illuminate\Database\Eloquent\Builder
+ */
+public function scopeMethodName($query, $parameter): \Illuminate\Database\Eloquent\Builder
+{
+    return $query->where('column', $parameter);
+}
+```
+
+### 2. Cache Invalidation for Hierarchical Systems
+
+**Issue:** When invalidating cache for hierarchical settings, we must consider all possible cache key combinations, not just parent scopes.
+
+**Problem:** A tenant-level setting update should invalidate:
+- The tenant-level cache for that key
+- Any module-level caches that might have resolved to that tenant setting
+- Any user-level caches that might have resolved to that tenant setting
+
+**Solution:** Use pattern-based cache invalidation (Redis `keys()` command) or invalidate all scope combinations when exact combinations are unknown.
+
+```php
+// For hierarchical systems, invalidate by pattern
+$pattern = "{$prefix}:{$key}:*";
+$redis = Cache::getRedis();
+$keys = $redis->keys($pattern);
+if (!empty($keys)) {
+    $redis->del($keys);
+}
+```
+
+**Lesson:** For hierarchical/inherited data with caching, consider the full dependency graph when invalidating, not just direct relationships.
+
+### 3. Package Decoupling Scope Clarification
+
+**Important Distinctions:**
+
+1. **Laravel Core vs External Packages:**
+   - Laravel core facades (Cache, Crypt, Storage, Log, etc.) do NOT need abstraction
+   - External packages (Spatie, Scout) DO need abstraction in main app code
+   - Reason: Laravel core is stable and unlikely to change
+
+2. **Main App vs Internal Packages:**
+   - Main app code (`apps/*/app/`): MUST use wrapper traits
+   - Internal packages (`packages/*/src/`): MAY use direct traits since packages are self-contained
+   - Consistency preferred but not strictly required for internal packages
+
+3. **Model Traits vs Service Usage:**
+   - Model traits (LogsActivity, Searchable): Acceptable for model functionality
+   - Service/business logic: MUST use contracts and dependency injection
+   - Never call package APIs directly in services (e.g., `activity()->log()`)
+
+4. **Private/Protected Methods:**
+   - Direct Laravel facade use in private/protected methods is acceptable
+   - These are internal implementation details, not public API
+   - Public API should still use dependency injection
+
+**Example of Acceptable Direct Usage:**
+```php
+// In a SERVICE class
+protected function encryptValue(string $value): string
+{
+    // OK: Private method using Laravel core facade
+    return Crypt::encryptString($value);
+}
+
+// But the public API should use DI for external packages
+public function __construct(
+    private readonly ActivityLoggerContract $logger // Contract for external package
+) {}
+```
+
+### 4. Return Type Declarations in All Methods
+
+**Reminder:** This is non-negotiable. Every method must have a return type declaration:
+- Public methods: Required
+- Protected methods: Required
+- Private methods: Required
+- Magic methods (`__construct`, `__invoke`): Required (use `void` if no return)
+- Eloquent scope methods: Required (`Builder` return type)
+- Accessor/mutator methods: Required
+
+**Common Mistake:** Forgetting return types on:
+- Scope methods (`scopeXxx`)
+- Accessor methods (`getXxxAttribute`)
+- Relationship methods (but these typically have return types already)
+- Event listener `handle()` methods (use `void`)
 
 ---
 
