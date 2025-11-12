@@ -1,0 +1,44 @@
+{
+    "name": "azaharizaman/erp-settings-management",
+    "description": "Hierarchical Settings Management System for ERP with multi-level scopes, encryption, and caching",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Azahari Zaman",
+            "email": "azahari@nexusenvision.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "laravel/scout": "^10.0",
+        "azaharizaman/erp-core": "dev-main"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.0",
+        "laravel/pint": "^1.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "Azaharizaman\\Erp\\SettingsManagement\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Azaharizaman\\Erp\\SettingsManagement\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Azaharizaman\\Erp\\SettingsManagement\\SettingsManagementServiceProvider"
+            ],
+            "aliases": {
+                "Settings": "Azaharizaman\\Erp\\SettingsManagement\\Facades\\Settings"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
