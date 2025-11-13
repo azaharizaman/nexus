@@ -22,18 +22,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Azaharizaman\\Erp\\AuditLogging\\": "src/"
+            "Nexus\\Erp\\AuditLogging\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Azaharizaman\\Erp\\AuditLogging\\Tests\\": "tests/"
+            "Nexus\\Erp\\AuditLogging\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Azaharizaman\\Erp\\AuditLogging\\AuditLoggingServiceProvider"
+                "Nexus\\Erp\\AuditLogging\\AuditLoggingServiceProvider"
             ]
         }
     },

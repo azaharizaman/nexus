@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\AuditLogging\Services\LogFormatterService;
+use Nexus\Erp\AuditLogging\Services\LogFormatterService;
 
 /**
  * Unit Tests for LogFormatterService

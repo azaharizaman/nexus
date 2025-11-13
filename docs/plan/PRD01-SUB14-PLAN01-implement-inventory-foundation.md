@@ -53,7 +53,7 @@ This implementation plan establishes the foundational infrastructure for the Inv
 
 - **CON-001**: Must use PostgreSQL 14+ for generated columns (available_quantity)
 - **CON-002**: Must follow Laravel 12 domain-driven design structure
-- **CON-003**: Package namespace: `Azaharizaman\Erp\InventoryManagement`
+- **CON-003**: Package namespace: `Nexus\Erp\InventoryManagement`
 - **CON-004**: All models must use strict types (`declare(strict_types=1);`)
 - **CON-005**: Database tables must use tenant_id for multi-tenancy isolation
 - **CON-006**: All date columns use TIMESTAMP type (not DATE) for precision

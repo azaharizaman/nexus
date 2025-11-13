@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use Azaharizaman\Erp\Core\Enums\UserStatus;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Enums\UserStatus;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;

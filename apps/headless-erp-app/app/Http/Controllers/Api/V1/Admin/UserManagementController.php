@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Auth\UserResource;
 use App\Models\User;
 use App\Support\Contracts\PermissionServiceContract;
-use Azaharizaman\Erp\Core\Enums\UserStatus;
+use Nexus\Erp\Core\Enums\UserStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Core\Enums;
 
-use Azaharizaman\Erp\Core\Enums\UserStatus;
+use Nexus\Erp\Core\Enums\UserStatus;
 use PHPUnit\Framework\TestCase;
 
 /**

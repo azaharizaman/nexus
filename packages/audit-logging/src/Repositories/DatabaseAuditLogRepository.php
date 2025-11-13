@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Repositories;
+namespace Nexus\Erp\AuditLogging\Repositories;
 
-use Azaharizaman\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
+use Nexus\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Contracts;
+namespace Nexus\Erp\Core\Contracts;
 
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Models\Tenant;
 
 /**
  * Tenant Manager Contract

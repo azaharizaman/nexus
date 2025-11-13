@@ -58,7 +58,7 @@ The Journal Entries System solves the critical problem of **manual accounting ad
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-journal-entries`
-- **Namespace:** `Azaharizaman\Erp\JournalEntries`
+- **Namespace:** `Nexus\Erp\JournalEntries`
 - **Monorepo Location:** `/packages/journal-entries/`
 - **Installation:** `composer require azaharizaman/erp-journal-entries` (post v1.0 release)
 

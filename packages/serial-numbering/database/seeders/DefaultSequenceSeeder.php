@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Database\Seeders;
+namespace Nexus\Erp\SerialNumbering\Database\Seeders;
 
-use Azaharizaman\Erp\SerialNumbering\Enums\ResetPeriod;
-use Azaharizaman\Erp\SerialNumbering\Models\Sequence;
+use Nexus\Erp\SerialNumbering\Enums\ResetPeriod;
+use Nexus\Erp\SerialNumbering\Models\Sequence;
 use Illuminate\Database\Seeder;
 
 /**

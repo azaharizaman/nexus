@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Models;
+namespace Nexus\Erp\SerialNumbering\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\SerialNumbering\Http\Controllers\SequenceController;
+use Nexus\Erp\SerialNumbering\Http\Controllers\SequenceController;
 use Illuminate\Support\Facades\Route;
 
 /*

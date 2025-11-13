@@ -20,18 +20,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Azaharizaman\\Erp\\SerialNumbering\\": "src/"
+            "Nexus\\Erp\\SerialNumbering\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Azaharizaman\\Erp\\SerialNumbering\\Tests\\": "tests/"
+            "Nexus\\Erp\\SerialNumbering\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Azaharizaman\\Erp\\SerialNumbering\\SerialNumberingServiceProvider"
+                "Nexus\\Erp\\SerialNumbering\\SerialNumberingServiceProvider"
             ]
         }
     },

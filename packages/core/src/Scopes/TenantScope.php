@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Scopes;
+namespace Nexus\Erp\Core\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

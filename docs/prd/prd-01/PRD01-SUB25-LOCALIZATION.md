@@ -50,7 +50,7 @@ This module solves the challenge of supporting global operations by providing co
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-localization`
-- **Namespace:** `Azaharizaman\Erp\Localization`
+- **Namespace:** `Nexus\Erp\Localization`
 - **Monorepo Location:** `/packages/localization/`
 - **Installation:** `composer require azaharizaman/erp-localization` (post v1.0 release)
 
@@ -341,7 +341,7 @@ All endpoints follow the RESTful pattern under `/api/v1/localization/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\Localization\Events;
+namespace Nexus\Erp\Localization\Events;
 
 class LanguageSwitchedEvent
 {

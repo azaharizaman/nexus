@@ -55,7 +55,7 @@ laravel-erp/
 │       └── composer.json
 ├── packages/
 │   └── core/                     # Core ERP package
-│       ├── src/                  # Source code (Azaharizaman\Erp\Core namespace)
+│       ├── src/                  # Source code (Nexus\Erp\Core namespace)
 │       ├── tests/                # Package tests
 │       ├── composer.json         # Package dependencies
 │       └── README.md             # Package documentation
@@ -173,7 +173,7 @@ This project follows a **monorepo architecture** as specified in [PRD01-MVP.md](
   - Contains HTTP layer, configuration, and application-specific logic
   
 - **`packages/core/`** - Core ERP functionality package
-  - Namespace: `Azaharizaman\Erp\Core`
+  - Namespace: `Nexus\Erp\Core`
   - Multi-tenancy, authentication, audit logging
   - Independent, publishable package
 

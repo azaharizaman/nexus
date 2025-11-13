@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Services;
+namespace Nexus\Erp\AuditLogging\Services;
 
-use Azaharizaman\Erp\AuditLogging\Contracts\LogFormatterContract;
+use Nexus\Erp\AuditLogging\Contracts\LogFormatterContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 

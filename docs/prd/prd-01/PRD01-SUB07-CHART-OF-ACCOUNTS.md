@@ -60,7 +60,7 @@ The Chart of Accounts System solves the critical problem of **financial classifi
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-chart-of-accounts`
-- **Namespace:** `Azaharizaman\Erp\ChartOfAccounts`
+- **Namespace:** `Nexus\Erp\ChartOfAccounts`
 - **Monorepo Location:** `/packages/chart-of-accounts/`
 - **Installation:** `composer require azaharizaman/erp-chart-of-accounts` (post v1.0 release)
 
@@ -341,7 +341,7 @@ All endpoints follow `/api/v1/accounts` pattern:
 
 **Facade Usage:**
 ```php
-use Azaharizaman\Erp\ChartOfAccounts\Facades\COA;
+use Nexus\Erp\ChartOfAccounts\Facades\COA;
 
 // Get account tree
 $tree = COA::tree();

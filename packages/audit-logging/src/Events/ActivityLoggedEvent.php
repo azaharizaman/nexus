@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Events;
+namespace Nexus\Erp\AuditLogging\Events;
 
 use Carbon\Carbon;
 use Illuminate\Broadcasting\InteractsWithSockets;

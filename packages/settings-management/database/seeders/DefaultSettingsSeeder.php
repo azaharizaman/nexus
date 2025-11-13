@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Database\Seeders;
+namespace Nexus\Erp\SettingsManagement\Database\Seeders;
 
-use Azaharizaman\Erp\SettingsManagement\Models\Setting;
+use Nexus\Erp\SettingsManagement\Models\Setting;
 use Illuminate\Database\Seeder;
 
 /**

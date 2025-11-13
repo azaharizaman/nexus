@@ -60,7 +60,7 @@ The Audit Logging System solves the critical problem of **traceable system activ
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-audit-logging`
-- **Namespace:** `Azaharizaman\Erp\AuditLogging`
+- **Namespace:** `Nexus\Erp\AuditLogging`
 - **Monorepo Location:** `/packages/audit-logging/`
 - **Installation:** `composer require azaharizaman/erp-audit-logging` (post v1.0 release)
 
@@ -336,7 +336,7 @@ All endpoints follow `/api/v1/audit` pattern:
 
 **Event Usage Example:**
 ```php
-use Azaharizaman\Erp\AuditLogging\Events\ActivityLoggedEvent;
+use Nexus\Erp\AuditLogging\Events\ActivityLoggedEvent;
 
 // Automatically emitted by logging system
 event(new ActivityLoggedEvent($activityLog));

@@ -49,7 +49,7 @@ This module solves the challenge of reliably delivering time-sensitive notificat
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-notifications`
-- **Namespace:** `Azaharizaman\Erp\Notifications`
+- **Namespace:** `Nexus\Erp\Notifications`
 - **Monorepo Location:** `/packages/notifications/`
 - **Installation:** `composer require azaharizaman/erp-notifications` (post v1.0 release)
 
@@ -358,7 +358,7 @@ All endpoints follow the RESTful pattern under `/api/v1/notifications/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\Notifications\Events;
+namespace Nexus\Erp\Notifications\Events;
 
 class NotificationSentEvent
 {

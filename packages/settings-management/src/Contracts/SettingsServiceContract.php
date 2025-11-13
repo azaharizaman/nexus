@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Contracts;
+namespace Nexus\Erp\SettingsManagement\Contracts;
 
 /**
  * Settings Service Contract

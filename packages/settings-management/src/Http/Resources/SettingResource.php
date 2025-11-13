@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Http\Resources;
+namespace Nexus\Erp\SettingsManagement\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -12,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * Transforms Setting model to JSON:API format.
  *
- * @mixin \Azaharizaman\Erp\SettingsManagement\Models\Setting
+ * @mixin \Nexus\Erp\SettingsManagement\Models\Setting
  */
 class SettingResource extends JsonResource
 {

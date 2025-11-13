@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Services;
+namespace Nexus\Erp\SettingsManagement\Services;
 
-use Azaharizaman\Erp\SettingsManagement\Contracts\SettingsRepositoryContract;
-use Azaharizaman\Erp\SettingsManagement\Contracts\SettingsServiceContract;
-use Azaharizaman\Erp\SettingsManagement\Events\CacheInvalidatedEvent;
-use Azaharizaman\Erp\SettingsManagement\Events\SettingCreatedEvent;
-use Azaharizaman\Erp\SettingsManagement\Events\SettingUpdatedEvent;
-use Azaharizaman\Erp\SettingsManagement\Models\Setting;
-use Azaharizaman\Erp\SettingsManagement\Models\SettingHistory;
+use Nexus\Erp\SettingsManagement\Contracts\SettingsRepositoryContract;
+use Nexus\Erp\SettingsManagement\Contracts\SettingsServiceContract;
+use Nexus\Erp\SettingsManagement\Events\CacheInvalidatedEvent;
+use Nexus\Erp\SettingsManagement\Events\SettingCreatedEvent;
+use Nexus\Erp\SettingsManagement\Events\SettingUpdatedEvent;
+use Nexus\Erp\SettingsManagement\Models\Setting;
+use Nexus\Erp\SettingsManagement\Models\SettingHistory;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core;
+namespace Nexus\Erp\Core;
 
-use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Http\Middleware\EnsureTenantActive;
-use Azaharizaman\Erp\Core\Middleware\IdentifyTenant;
-use Azaharizaman\Erp\Core\Models\Tenant;
-use Azaharizaman\Erp\Core\Repositories\TenantRepository;
-use Azaharizaman\Erp\Core\Services\ImpersonationService;
-use Azaharizaman\Erp\Core\Services\TenantManager;
+use Nexus\Erp\Core\Contracts\TenantManagerContract;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Http\Middleware\EnsureTenantActive;
+use Nexus\Erp\Core\Middleware\IdentifyTenant;
+use Nexus\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Repositories\TenantRepository;
+use Nexus\Erp\Core\Services\ImpersonationService;
+use Nexus\Erp\Core\Services\TenantManager;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 

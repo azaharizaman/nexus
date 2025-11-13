@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Http\Controllers;
+namespace Nexus\Erp\SerialNumbering\Http\Controllers;
 
-use Azaharizaman\Erp\SerialNumbering\Actions\GenerateSerialNumberAction;
-use Azaharizaman\Erp\SerialNumbering\Actions\OverrideSerialNumberAction;
-use Azaharizaman\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
-use Azaharizaman\Erp\SerialNumbering\Actions\ResetSequenceAction;
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
-use Azaharizaman\Erp\SerialNumbering\Http\Requests\CreateSequenceRequest;
-use Azaharizaman\Erp\SerialNumbering\Http\Requests\UpdateSequenceRequest;
-use Azaharizaman\Erp\SerialNumbering\Http\Resources\SequenceResource;
+use Nexus\Erp\SerialNumbering\Actions\GenerateSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\OverrideSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\ResetSequenceAction;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Http\Requests\CreateSequenceRequest;
+use Nexus\Erp\SerialNumbering\Http\Requests\UpdateSequenceRequest;
+use Nexus\Erp\SerialNumbering\Http\Resources\SequenceResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

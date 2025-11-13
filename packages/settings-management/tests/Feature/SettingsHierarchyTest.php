@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\Core\Models\Tenant;
-use Azaharizaman\Erp\Core\Models\User;
-use Azaharizaman\Erp\SettingsManagement\Facades\Settings;
-use Azaharizaman\Erp\SettingsManagement\Models\Setting;
+use Nexus\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Models\User;
+use Nexus\Erp\SettingsManagement\Facades\Settings;
+use Nexus\Erp\SettingsManagement\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {

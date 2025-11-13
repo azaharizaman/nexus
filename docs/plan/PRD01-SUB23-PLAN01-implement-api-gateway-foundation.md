@@ -58,7 +58,7 @@ This implementation plan covers **API Gateway Foundation** for the API Gateway &
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
 | TASK-001 | Create package directory at `packages/api-gateway/` with standard Laravel package structure | | |
-| TASK-002 | Create composer.json with name `azaharizaman/erp-api-gateway`, namespace `Azaharizaman\Erp\ApiGateway`, require laravel/framework ^12.0, laravel/sanctum ^4.0 | | |
+| TASK-002 | Create composer.json with name `azaharizaman/erp-api-gateway`, namespace `Nexus\Erp\ApiGateway`, require laravel/framework ^12.0, laravel/sanctum ^4.0 | | |
 | TASK-003 | Create service provider in `packages/api-gateway/src/ApiGatewayServiceProvider.php` registering routes, migrations, configs | | |
 | TASK-004 | Create migration `xxxx_create_api_keys_table.php` with columns: id, tenant_id, key_name, key_hash, key_prefix, permissions (JSON), rate_limit_tier, requests_per_minute, is_active, last_used_at, expires_at, created_by, timestamps | | |
 | TASK-005 | Create migration `xxxx_create_api_request_log_table.php` with columns: id, tenant_id, api_key_id, user_id, request_method, request_path, response_status_code, response_time_ms, ip_address, user_agent, api_version, created_at | | |

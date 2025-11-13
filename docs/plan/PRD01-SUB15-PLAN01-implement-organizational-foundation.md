@@ -141,7 +141,7 @@ This implementation plan covers the foundational components of the Backoffice mo
 - **TASK-3.8:** Create middleware `ValidateBackofficeAccess.php` to check user has required backoffice permissions; throw 403 if unauthorized
 - **TASK-3.9:** Register routes in `packages/backoffice/routes/api.php` with prefix '/backoffice', middleware: ['auth:sanctum', 'tenant', 'validate-backoffice-access']; group companies and organizations routes
 - **TASK-3.10:** Create README.md for backoffice package with installation instructions, usage examples, configuration options
-- **TASK-3.11:** Create composer.json for backoffice package with metadata: name "azaharizaman/laravel-backoffice", namespace "Azaharizaman\\Erp\\Backoffice", require: php ^8.2, laravel/framework ^12.0, lorisleiva/laravel-actions ^2.0; autoload PSR-4
+- **TASK-3.11:** Create composer.json for backoffice package with metadata: name "azaharizaman/laravel-backoffice", namespace "Nexus\\Erp\\Backoffice", require: php ^8.2, laravel/framework ^12.0, lorisleiva/laravel-actions ^2.0; autoload PSR-4
 - **TASK-3.12:** Write unit test `BackofficeServiceProviderTest.php`: test bindings are registered, test routes are loaded, test config is published
 - **TASK-3.13:** Write feature test `BackofficeMiddlewareTest.php`: test middleware blocks unauthorized users, test middleware allows users with permissions
 
@@ -587,7 +587,7 @@ POST /api/v1/backoffice/organizations
 ### Events Emitted
 
 ```php
-namespace Azaharizaman\Erp\Backoffice\Events;
+namespace Nexus\Erp\Backoffice\Events;
 
 // Company events
 class CompanyCreatedEvent
@@ -638,7 +638,7 @@ class OrganizationMovedEvent
 ### Listeners
 
 ```php
-namespace Azaharizaman\Erp\Backoffice\Listeners;
+namespace Nexus\Erp\Backoffice\Listeners;
 
 // Initialize backoffice data when tenant created
 class InitializeTenantBackofficeListener

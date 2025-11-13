@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Http\Controllers;
+namespace Nexus\Erp\AuditLogging\Http\Controllers;
 
-use Azaharizaman\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
-use Azaharizaman\Erp\AuditLogging\Contracts\LogExporterContract;
-use Azaharizaman\Erp\AuditLogging\Http\Resources\AuditLogResource;
+use Nexus\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
+use Nexus\Erp\AuditLogging\Contracts\LogExporterContract;
+use Nexus\Erp\AuditLogging\Http\Resources\AuditLogResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

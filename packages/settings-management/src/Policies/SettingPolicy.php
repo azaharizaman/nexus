@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Policies;
+namespace Nexus\Erp\SettingsManagement\Policies;
 
-use Azaharizaman\Erp\Core\Models\User;
-use Azaharizaman\Erp\SettingsManagement\Models\Setting;
+use Nexus\Erp\Core\Models\User;
+use Nexus\Erp\SettingsManagement\Models\Setting;
 
 /**
  * Setting Policy

@@ -52,7 +52,7 @@ This module solves the challenge of maintaining consistent, high-quality master 
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-mdm`
-- **Namespace:** `Azaharizaman\Erp\Mdm`
+- **Namespace:** `Nexus\Erp\Mdm`
 - **Monorepo Location:** `/packages/mdm/`
 - **Installation:** `composer require azaharizaman/erp-mdm` (post v1.0 release)
 
@@ -384,7 +384,7 @@ All endpoints follow the RESTful pattern under `/api/v1/mdm/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\Mdm\Events;
+namespace Nexus\Erp\Mdm\Events;
 
 class MasterDataCreatedEvent
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Tests;
+namespace Nexus\Erp\SerialNumbering\Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 

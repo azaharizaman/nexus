@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Services;
+namespace Nexus\Erp\Core\Services;
 
 use App\Support\Contracts\ActivityLoggerContract;
-use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Contracts\TenantManagerContract;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;

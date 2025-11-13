@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Actions;
+namespace Nexus\Erp\SerialNumbering\Actions;
 
-use Azaharizaman\Erp\SerialNumbering\Contracts\PatternParserContract;
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
-use Azaharizaman\Erp\SerialNumbering\Events\SequenceOverriddenEvent;
-use Azaharizaman\Erp\SerialNumbering\Exceptions\DuplicateNumberException;
-use Azaharizaman\Erp\SerialNumbering\Exceptions\SequenceNotFoundException;
-use Azaharizaman\Erp\SerialNumbering\Models\SerialNumberLog;
+use Nexus\Erp\SerialNumbering\Contracts\PatternParserContract;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Events\SequenceOverriddenEvent;
+use Nexus\Erp\SerialNumbering\Exceptions\DuplicateNumberException;
+use Nexus\Erp\SerialNumbering\Exceptions\SequenceNotFoundException;
+use Nexus\Erp\SerialNumbering\Models\SerialNumberLog;
 use Illuminate\Support\Facades\Gate;
 use Lorisleiva\Actions\Concerns\AsAction;
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Domains\Core\Middleware;
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
-use Azaharizaman\Erp\Core\Middleware\IdentifyTenant;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Contracts\TenantManagerContract;
+use Nexus\Erp\Core\Middleware\IdentifyTenant;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;

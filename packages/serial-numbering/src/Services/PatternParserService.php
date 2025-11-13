@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Services;
+namespace Nexus\Erp\SerialNumbering\Services;
 
-use Azaharizaman\Erp\SerialNumbering\Contracts\PatternParserContract;
-use Azaharizaman\Erp\SerialNumbering\Exceptions\InvalidPatternException;
+use Nexus\Erp\SerialNumbering\Contracts\PatternParserContract;
+use Nexus\Erp\SerialNumbering\Exceptions\InvalidPatternException;
 
 /**
  * Pattern Parser Service

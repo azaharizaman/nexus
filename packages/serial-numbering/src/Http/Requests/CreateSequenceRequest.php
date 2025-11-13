@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Http\Requests;
+namespace Nexus\Erp\SerialNumbering\Http\Requests;
 
-use Azaharizaman\Erp\SerialNumbering\Enums\ResetPeriod;
+use Nexus\Erp\SerialNumbering\Enums\ResetPeriod;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

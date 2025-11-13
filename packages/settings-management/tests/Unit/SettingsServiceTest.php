@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\SettingsManagement\Models\Setting;
-use Azaharizaman\Erp\SettingsManagement\Services\SettingsService;
+use Nexus\Erp\SettingsManagement\Models\Setting;
+use Nexus\Erp\SettingsManagement\Services\SettingsService;
 use Illuminate\Support\Facades\Crypt;
 
 test('can cast string value correctly', function () {

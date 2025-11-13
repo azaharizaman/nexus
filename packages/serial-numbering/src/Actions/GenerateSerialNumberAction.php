@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Actions;
+namespace Nexus\Erp\SerialNumbering\Actions;
 
-use Azaharizaman\Erp\SerialNumbering\Contracts\PatternParserContract;
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
-use Azaharizaman\Erp\SerialNumbering\Events\SequenceGeneratedEvent;
-use Azaharizaman\Erp\SerialNumbering\Models\SerialNumberLog;
+use Nexus\Erp\SerialNumbering\Contracts\PatternParserContract;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Events\SequenceGeneratedEvent;
+use Nexus\Erp\SerialNumbering\Models\SerialNumberLog;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -40,8 +40,8 @@ class GenerateSerialNumberAction
      * @param  array<string, mixed>  $context  Additional context for pattern variables
      * @return string The generated serial number
      *
-     * @throws \Azaharizaman\Erp\SerialNumbering\Exceptions\SequenceNotFoundException
-     * @throws \Azaharizaman\Erp\SerialNumbering\Exceptions\InvalidPatternException
+     * @throws \Nexus\Erp\SerialNumbering\Exceptions\SequenceNotFoundException
+     * @throws \Nexus\Erp\SerialNumbering\Exceptions\InvalidPatternException
      */
     public function handle(string $tenantId, string $sequenceName, array $context = []): string
     {
@@ -50,7 +50,7 @@ class GenerateSerialNumberAction
             $sequence = $this->repository->find($tenantId, $sequenceName);
 
             if ($sequence === null) {
-                throw new \Azaharizaman\Erp\SerialNumbering\Exceptions\SequenceNotFoundException(
+                throw new \Nexus\Erp\SerialNumbering\Exceptions\SequenceNotFoundException(
                     "Sequence '{$sequenceName}' not found for tenant '{$tenantId}'"
                 );
             }

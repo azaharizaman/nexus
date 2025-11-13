@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

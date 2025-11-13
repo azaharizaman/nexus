@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Contracts;
+namespace Nexus\Erp\AuditLogging\Contracts;
 
 use Illuminate\Database\Eloquent\Collection;
 

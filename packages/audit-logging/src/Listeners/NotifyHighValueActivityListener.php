@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Listeners;
+namespace Nexus\Erp\AuditLogging\Listeners;
 
-use Azaharizaman\Erp\AuditLogging\Events\ActivityLoggedEvent;
+use Nexus\Erp\AuditLogging\Events\ActivityLoggedEvent;
 use Illuminate\Support\Facades\Log;
 
 /**

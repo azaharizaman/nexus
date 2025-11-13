@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Actions;
+namespace Nexus\Erp\Core\Actions;
 
 use App\Support\Contracts\ActivityLoggerContract;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
-use Azaharizaman\Erp\Core\Events\TenantSuspendedEvent;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Events\TenantSuspendedEvent;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Console\Command;
 use Lorisleiva\Actions\Concerns\AsAction;
 

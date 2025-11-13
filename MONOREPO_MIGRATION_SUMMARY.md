@@ -86,14 +86,14 @@ laravel-erp/
 
 ## 2. Namespace Changes
 
-All Core domain classes have been moved from `App\Domains\Core` to `Azaharizaman\Erp\Core`:
+All Core domain classes have been moved from `App\Domains\Core` to `Nexus\Erp\Core`:
 
 | Old Namespace | New Namespace |
 |---------------|---------------|
-| `App\Domains\Core\Models\Tenant` | `Azaharizaman\Erp\Core\Models\Tenant` |
-| `App\Domains\Core\Services\TenantManager` | `Azaharizaman\Erp\Core\Services\TenantManager` |
-| `App\Domains\Core\Contracts\*` | `Azaharizaman\Erp\Core\Contracts\*` |
-| `App\Domains\Core\Actions\*` | `Azaharizaman\Erp\Core\Actions\*` |
+| `App\Domains\Core\Models\Tenant` | `Nexus\Erp\Core\Models\Tenant` |
+| `App\Domains\Core\Services\TenantManager` | `Nexus\Erp\Core\Services\TenantManager` |
+| `App\Domains\Core\Contracts\*` | `Nexus\Erp\Core\Contracts\*` |
+| `App\Domains\Core\Actions\*` | `Nexus\Erp\Core\Actions\*` |
 | ... and all other Core domain classes | ... |
 
 ---
@@ -126,7 +126,7 @@ All Core domain classes have been moved from `App\Domains\Core` to `Azaharizaman
 - ✅ All PHP files in `apps/headless-erp-app/database/` - Updated factory imports
 
 ### Configuration Files
-- ✅ `apps/headless-erp-app/bootstrap/providers.php` - Updated to use `Azaharizaman\Erp\Core\CoreServiceProvider`
+- ✅ `apps/headless-erp-app/bootstrap/providers.php` - Updated to use `Nexus\Erp\Core\CoreServiceProvider`
 - ✅ `apps/headless-erp-app/composer.json` - Added path repository and `azaharizaman/erp-core` dependency
 - ✅ Root `composer.json` - Converted to monorepo configuration
 - ✅ `README.md` - Updated with monorepo structure and instructions
@@ -179,13 +179,13 @@ All Core domain classes have been moved from `App\Domains\Core` to `Azaharizaman
     },
     "autoload": {
         "psr-4": {
-            "Azaharizaman\\Erp\\Core\\": "src/"
+            "Nexus\\Erp\\Core\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Azaharizaman\\Erp\\Core\\CoreServiceProvider"
+                "Nexus\\Erp\\Core\\CoreServiceProvider"
             ]
         }
     }
@@ -257,7 +257,7 @@ The key to the monorepo is Composer's "path" repository type:
 
 ### ✅ Package Independence
 - Core package can be published independently to Packagist
-- Clear package boundaries with `Azaharizaman\Erp\Core` namespace
+- Clear package boundaries with `Nexus\Erp\Core` namespace
 - Self-contained with own composer.json and tests
 
 ### ✅ Simplified Versioning
@@ -296,7 +296,7 @@ composer test:app
 cd apps/headless-erp-app
 composer dump-autoload
 php artisan tinker
-# >>> use Azaharizaman\Erp\Core\Models\Tenant;
+# >>> use Nexus\Erp\Core\Models\Tenant;
 # >>> Tenant::count();
 ```
 
@@ -372,7 +372,7 @@ composer install --prefer-source
 ```
 
 ### Namespace Not Found
-Check that all imports use `Azaharizaman\Erp\Core` instead of `App\Domains\Core`:
+Check that all imports use `Nexus\Erp\Core` instead of `App\Domains\Core`:
 ```bash
 cd apps/headless-erp-app
 grep -r "App\\\\Domains\\\\Core" app/

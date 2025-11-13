@@ -47,7 +47,7 @@ This module solves the challenge of providing a consistent, well-documented, and
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-api-gateway`
-- **Namespace:** `Azaharizaman\Erp\ApiGateway`
+- **Namespace:** `Nexus\Erp\ApiGateway`
 - **Monorepo Location:** `/packages/api-gateway/`
 - **Installation:** `composer require azaharizaman/erp-api-gateway` (post v1.0 release)
 
@@ -315,7 +315,7 @@ CREATE TABLE sandbox_environments (
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\ApiGateway\Events;
+namespace Nexus\Erp\ApiGateway\Events;
 
 class APIRequestEvent
 {

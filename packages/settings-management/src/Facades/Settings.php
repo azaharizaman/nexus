@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Facades;
+namespace Nexus\Erp\SettingsManagement\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static void invalidateCache(string $key, ?string $scope = null)
  * @method static int warmCache(?string $scope = null, ?int $tenantId = null)
  *
- * @see \Azaharizaman\Erp\SettingsManagement\Contracts\SettingsServiceContract
+ * @see \Nexus\Erp\SettingsManagement\Contracts\SettingsServiceContract
  */
 class Settings extends Facade
 {

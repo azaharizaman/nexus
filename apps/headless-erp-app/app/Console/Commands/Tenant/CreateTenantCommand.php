@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Tenant;
 
-use Azaharizaman\Erp\Core\Actions\CreateTenantAction;
+use Nexus\Erp\Core\Actions\CreateTenantAction;
 use Illuminate\Console\Command;
 use Illuminate\Validation\ValidationException;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Policies;
+namespace Nexus\Erp\Core\Policies;
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Models\Tenant;
 
 /**
  * Tenant Policy

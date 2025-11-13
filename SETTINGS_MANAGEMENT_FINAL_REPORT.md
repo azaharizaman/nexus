@@ -198,7 +198,7 @@ packages/settings-management/
 
 ### Basic Usage
 ```php
-use Azaharizaman\Erp\SettingsManagement\Facades\Settings;
+use Nexus\Erp\SettingsManagement\Facades\Settings;
 
 // Get a setting
 $smtpHost = Settings::get('email.smtp.host');
@@ -304,7 +304,7 @@ php artisan migrate
 
 5. **Seed default settings**:
 ```bash
-php artisan db:seed --class="Azaharizaman\\Erp\\SettingsManagement\\Database\\Seeders\\DefaultSettingsSeeder"
+php artisan db:seed --class="Nexus\\Erp\\SettingsManagement\\Database\\Seeders\\DefaultSettingsSeeder"
 ```
 
 6. **Warm cache** (optional):

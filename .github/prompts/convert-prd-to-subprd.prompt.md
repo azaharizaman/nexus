@@ -66,7 +66,7 @@ Please follow these steps:
 
    ### Composer Package Information
    - **Package Name:** `azaharizaman/erp-{module}`
-   - **Namespace:** `Azaharizaman\Erp\{Module}`
+   - **Namespace:** `Nexus\Erp\{Module}`
    - **Monorepo Location:** `/packages/{module}/`
    - **Installation:** `composer require azaharizaman/erp-{module}` (post v1.0 release)
 

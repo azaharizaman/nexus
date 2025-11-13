@@ -55,7 +55,7 @@ This module solves the challenge of tracking inventory across multiple warehouse
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-inventory-management`
-- **Namespace:** `Azaharizaman\Erp\InventoryManagement`
+- **Namespace:** `Nexus\Erp\InventoryManagement`
 - **Monorepo Location:** `/packages/inventory-management/`
 - **Installation:** `composer require azaharizaman/erp-inventory-management` (post v1.0 release)
 
@@ -304,7 +304,7 @@ All endpoints follow the RESTful pattern under `/api/v1/inventory/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\InventoryManagement\Events;
+namespace Nexus\Erp\InventoryManagement\Events;
 
 class StockReceivedEvent
 {

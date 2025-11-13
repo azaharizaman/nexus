@@ -49,7 +49,7 @@ This module solves the challenge of integrating with external systems (SAP, Sale
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-integration-connectors`
-- **Namespace:** `Azaharizaman\Erp\IntegrationConnectors`
+- **Namespace:** `Nexus\Erp\IntegrationConnectors`
 - **Monorepo Location:** `/packages/integration-connectors/`
 - **Installation:** `composer require azaharizaman/erp-integration-connectors` (post v1.0 release)
 
@@ -360,7 +360,7 @@ All endpoints follow the RESTful pattern under `/api/v1/integration/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\IntegrationConnectors\Events;
+namespace Nexus\Erp\IntegrationConnectors\Events;
 
 class SyncStartedEvent
 {

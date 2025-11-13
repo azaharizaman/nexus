@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Core\Enums;
 
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Enums\TenantStatus;
 use PHPUnit\Framework\TestCase;
 
 class TenantStatusTest extends TestCase

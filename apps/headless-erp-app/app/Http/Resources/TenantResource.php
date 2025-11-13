@@ -12,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * Transforms tenant model into JSON:API compliant response.
  *
- * @property \Azaharizaman\Erp\Core\Models\Tenant $resource
+ * @property \Nexus\Erp\Core\Models\Tenant $resource
  */
 class TenantResource extends JsonResource
 {

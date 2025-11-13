@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use Azaharizaman\Erp\Core\Events\TenantArchivedEvent;
-use Azaharizaman\Erp\Core\Events\TenantCreatedEvent;
-use Azaharizaman\Erp\Core\Events\TenantUpdatedEvent;
-use Azaharizaman\Erp\Core\Listeners\InitializeTenantDataListener;
+use Nexus\Erp\Core\Events\TenantArchivedEvent;
+use Nexus\Erp\Core\Events\TenantCreatedEvent;
+use Nexus\Erp\Core\Events\TenantUpdatedEvent;
+use Nexus\Erp\Core\Listeners\InitializeTenantDataListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 /**

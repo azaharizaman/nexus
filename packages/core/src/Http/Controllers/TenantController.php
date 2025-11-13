@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Http\Controllers;
+namespace Nexus\Erp\Core\Http\Controllers;
 
-use Azaharizaman\Erp\Core\Actions\ActivateTenantAction;
-use Azaharizaman\Erp\Core\Actions\ArchiveTenantAction;
-use Azaharizaman\Erp\Core\Actions\CreateTenantAction;
-use Azaharizaman\Erp\Core\Actions\DeleteTenantAction;
-use Azaharizaman\Erp\Core\Actions\EndImpersonationAction;
-use Azaharizaman\Erp\Core\Actions\StartImpersonationAction;
-use Azaharizaman\Erp\Core\Actions\SuspendTenantAction;
-use Azaharizaman\Erp\Core\Actions\UpdateTenantAction;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
-use Azaharizaman\Erp\Core\Http\Requests\StoreTenantRequest;
-use Azaharizaman\Erp\Core\Http\Requests\UpdateTenantRequest;
-use Azaharizaman\Erp\Core\Http\Resources\TenantResource;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Actions\ActivateTenantAction;
+use Nexus\Erp\Core\Actions\ArchiveTenantAction;
+use Nexus\Erp\Core\Actions\CreateTenantAction;
+use Nexus\Erp\Core\Actions\DeleteTenantAction;
+use Nexus\Erp\Core\Actions\EndImpersonationAction;
+use Nexus\Erp\Core\Actions\StartImpersonationAction;
+use Nexus\Erp\Core\Actions\SuspendTenantAction;
+use Nexus\Erp\Core\Actions\UpdateTenantAction;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Http\Requests\StoreTenantRequest;
+use Nexus\Erp\Core\Http\Requests\UpdateTenantRequest;
+use Nexus\Erp\Core\Http\Resources\TenantResource;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

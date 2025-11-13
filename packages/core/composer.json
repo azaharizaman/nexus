@@ -22,18 +22,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Azaharizaman\\Erp\\Core\\": "src/"
+            "Nexus\\Erp\\Core\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Azaharizaman\\Erp\\Core\\Tests\\": "tests/"
+            "Nexus\\Erp\\Core\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Azaharizaman\\Erp\\Core\\CoreServiceProvider"
+                "Nexus\\Erp\\Core\\CoreServiceProvider"
             ]
         }
     },

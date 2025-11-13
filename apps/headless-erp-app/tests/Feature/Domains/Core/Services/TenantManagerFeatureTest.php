@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Domains\Core\Services;
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Contracts\TenantManagerContract;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;

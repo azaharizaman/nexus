@@ -52,7 +52,7 @@ This module solves the challenge of managing the complete procure-to-pay cycle f
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-purchasing`
-- **Namespace:** `Azaharizaman\Erp\Purchasing`
+- **Namespace:** `Nexus\Erp\Purchasing`
 - **Monorepo Location:** `/packages/purchasing/`
 - **Installation:** `composer require azaharizaman/erp-purchasing` (post v1.0 release)
 
@@ -382,7 +382,7 @@ All endpoints follow the RESTful pattern under `/api/v1/purchasing/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\Purchasing\Events;
+namespace Nexus\Erp\Purchasing\Events;
 
 class PurchaseOrderCreatedEvent
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Jobs;
+namespace Nexus\Erp\AuditLogging\Jobs;
 
-use Azaharizaman\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
-use Azaharizaman\Erp\AuditLogging\Events\ActivityLoggedEvent;
+use Nexus\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
+use Nexus\Erp\AuditLogging\Events\ActivityLoggedEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

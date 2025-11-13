@@ -39,7 +39,7 @@ php artisan migrate
 ### Creating a Sequence
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
 
 $repository = app(SequenceRepositoryContract::class);
 
@@ -55,7 +55,7 @@ $sequence = $repository->create([
 ### Generating Serial Numbers
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Actions\GenerateSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\GenerateSerialNumberAction;
 
 $number = GenerateSerialNumberAction::run('123', 'invoices', [
     'tenant_code' => 'ACME',
@@ -105,7 +105,7 @@ POST   /api/v1/sequences/{name}/override  - Override number (super-admin)
 ### Preview Without Consuming
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
 
 $preview = PreviewSerialNumberAction::run('123', 'invoices');
 // Returns next number without incrementing counter
@@ -114,7 +114,7 @@ $preview = PreviewSerialNumberAction::run('123', 'invoices');
 ### Resetting Sequences
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Actions\ResetSequenceAction;
+use Nexus\Erp\SerialNumbering\Actions\ResetSequenceAction;
 
 ResetSequenceAction::run('123', 'invoices', 'End of year reset');
 ```

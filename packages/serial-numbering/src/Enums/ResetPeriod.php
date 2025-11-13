@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Enums;
+namespace Nexus\Erp\SerialNumbering\Enums;
 
 /**
  * Reset Period Enum

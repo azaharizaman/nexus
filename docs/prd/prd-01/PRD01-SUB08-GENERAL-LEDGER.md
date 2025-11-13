@@ -63,7 +63,7 @@ The General Ledger System solves the critical problem of **unified financial tra
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-general-ledger`
-- **Namespace:** `Azaharizaman\Erp\GeneralLedger`
+- **Namespace:** `Nexus\Erp\GeneralLedger`
 - **Monorepo Location:** `/packages/general-ledger/`
 - **Installation:** `composer require azaharizaman/erp-general-ledger` (post v1.0 release)
 
@@ -419,7 +419,7 @@ All endpoints follow `/api/v1/gl` pattern:
 
 **Facade Usage:**
 ```php
-use Azaharizaman\Erp\GeneralLedger\Facades\GL;
+use Nexus\Erp\GeneralLedger\Facades\GL;
 
 // Create GL entry (usually done by submodules)
 $entry = GL::createEntry([

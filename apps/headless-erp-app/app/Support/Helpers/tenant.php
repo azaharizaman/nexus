@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Contracts\TenantManagerContract;
+use Nexus\Erp\Core\Models\Tenant;
 
 if (! function_exists('tenant')) {
     /**

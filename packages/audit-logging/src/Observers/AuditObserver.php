@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Observers;
+namespace Nexus\Erp\AuditLogging\Observers;
 
-use Azaharizaman\Erp\AuditLogging\Jobs\LogActivityJob;
-use Azaharizaman\Erp\AuditLogging\Services\LogFormatterService;
+use Nexus\Erp\AuditLogging\Jobs\LogActivityJob;
+use Nexus\Erp\AuditLogging\Services\LogFormatterService;
 use Illuminate\Database\Eloquent\Model;
 
 /**

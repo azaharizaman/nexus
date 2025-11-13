@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Http\Resources;
+namespace Nexus\Erp\Core\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * Transforms tenant model to JSON:API format.
  * Conditionally includes sensitive data (configuration) only for admins.
  *
- * @property \Azaharizaman\Erp\Core\Models\Tenant $resource
+ * @property \Nexus\Erp\Core\Models\Tenant $resource
  */
 class TenantResource extends JsonResource
 {

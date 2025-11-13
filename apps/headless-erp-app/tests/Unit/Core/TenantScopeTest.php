@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Core;
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Models\Tenant;
-use Azaharizaman\Erp\Core\Scopes\TenantScope;
-use Azaharizaman\Erp\Core\Traits\BelongsToTenant;
+use Nexus\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Scopes\TenantScope;
+use Nexus\Erp\Core\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

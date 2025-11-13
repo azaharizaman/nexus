@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Traits;
+namespace Nexus\Erp\AuditLogging\Traits;
 
-use Azaharizaman\Erp\AuditLogging\Observers\AuditObserver;
+use Nexus\Erp\AuditLogging\Observers\AuditObserver;
 
 /**
  * Auditable Trait

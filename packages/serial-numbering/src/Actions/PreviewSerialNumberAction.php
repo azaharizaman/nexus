@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Actions;
+namespace Nexus\Erp\SerialNumbering\Actions;
 
-use Azaharizaman\Erp\SerialNumbering\Contracts\PatternParserContract;
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
-use Azaharizaman\Erp\SerialNumbering\Exceptions\SequenceNotFoundException;
+use Nexus\Erp\SerialNumbering\Contracts\PatternParserContract;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Exceptions\SequenceNotFoundException;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 /**

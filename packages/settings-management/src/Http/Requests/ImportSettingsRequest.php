@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Http\Requests;
+namespace Nexus\Erp\SettingsManagement\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

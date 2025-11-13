@@ -170,7 +170,7 @@ Located at `config/settings-management.php`:
 ### Using Facade
 
 ```php
-use Azaharizaman\Erp\SettingsManagement\Facades\Settings;
+use Nexus\Erp\SettingsManagement\Facades\Settings;
 
 // Get with hierarchical resolution
 $value = Settings::get('email.smtp.host');
@@ -199,7 +199,7 @@ Settings::setMany([
 ### Using Dependency Injection
 
 ```php
-use Azaharizaman\Erp\SettingsManagement\Contracts\SettingsServiceContract;
+use Nexus\Erp\SettingsManagement\Contracts\SettingsServiceContract;
 
 public function __construct(
     private readonly SettingsServiceContract $settings
@@ -224,7 +224,7 @@ php artisan erp:settings:warm-cache --scope=tenant
 php artisan erp:settings:warm-cache --tenant=1
 
 # Seed default system settings
-php artisan db:seed --class="Azaharizaman\\Erp\\SettingsManagement\\Database\\Seeders\\DefaultSettingsSeeder"
+php artisan db:seed --class="Nexus\\Erp\\SettingsManagement\\Database\\Seeders\\DefaultSettingsSeeder"
 ```
 
 ## Testing

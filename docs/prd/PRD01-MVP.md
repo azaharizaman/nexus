@@ -227,14 +227,19 @@ The system leverages modern, battle-tested technologies from the Laravel ecosyst
 | **Laravel Queue + Horizon** | Asynchronous job processing and monitoring | Background tasks, email, report generation, integrations |
 
 #### C.6.4. Database & Data Layer
-| Component | Recommendation | Purpose |
+| Component | Specification | Purpose |
 |-----------|---------------|---------|
-| **Primary RDBMS** | PostgreSQL (preferred) or MySQL | Transactional data with ACID compliance |
+| **Primary RDBMS** | PostgreSQL 13+ (REQUIRED) | ACID-compliant transactional data with JSONB support |
+| **JSONB Storage** | PostgreSQL JSONB columns | Unstructured and flexible data storage (audit logs, settings, events) |
 | **Cache Layer** | Redis or Memcached | Settings cache, session storage, rate limiting |
 | **Search Engine** | Laravel Scout + Meilisearch/Algolia | Full-text search across entities |
-| **Audit Storage** | MongoDB or PostgreSQL JSONB | High-volume, flexible log storage |
 
-**Database Strategy:** Hybrid SQL + NoSQL approach (see Hybrid Database Strategy section below)
+**Database Strategy (MANDATORY):** PostgreSQL is the exclusive, required database platform for this project. All ACID-required transactional data is stored in PostgreSQL standard tables, while unstructured and flexible data is stored in PostgreSQL JSONB columns. This provides:
+- ✅ Full ACID compliance for all transactional data
+- ✅ Native JSON support for flexible data structures (audit logs, event payloads, settings)
+- ✅ Single database platform reducing operational complexity
+- ✅ Superior query capabilities and performance optimization
+- ✅ No external dependencies for document storage
 
 #### C.6.5. Development & Quality Tools
 | Component | Purpose |
@@ -253,14 +258,18 @@ The system leverages modern, battle-tested technologies from the Laravel ecosyst
 | **Fractal (optional)** | Advanced API transformation and pagination |
 
 #### C.6.7. Business Packages (Custom/First-Party)
-| Package | Purpose | Location |
-|---------|---------|----------|
-| **azaharizaman/erp-core** | Multi-tenancy, auth, audit logging | `packages/core/` |
-| **azaharizaman/erp-uom** | Unit of Measure management | `packages/uom/` |
-| **azaharizaman/erp-inventory** | Inventory and stock control | `packages/inventory/` |
-| **azaharizaman/erp-backoffice** | Company/branch/department structure | `packages/backoffice/` |
-| **azaharizaman/erp-serial-numbering** | Document numbering system | `packages/serial-numbering/` |
-| **azaharizaman/huggingface-php** | AI/ML integration capabilities | External package |
+
+**Important Namespace Note:** All packages use the **Nexus** namespace (e.g., `Nexus\Erp\Core`) within code, while maintaining the **azaharizaman** vendor prefix in Composer package names for external distribution consistency (e.g., `azaharizaman/erp-core`).
+
+| Package | Composer Name | PHP Namespace | Purpose | Location |
+|---------|---------------|----------------|---------|----------|
+| **Core Module** | `azaharizaman/erp-core` | `Nexus\Erp\Core` | Multi-tenancy, auth, audit logging | `packages/core/` |
+| **UOM Module** | `azaharizaman/erp-uom` | `Nexus\Erp\Uom` | Unit of Measure management | `packages/uom/` |
+| **Inventory Module** | `azaharizaman/erp-inventory` | `Nexus\Erp\Inventory` | Inventory and stock control | `packages/inventory/` |
+| **Backoffice Module** | `azaharizaman/erp-backoffice` | `Nexus\Erp\Backoffice` | Company/branch/department structure | `packages/backoffice/` |
+| **Serial Numbering Module** | `azaharizaman/erp-serial-numbering` | `Nexus\Erp\SerialNumbering` | Document numbering system | `packages/serial-numbering/` |
+| **Settings Module** | `azaharizaman/erp-settings-management` | `Nexus\Erp\SettingsManagement` | Application settings and configuration | `packages/settings-management/` |
+| **AI/ML Integration** | `azaharizaman/huggingface-php` | `Nexus\Huggingface` | AI/ML integration capabilities | External package |
 
 ### C.7. Open-Source Strategy
 

@@ -66,7 +66,7 @@ All 25 tasks across 5 goals completed:
 
 ### 1. Automatic Audit Logging
 ```php
-use Azaharizaman\Erp\AuditLogging\Traits\Auditable;
+use Nexus\Erp\AuditLogging\Traits\Auditable;
 
 class Invoice extends Model
 {
@@ -104,7 +104,7 @@ POST /api/v1/audit-logs/export   - Export logs
 
 ### 7. System Activity Logging
 ```php
-use Azaharizaman\Erp\AuditLogging\Traits\LogsSystemActivity;
+use Nexus\Erp\AuditLogging\Traits\LogsSystemActivity;
 
 class ImportCommand extends Command
 {

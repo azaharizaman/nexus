@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Permission;

@@ -1,0 +1,101 @@
+# Docker ignore patterns for Laravel ERP
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+*.sublime-*
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+yarn.lock
+
+# Laravel specific
+bootstrap/cache/
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+.env
+.env.local
+.env.*.local
+
+# Documentation
+docs/
+*.md
+!Dockerfile
+
+# Testing
+coverage/
+.phpunit.result.cache
+.pest.result.cache
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+.tmp/
+temp/
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+.TemporaryItems
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Database
+*.sql
+database/backups/
+
+# Build artifacts
+dist/
+build/
+*.compiled
+
+# Node specific
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+
+# Docker files (don't include in image)
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# GitHub specific
+.github/
+
+# Development artifacts
+.venv
+venv/
+__pycache__/
+.pytest_cache/
+
+# IDE temporary files
+*.iml
+*.iws
+*.ipr
+
+# Miscellaneous
+.cache/
+.local/
+.vagrant/
+Vagrantfile
+*.box

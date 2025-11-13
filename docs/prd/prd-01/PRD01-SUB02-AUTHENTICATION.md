@@ -62,7 +62,7 @@ The Authentication & Authorization System solves the critical problem of **secur
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-authentication`
-- **Namespace:** `Azaharizaman\Erp\Authentication`
+- **Namespace:** `Nexus\Erp\Authentication`
 - **Monorepo Location:** `/packages/authentication/`
 - **Installation:** `composer require azaharizaman/erp-authentication` (post v1.0 release)
 
@@ -382,7 +382,7 @@ All endpoints follow `/api/v1/auth` pattern:
 
 **Event Usage Example:**
 ```php
-use Azaharizaman\Erp\Authentication\Events\UserLoggedInEvent;
+use Nexus\Erp\Authentication\Events\UserLoggedInEvent;
 
 // Emit event after successful login
 event(new UserLoggedInEvent($user, $token, $deviceName));
@@ -795,7 +795,7 @@ composer require azaharizaman/erp-authentication
 
 **Step 2: Publish Configuration**
 ```bash
-php artisan vendor:publish --provider="Azaharizaman\Erp\Authentication\AuthenticationServiceProvider"
+php artisan vendor:publish --provider="Nexus\Erp\Authentication\AuthenticationServiceProvider"
 ```
 
 **Step 3: Run Migrations**

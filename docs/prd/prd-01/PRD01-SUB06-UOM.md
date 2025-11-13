@@ -63,7 +63,7 @@ The UOM Management System solves the critical problem of **measurement consisten
 
 - **Published Package:** `azaharizaman/laravel-uom-management`
 - **Internal Package Name:** `azaharizaman/erp-uom-management`
-- **Namespace:** `Azaharizaman\Uom`
+- **Namespace:** `Nexus\Uom`
 - **Monorepo Location:** `/packages/uom-management/`
 - **Installation:** `composer require azaharizaman/laravel-uom-management`
 ## Requirements
@@ -351,7 +351,7 @@ All endpoints follow `/api/v1/uoms` pattern:
 
 **Facade Usage:**
 ```php
-use Azaharizaman\Uom\Facades\UomConverter;
+use Nexus\Uom\Facades\UomConverter;
 
 // Convert quantity between units
 $pounds = UomConverter::convert(10, 'kg', 'lb'); // 22.046

@@ -59,7 +59,7 @@ The Serial Numbering System solves the critical problem of **consistent document
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-serial-numbering`
-- **Namespace:** `Azaharizaman\Erp\SerialNumbering`
+- **Namespace:** `Nexus\Erp\SerialNumbering`
 - **Monorepo Location:** `/packages/serial-numbering/`
 - **Installation:** `composer require azaharizaman/erp-serial-numbering` (post v1.0 release)
 

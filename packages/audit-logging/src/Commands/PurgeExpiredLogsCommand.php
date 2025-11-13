@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Commands;
+namespace Nexus\Erp\AuditLogging\Commands;
 
-use Azaharizaman\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
-use Azaharizaman\Erp\AuditLogging\Events\LogRetentionExpiredEvent;
+use Nexus\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
+use Nexus\Erp\AuditLogging\Events\LogRetentionExpiredEvent;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;

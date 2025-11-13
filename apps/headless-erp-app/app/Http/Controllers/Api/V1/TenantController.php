@@ -8,11 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTenantRequest;
 use App\Http\Requests\UpdateTenantRequest;
 use App\Http\Resources\TenantResource;
-use Azaharizaman\Erp\Core\Actions\ArchiveTenantAction;
-use Azaharizaman\Erp\Core\Actions\CreateTenantAction;
-use Azaharizaman\Erp\Core\Actions\UpdateTenantAction;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Actions\ArchiveTenantAction;
+use Nexus\Erp\Core\Actions\CreateTenantAction;
+use Nexus\Erp\Core\Actions\UpdateTenantAction;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -119,7 +119,7 @@ class TenantController extends Controller
         // Eager load users count if requested
         if (request('with_users_count')) {
             $tenant->loadCount(['users' => function ($query) {
-                $query->withoutGlobalScope(\Azaharizaman\Erp\Core\Scopes\TenantScope::class);
+                $query->withoutGlobalScope(\Nexus\Erp\Core\Scopes\TenantScope::class);
             }]);
         }
 

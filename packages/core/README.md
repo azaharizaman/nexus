@@ -56,7 +56,7 @@ REDIS_PORT=6379
 All models that should be scoped to tenants must use the `BelongsToTenant` trait:
 
 ```php
-use Azaharizaman\Erp\Core\Traits\BelongsToTenant;
+use Nexus\Erp\Core\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
@@ -223,8 +223,8 @@ Authorization: Bearer {token}
 #### Using Actions
 
 ```php
-use Azaharizaman\Erp\Core\Actions\CreateTenantAction;
-use Azaharizaman\Erp\Core\Actions\SuspendTenantAction;
+use Nexus\Erp\Core\Actions\CreateTenantAction;
+use Nexus\Erp\Core\Actions\SuspendTenantAction;
 
 // Create tenant
 $tenant = CreateTenantAction::run([
@@ -240,7 +240,7 @@ $suspendedTenant = SuspendTenantAction::run($tenant, 'Payment overdue');
 #### Using TenantManager
 
 ```php
-use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
+use Nexus\Erp\Core\Contracts\TenantManagerContract;
 
 $tenantManager = app(TenantManagerContract::class);
 
@@ -261,7 +261,7 @@ $tenantManager->setActive($tenant);
 #### Using ImpersonationService
 
 ```php
-use Azaharizaman\Erp\Core\Services\ImpersonationService;
+use Nexus\Erp\Core\Services\ImpersonationService;
 
 $impersonationService = app(ImpersonationService::class);
 
@@ -289,9 +289,9 @@ $impersonationService->endImpersonation(auth()->user());
 The package dispatches events for key tenant lifecycle changes:
 
 ```php
-use Azaharizaman\Erp\Core\Events\TenantCreatedEvent;
-use Azaharizaman\Erp\Core\Events\TenantSuspendedEvent;
-use Azaharizaman\Erp\Core\Events\TenantImpersonationStartedEvent;
+use Nexus\Erp\Core\Events\TenantCreatedEvent;
+use Nexus\Erp\Core\Events\TenantSuspendedEvent;
+use Nexus\Erp\Core\Events\TenantImpersonationStartedEvent;
 
 // Listen to tenant events
 Event::listen(TenantCreatedEvent::class, function ($event) {

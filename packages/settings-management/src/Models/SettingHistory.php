@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Models;
+namespace Nexus\Erp\SettingsManagement\Models;
 
-use Azaharizaman\Erp\Core\Models\Tenant;
-use Azaharizaman\Erp\Core\Models\User;
+use Nexus\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

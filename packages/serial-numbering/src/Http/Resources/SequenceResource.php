@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Http\Resources;
+namespace Nexus\Erp\SerialNumbering\Http\Resources;
 
-use Azaharizaman\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * Transforms Sequence model to JSON:API format.
  *
- * @property \Azaharizaman\Erp\SerialNumbering\Models\Sequence $resource
+ * @property \Nexus\Erp\SerialNumbering\Models\Sequence $resource
  */
 class SequenceResource extends JsonResource
 {

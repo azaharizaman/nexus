@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Console\Commands;
+namespace Nexus\Erp\SettingsManagement\Console\Commands;
 
-use Azaharizaman\Erp\SettingsManagement\Contracts\SettingsServiceContract;
+use Nexus\Erp\SettingsManagement\Contracts\SettingsServiceContract;
 use Illuminate\Console\Command;
 
 /**

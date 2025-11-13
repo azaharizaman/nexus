@@ -50,7 +50,7 @@ This module solves the challenge of implementing complex, multi-level approval w
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-workflow-engine`
-- **Namespace:** `Azaharizaman\Erp\WorkflowEngine`
+- **Namespace:** `Nexus\Erp\WorkflowEngine`
 - **Monorepo Location:** `/packages/workflow-engine/`
 - **Installation:** `composer require azaharizaman/erp-workflow-engine` (post v1.0 release)
 
@@ -361,7 +361,7 @@ All endpoints follow the RESTful pattern under `/api/v1/workflows/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\WorkflowEngine\Events;
+namespace Nexus\Erp\WorkflowEngine\Events;
 
 class WorkflowStartedEvent
 {

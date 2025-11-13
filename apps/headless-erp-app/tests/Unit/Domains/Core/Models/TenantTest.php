@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Core\Models;
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

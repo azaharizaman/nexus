@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Enums\UserStatus;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Enums\UserStatus;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {

@@ -61,7 +61,7 @@ The Settings Management System solves the critical problem of **configuration fl
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-settings-management`
-- **Namespace:** `Azaharizaman\Erp\SettingsManagement`
+- **Namespace:** `Nexus\Erp\SettingsManagement`
 - **Monorepo Location:** `/packages/settings-management/`
 - **Installation:** `composer require azaharizaman/erp-settings-management` (post v1.0 release)
 
@@ -300,7 +300,7 @@ All endpoints follow `/api/v1/settings` pattern:
 
 **Facade Usage:**
 ```php
-use Azaharizaman\Erp\SettingsManagement\Facades\Settings;
+use Nexus\Erp\SettingsManagement\Facades\Settings;
 
 // Get setting with default fallback
 $smtpHost = Settings::get('mail.smtp.host', 'localhost');
@@ -347,7 +347,7 @@ $emailSettings = Settings::category('email')->all();
 
 **Event Usage Example:**
 ```php
-use Azaharizaman\Erp\SettingsManagement\Events\SettingUpdatedEvent;
+use Nexus\Erp\SettingsManagement\Events\SettingUpdatedEvent;
 
 // Automatically emitted when setting changes
 event(new SettingUpdatedEvent($setting, 'old-value', 'new-value'));

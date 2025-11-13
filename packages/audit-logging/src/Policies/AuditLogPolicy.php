@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Policies;
+namespace Nexus\Erp\AuditLogging\Policies;
 
 use App\Models\User;
 use Spatie\Activitylog\Models\Activity;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Actions;
+namespace Nexus\Erp\Core\Actions;
 
 use App\Support\Contracts\ActivityLoggerContract;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Events\TenantDeletedEvent;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Events\TenantDeletedEvent;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Lorisleiva\Actions\Concerns\AsAction;

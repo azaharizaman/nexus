@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\SerialNumbering\Exceptions\InvalidPatternException;
-use Azaharizaman\Erp\SerialNumbering\Services\PatternParserService;
+use Nexus\Erp\SerialNumbering\Exceptions\InvalidPatternException;
+use Nexus\Erp\SerialNumbering\Services\PatternParserService;
 
 test('can parse pattern with YEAR variable', function () {
     $parser = new PatternParserService();

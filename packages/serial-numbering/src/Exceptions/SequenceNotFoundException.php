@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Exceptions;
+namespace Nexus\Erp\SerialNumbering\Exceptions;
 
 use Exception;
 

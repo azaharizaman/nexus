@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Contracts;
+namespace Nexus\Erp\SerialNumbering\Contracts;
 
 /**
  * Pattern Parser Contract
@@ -21,7 +21,7 @@ interface PatternParserContract
      * @param  array<string, mixed>  $context  Context values for variable substitution
      * @return string The evaluated pattern
      *
-     * @throws \Azaharizaman\Erp\SerialNumbering\Exceptions\InvalidPatternException
+     * @throws \Nexus\Erp\SerialNumbering\Exceptions\InvalidPatternException
      */
     public function parse(string $pattern, array $context): string;
 

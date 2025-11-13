@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Middleware;
+namespace Nexus\Erp\Core\Middleware;
 
-use Azaharizaman\Erp\Core\Contracts\TenantManagerContract;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Contracts\TenantManagerContract;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -104,7 +104,7 @@ class IdentifyTenant
      * Load tenant from cache first, fall back to database if not cached
      *
      * @param  string  $tenantId  The tenant ID
-     * @return \Azaharizaman\Erp\Core\Models\Tenant|null
+     * @return \Nexus\Erp\Core\Models\Tenant|null
      */
     protected function loadTenantFromCacheOrDatabase(string $tenantId)
     {

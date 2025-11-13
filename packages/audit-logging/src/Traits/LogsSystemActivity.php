@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Traits;
+namespace Nexus\Erp\AuditLogging\Traits;
 
-use Azaharizaman\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
+use Nexus\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
 use Illuminate\Support\Str;
 
 /**

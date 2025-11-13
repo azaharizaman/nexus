@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Core\Actions;
 
-use Azaharizaman\Erp\Core\Actions\UpdateTenantAction;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
-use Azaharizaman\Erp\Core\Events\TenantUpdatedEvent;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Actions\UpdateTenantAction;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Events\TenantUpdatedEvent;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Validation\ValidationException;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\AuditLogging\Traits\Auditable;
+use Nexus\Erp\AuditLogging\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 /**

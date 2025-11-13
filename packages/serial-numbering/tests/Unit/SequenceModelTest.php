@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\SerialNumbering\Enums\ResetPeriod;
-use Azaharizaman\Erp\SerialNumbering\Models\Sequence;
+use Nexus\Erp\SerialNumbering\Enums\ResetPeriod;
+use Nexus\Erp\SerialNumbering\Models\Sequence;
 use Carbon\Carbon;
 
 test('sequence model has correct fillable attributes', function () {

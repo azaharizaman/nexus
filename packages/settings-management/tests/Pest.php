@@ -13,7 +13,7 @@ declare(strict_types=1);
 |
 */
 
-uses(Azaharizaman\Erp\SettingsManagement\Tests\TestCase::class)->in('Feature', 'Unit');
+uses(Nexus\Erp\SettingsManagement\Tests\TestCase::class)->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering;
+namespace Nexus\Erp\SerialNumbering;
 
-use Azaharizaman\Erp\SerialNumbering\Contracts\PatternParserContract;
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
-use Azaharizaman\Erp\SerialNumbering\Http\Middleware\InjectTenantContext;
-use Azaharizaman\Erp\SerialNumbering\Models\Sequence;
-use Azaharizaman\Erp\SerialNumbering\Policies\SequencePolicy;
-use Azaharizaman\Erp\SerialNumbering\Repositories\DatabaseSequenceRepository;
-use Azaharizaman\Erp\SerialNumbering\Services\PatternParserService;
+use Nexus\Erp\SerialNumbering\Contracts\PatternParserContract;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Http\Middleware\InjectTenantContext;
+use Nexus\Erp\SerialNumbering\Models\Sequence;
+use Nexus\Erp\SerialNumbering\Policies\SequencePolicy;
+use Nexus\Erp\SerialNumbering\Repositories\DatabaseSequenceRepository;
+use Nexus\Erp\SerialNumbering\Services\PatternParserService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 

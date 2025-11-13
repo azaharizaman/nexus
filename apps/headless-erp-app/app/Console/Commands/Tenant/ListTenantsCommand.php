@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Tenant;
 
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Enums\TenantStatus;
 use Illuminate\Console\Command;
 
 /**

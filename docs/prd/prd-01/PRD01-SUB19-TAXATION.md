@@ -53,7 +53,7 @@ This module solves the challenge of managing complex tax requirements across mul
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-taxation`
-- **Namespace:** `Azaharizaman\Erp\Taxation`
+- **Namespace:** `Nexus\Erp\Taxation`
 - **Monorepo Location:** `/packages/taxation/`
 - **Installation:** `composer require azaharizaman/erp-taxation` (post v1.0 release)
 
@@ -395,7 +395,7 @@ All endpoints follow the RESTful pattern under `/api/v1/taxation/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\Taxation\Events;
+namespace Nexus\Erp\Taxation\Events;
 
 class TaxCalculatedEvent
 {

@@ -13,7 +13,7 @@ declare(strict_types=1);
 |
 */
 
-uses(Azaharizaman\Erp\SerialNumbering\Tests\TestCase::class)->in('Feature', 'Unit');
+uses(Nexus\Erp\SerialNumbering\Tests\TestCase::class)->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------

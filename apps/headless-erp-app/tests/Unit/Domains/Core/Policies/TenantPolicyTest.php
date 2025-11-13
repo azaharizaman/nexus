@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Core\Policies;
 
 use App\Models\User;
-use Azaharizaman\Erp\Core\Models\Tenant;
-use Azaharizaman\Erp\Core\Policies\TenantPolicy;
+use Nexus\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Policies\TenantPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Contracts;
+namespace Nexus\Erp\SerialNumbering\Contracts;
 
-use Azaharizaman\Erp\SerialNumbering\Models\Sequence;
+use Nexus\Erp\SerialNumbering\Models\Sequence;
 
 /**
  * Sequence Repository Contract
@@ -32,7 +32,7 @@ interface SequenceRepositoryContract
      * @param  string  $sequenceName  The sequence name
      * @return int The new counter value after increment
      *
-     * @throws \Azaharizaman\Erp\SerialNumbering\Exceptions\SequenceNotFoundException
+     * @throws \Nexus\Erp\SerialNumbering\Exceptions\SequenceNotFoundException
      */
     public function lockAndIncrement(string $tenantId, string $sequenceName): int;
 
@@ -60,7 +60,7 @@ interface SequenceRepositoryContract
      * @param  string  $sequenceName  The sequence name
      * @return void
      *
-     * @throws \Azaharizaman\Erp\SerialNumbering\Exceptions\SequenceNotFoundException
+     * @throws \Nexus\Erp\SerialNumbering\Exceptions\SequenceNotFoundException
      */
     public function reset(string $tenantId, string $sequenceName): void;
 

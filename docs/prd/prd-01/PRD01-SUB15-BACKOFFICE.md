@@ -51,7 +51,7 @@ This module solves the challenge of managing enterprise-wide organizational stru
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/laravel-backoffice`
-- **Namespace:** `Azaharizaman\Erp\Backoffice`
+- **Namespace:** `Nexus\Erp\Backoffice`
 - **Monorepo Location:** `/packages/backoffice/`
 - **Installation:** `composer require azaharizaman/laravel-backoffice` (post v1.0 release)
 
@@ -346,7 +346,7 @@ All endpoints follow the RESTful pattern under `/api/v1/backoffice/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\Backoffice\Events;
+namespace Nexus\Erp\Backoffice\Events;
 
 class FiscalYearClosedEvent
 {

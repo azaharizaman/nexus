@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Traits;
+namespace Nexus\Erp\Core\Traits;
 
-use Azaharizaman\Erp\Core\Models\Tenant;
-use Azaharizaman\Erp\Core\Scopes\TenantScope;
+use Nexus\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\Core\Http\Controllers\TenantController;
+use Nexus\Erp\Core\Http\Controllers\TenantController;
 use Illuminate\Support\Facades\Route;
 
 /*

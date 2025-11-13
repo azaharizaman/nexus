@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Azaharizaman\Erp\AuditLogging\Http\Controllers\AuditLogController;
+use Nexus\Erp\AuditLogging\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Route;
 
 /*

@@ -51,7 +51,7 @@ Solves the critical problem of **customer payment management** by:
 ### Composer Package Information
 
 - **Package:** `azaharizaman/erp-accounts-receivable`
-- **Namespace:** `Azaharizaman\Erp\AccountsReceivable`
+- **Namespace:** `Nexus\Erp\AccountsReceivable`
 - **Monorepo:** `/packages/accounts-receivable/`
 
 ---
@@ -275,7 +275,7 @@ CREATE TABLE customer_credit_limits (
 ### Service API
 
 ```php
-use Azaharizaman\Erp\AccountsReceivable\Facades\AR;
+use Nexus\Erp\AccountsReceivable\Facades\AR;
 
 // Create AR invoice from sales order
 $invoice = AR::createInvoiceFromSalesOrder($salesOrder);

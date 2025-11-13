@@ -52,7 +52,7 @@ This module solves the challenge of managing employee master data, organizationa
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-hcm`
-- **Namespace:** `Azaharizaman\Erp\Hcm`
+- **Namespace:** `Nexus\Erp\Hcm`
 - **Monorepo Location:** `/packages/hcm/`
 - **Installation:** `composer require azaharizaman/erp-hcm` (post v1.0 release)
 
@@ -285,7 +285,7 @@ All endpoints follow the RESTful pattern under `/api/v1/hcm/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\Hcm\Events;
+namespace Nexus\Erp\Hcm\Events;
 
 class EmployeeHiredEvent
 {

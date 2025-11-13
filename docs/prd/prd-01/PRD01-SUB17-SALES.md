@@ -52,7 +52,7 @@ This module solves the challenge of managing the complete sales cycle from quota
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-sales`
-- **Namespace:** `Azaharizaman\Erp\Sales`
+- **Namespace:** `Nexus\Erp\Sales`
 - **Monorepo Location:** `/packages/sales/`
 - **Installation:** `composer require azaharizaman/erp-sales` (post v1.0 release)
 
@@ -422,7 +422,7 @@ All endpoints follow the RESTful pattern under `/api/v1/sales/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\Sales\Events;
+namespace Nexus\Erp\Sales\Events;
 
 class SalesOrderCreatedEvent
 {

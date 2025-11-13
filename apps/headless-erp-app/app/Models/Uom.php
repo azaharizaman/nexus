@@ -6,12 +6,11 @@ namespace App\Models;
 
 use App\Enums\UomCategory;
 use App\Support\Traits\HasActivityLogging;
-use Azaharizaman\Erp\Core\Traits\BelongsToTenant;
+use Nexus\Erp\Core\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**

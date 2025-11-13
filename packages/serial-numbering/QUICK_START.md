@@ -45,7 +45,7 @@ php artisan vendor:publish --tag=serial-numbering-config
 Update tenant_id in `DefaultSequenceSeeder.php`, then:
 
 ```bash
-php artisan db:seed --class=Azaharizaman\\Erp\\SerialNumbering\\Database\\Seeders\\DefaultSequenceSeeder
+php artisan db:seed --class=Nexus\\Erp\\SerialNumbering\\Database\\Seeders\\DefaultSequenceSeeder
 ```
 
 ## Basic Usage
@@ -53,7 +53,7 @@ php artisan db:seed --class=Azaharizaman\\Erp\\SerialNumbering\\Database\\Seeder
 ### Create a Sequence
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
 
 $repository = app(SequenceRepositoryContract::class);
 
@@ -69,7 +69,7 @@ $sequence = $repository->create([
 ### Generate Numbers
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Actions\GenerateSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\GenerateSerialNumberAction;
 
 // Simple generation
 $number = GenerateSerialNumberAction::run('1', 'invoices');
@@ -85,7 +85,7 @@ $number = GenerateSerialNumberAction::run('1', 'invoices', [
 ### Preview Next Number
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
 
 $preview = PreviewSerialNumberAction::run('1', 'invoices');
 // Returns next number WITHOUT incrementing counter
@@ -200,7 +200,7 @@ Set up these permissions in your user/role system:
 Listen to sequence events in your `EventServiceProvider`:
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Events\SequenceGeneratedEvent;
+use Nexus\Erp\SerialNumbering\Events\SequenceGeneratedEvent;
 
 Event::listen(SequenceGeneratedEvent::class, function ($event) {
     Log::info('Serial number generated', [
@@ -233,7 +233,7 @@ The package uses `SELECT FOR UPDATE` to prevent race conditions. If you see dead
 Validate pattern:
 
 ```php
-use Azaharizaman\Erp\SerialNumbering\Services\PatternParserService;
+use Nexus\Erp\SerialNumbering\Services\PatternParserService;
 
 $parser = app(PatternParserService::class);
 $isValid = $parser->validate('YOUR-PATTERN-HERE');

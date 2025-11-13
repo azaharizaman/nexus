@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Models;
+namespace Nexus\Erp\Core\Models;
 
 use App\Support\Traits\HasActivityLogging;
 use App\Support\Traits\IsSearchable;
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Enums\TenantStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

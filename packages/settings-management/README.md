@@ -37,7 +37,7 @@ php artisan migrate
 4. (Optional) Seed default system settings:
 
 ```bash
-php artisan db:seed --class="Azaharizaman\\Erp\\SettingsManagement\\Database\\Seeders\\DefaultSettingsSeeder"
+php artisan db:seed --class="Nexus\\Erp\\SettingsManagement\\Database\\Seeders\\DefaultSettingsSeeder"
 ```
 
 ## Usage
@@ -45,7 +45,7 @@ php artisan db:seed --class="Azaharizaman\\Erp\\SettingsManagement\\Database\\Se
 ### Using the Facade
 
 ```php
-use Azaharizaman\Erp\SettingsManagement\Facades\Settings;
+use Nexus\Erp\SettingsManagement\Facades\Settings;
 
 // Get a setting (with hierarchical resolution)
 $value = Settings::get('email.smtp.host');
@@ -75,7 +75,7 @@ Settings::setMany([
 ### Using Dependency Injection
 
 ```php
-use Azaharizaman\Erp\SettingsManagement\Contracts\SettingsServiceContract;
+use Nexus\Erp\SettingsManagement\Contracts\SettingsServiceContract;
 
 class MyService
 {
@@ -245,7 +245,7 @@ The package dispatches the following events:
 ### Listening to Events
 
 ```php
-use Azaharizaman\Erp\SettingsManagement\Events\SettingUpdatedEvent;
+use Nexus\Erp\SettingsManagement\Events\SettingUpdatedEvent;
 
 Event::listen(SettingUpdatedEvent::class, function ($event) {
     // React to setting changes

@@ -58,7 +58,7 @@ The Multi-Tenancy System solves the critical problem of **secure multi-organizat
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-multitenancy`
-- **Namespace:** `Azaharizaman\Erp\Multitenancy`
+- **Namespace:** `Nexus\Erp\Multitenancy`
 - **Monorepo Location:** `/packages/multitenancy/`
 - **Installation:** `composer require azaharizaman/erp-multitenancy` (post v1.0 release)
 
@@ -262,7 +262,7 @@ All endpoints follow `/api/v1/admin/tenants` pattern:
 
 **Event Usage Example:**
 ```php
-use Azaharizaman\Erp\Multitenancy\Events\TenantCreatedEvent;
+use Nexus\Erp\Multitenancy\Events\TenantCreatedEvent;
 
 // Emit event after tenant creation
 event(new TenantCreatedEvent($tenant));
@@ -641,7 +641,7 @@ packages/multitenancy/
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Multitenancy\Models;
+namespace Nexus\Erp\Multitenancy\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -681,10 +681,10 @@ class Tenant extends Model
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Multitenancy\Traits;
+namespace Nexus\Erp\Multitenancy\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
-use Azaharizaman\Erp\Multitenancy\Services\TenantContext;
+use Nexus\Erp\Multitenancy\Services\TenantContext;
 
 trait BelongsToTenant
 {

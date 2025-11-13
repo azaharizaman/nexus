@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Policies;
+namespace Nexus\Erp\SerialNumbering\Policies;
 
-use Azaharizaman\Erp\SerialNumbering\Models\Sequence;
+use Nexus\Erp\SerialNumbering\Models\Sequence;
 use Illuminate\Foundation\Auth\User;
 
 /**

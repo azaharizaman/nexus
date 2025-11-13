@@ -53,7 +53,7 @@ This module solves the challenge of generating accurate, timely financial report
 ### Composer Package Information
 
 - **Package Name:** `azaharizaman/erp-financial-reporting`
-- **Namespace:** `Azaharizaman\Erp\FinancialReporting`
+- **Namespace:** `Nexus\Erp\FinancialReporting`
 - **Monorepo Location:** `/packages/financial-reporting/`
 - **Installation:** `composer require azaharizaman/erp-financial-reporting` (post v1.0 release)
 
@@ -397,7 +397,7 @@ All endpoints follow the RESTful pattern under `/api/v1/financial-reporting/`:
 **Domain Events Emitted:**
 
 ```php
-namespace Azaharizaman\Erp\FinancialReporting\Events;
+namespace Nexus\Erp\FinancialReporting\Events;
 
 class ReportGeneratedEvent
 {

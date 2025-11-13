@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Actions;
+namespace Nexus\Erp\SerialNumbering\Actions;
 
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
-use Azaharizaman\Erp\SerialNumbering\Events\SequenceResetEvent;
-use Azaharizaman\Erp\SerialNumbering\Exceptions\SequenceNotFoundException;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Events\SequenceResetEvent;
+use Nexus\Erp\SerialNumbering\Exceptions\SequenceNotFoundException;
 use Illuminate\Support\Facades\Gate;
 use Lorisleiva\Actions\Concerns\AsAction;
 

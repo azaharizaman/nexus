@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging\Services;
+namespace Nexus\Erp\AuditLogging\Services;
 
-use Azaharizaman\Erp\AuditLogging\Contracts\LogExporterContract;
+use Nexus\Erp\AuditLogging\Contracts\LogExporterContract;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Csv\Writer;

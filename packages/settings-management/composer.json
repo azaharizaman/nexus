@@ -21,21 +21,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Azaharizaman\\Erp\\SettingsManagement\\": "src/"
+            "Nexus\\Erp\\SettingsManagement\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Azaharizaman\\Erp\\SettingsManagement\\Tests\\": "tests/"
+            "Nexus\\Erp\\SettingsManagement\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Azaharizaman\\Erp\\SettingsManagement\\SettingsManagementServiceProvider"
+                "Nexus\\Erp\\SettingsManagement\\SettingsManagementServiceProvider"
             ],
             "aliases": {
-                "Settings": "Azaharizaman\\Erp\\SettingsManagement\\Facades\\Settings"
+                "Settings": "Nexus\\Erp\\SettingsManagement\\Facades\\Settings"
             }
         }
     },

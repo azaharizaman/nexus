@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Models;
+namespace Nexus\Erp\SerialNumbering\Models;
 
-use Azaharizaman\Erp\SerialNumbering\Enums\ResetPeriod;
+use Nexus\Erp\SerialNumbering\Enums\ResetPeriod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 

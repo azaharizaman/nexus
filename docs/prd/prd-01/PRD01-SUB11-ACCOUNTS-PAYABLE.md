@@ -49,7 +49,7 @@ Solves the critical problem of **vendor payment management** by:
 ### Composer Package Information
 
 - **Package:** `azaharizaman/erp-accounts-payable`
-- **Namespace:** `Azaharizaman\Erp\AccountsPayable`
+- **Namespace:** `Nexus\Erp\AccountsPayable`
 - **Monorepo:** `/packages/accounts-payable/`
 
 ---

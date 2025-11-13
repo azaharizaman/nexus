@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Core\Listeners;
 
-use Azaharizaman\Erp\Core\Events\TenantCreatedEvent;
-use Azaharizaman\Erp\Core\Listeners\InitializeTenantDataListener;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Events\TenantCreatedEvent;
+use Nexus\Erp\Core\Listeners\InitializeTenantDataListener;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;

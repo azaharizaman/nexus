@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Contracts;
+namespace Nexus\Erp\SettingsManagement\Contracts;
 
-use Azaharizaman\Erp\SettingsManagement\Models\Setting;
+use Nexus\Erp\SettingsManagement\Models\Setting;
 use Illuminate\Support\Collection;
 
 /**

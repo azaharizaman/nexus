@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domains\Core\Listeners;
 
-use Azaharizaman\Erp\Core\Actions\CreateTenantAction;
-use Azaharizaman\Erp\Core\Contracts\TenantRepositoryContract;
-use Azaharizaman\Erp\Core\Events\TenantCreatedEvent;
-use Azaharizaman\Erp\Core\Listeners\InitializeTenantDataListener;
+use Nexus\Erp\Core\Actions\CreateTenantAction;
+use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
+use Nexus\Erp\Core\Events\TenantCreatedEvent;
+use Nexus\Erp\Core\Listeners\InitializeTenantDataListener;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;

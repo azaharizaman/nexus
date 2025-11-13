@@ -181,7 +181,7 @@ This implementation plan covers the foundational components of the Sales module,
 | TASK-080 | Register routes in `packages/sales/routes/api.php` with prefix '/sales', middleware: ['auth:sanctum', 'tenant', 'validate-sales-access']; group customers, quotations, price-lists, pricing routes | | |
 | TASK-081 | Create seeder `SalesSeeder.php` to seed sample customers, price lists, and quotations for development/testing | | |
 | TASK-082 | Create README.md for sales package with installation, configuration, usage examples, API documentation | | |
-| TASK-083 | Create composer.json for sales package with metadata: name "azaharizaman/erp-sales", namespace "Azaharizaman\\Erp\\Sales", require: php ^8.2, laravel/framework ^12.0, azaharizaman/erp-core ^1.0, azaharizaman/erp-inventory-management ^1.0, lorisleiva/laravel-actions ^2.0; autoload PSR-4 | | |
+| TASK-083 | Create composer.json for sales package with metadata: name "azaharizaman/erp-sales", namespace "Nexus\\Erp\\Sales", require: php ^8.2, laravel/framework ^12.0, azaharizaman/erp-core ^1.0, azaharizaman/erp-inventory-management ^1.0, lorisleiva/laravel-actions ^2.0; autoload PSR-4 | | |
 | TASK-084 | Write unit tests for SalesServiceProvider: test all bindings registered, test routes loaded, test config published | | |
 | TASK-085 | Write feature tests for middleware: test blocks unauthorized users, test allows users with permissions | | |
 

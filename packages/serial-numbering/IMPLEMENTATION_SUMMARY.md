@@ -85,7 +85,7 @@ This implementation provides a comprehensive Serial Numbering System for the Lar
 
 ```php
 // Generate serial number
-use Azaharizaman\Erp\SerialNumbering\Actions\GenerateSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\GenerateSerialNumberAction;
 
 $number = GenerateSerialNumberAction::run('tenant-123', 'invoices', [
     'tenant_code' => 'ACME',
@@ -94,7 +94,7 @@ $number = GenerateSerialNumberAction::run('tenant-123', 'invoices', [
 // Returns: INV-2025-00001 (atomically incremented)
 
 // Preview next number without consuming
-use Azaharizaman\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
+use Nexus\Erp\SerialNumbering\Actions\PreviewSerialNumberAction;
 
 $preview = PreviewSerialNumberAction::run('tenant-123', 'invoices');
 // Returns: INV-2025-00002 (without incrementing counter)

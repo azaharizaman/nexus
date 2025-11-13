@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Enums;
+namespace Nexus\Erp\Core\Enums;
 
 enum TenantStatus: string
 {

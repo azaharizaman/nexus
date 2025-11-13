@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Http\Resources;
+namespace Nexus\Erp\SerialNumbering\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -12,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * Transforms SerialNumberLog model to JSON:API format.
  *
- * @property \Azaharizaman\Erp\SerialNumbering\Models\SerialNumberLog $resource
+ * @property \Nexus\Erp\SerialNumbering\Models\SerialNumberLog $resource
  */
 class SerialNumberLogResource extends JsonResource
 {

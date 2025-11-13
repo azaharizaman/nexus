@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement\Http\Controllers;
+namespace Nexus\Erp\SettingsManagement\Http\Controllers;
 
-use Azaharizaman\Erp\SettingsManagement\Contracts\SettingsServiceContract;
-use Azaharizaman\Erp\SettingsManagement\Http\Requests\BulkUpdateSettingsRequest;
-use Azaharizaman\Erp\SettingsManagement\Http\Requests\CreateSettingRequest;
-use Azaharizaman\Erp\SettingsManagement\Http\Requests\ImportSettingsRequest;
-use Azaharizaman\Erp\SettingsManagement\Http\Requests\UpdateSettingRequest;
-use Azaharizaman\Erp\SettingsManagement\Http\Resources\SettingResource;
-use Azaharizaman\Erp\SettingsManagement\Models\Setting;
+use Nexus\Erp\SettingsManagement\Contracts\SettingsServiceContract;
+use Nexus\Erp\SettingsManagement\Http\Requests\BulkUpdateSettingsRequest;
+use Nexus\Erp\SettingsManagement\Http\Requests\CreateSettingRequest;
+use Nexus\Erp\SettingsManagement\Http\Requests\ImportSettingsRequest;
+use Nexus\Erp\SettingsManagement\Http\Requests\UpdateSettingRequest;
+use Nexus\Erp\SettingsManagement\Http\Resources\SettingResource;
+use Nexus\Erp\SettingsManagement\Models\Setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

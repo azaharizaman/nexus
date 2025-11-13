@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Repositories;
+namespace Nexus\Erp\SerialNumbering\Repositories;
 
-use Azaharizaman\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
-use Azaharizaman\Erp\SerialNumbering\Exceptions\SequenceNotFoundException;
-use Azaharizaman\Erp\SerialNumbering\Models\Sequence;
+use Nexus\Erp\SerialNumbering\Contracts\SequenceRepositoryContract;
+use Nexus\Erp\SerialNumbering\Exceptions\SequenceNotFoundException;
+use Nexus\Erp\SerialNumbering\Models\Sequence;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 

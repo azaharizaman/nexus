@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SettingsManagement;
+namespace Nexus\Erp\SettingsManagement;
 
-use Azaharizaman\Erp\SettingsManagement\Console\Commands\WarmSettingsCacheCommand;
-use Azaharizaman\Erp\SettingsManagement\Contracts\SettingsRepositoryContract;
-use Azaharizaman\Erp\SettingsManagement\Contracts\SettingsServiceContract;
-use Azaharizaman\Erp\SettingsManagement\Models\Setting;
-use Azaharizaman\Erp\SettingsManagement\Policies\SettingPolicy;
-use Azaharizaman\Erp\SettingsManagement\Repositories\DatabaseSettingsRepository;
-use Azaharizaman\Erp\SettingsManagement\Services\SettingsService;
+use Nexus\Erp\SettingsManagement\Console\Commands\WarmSettingsCacheCommand;
+use Nexus\Erp\SettingsManagement\Contracts\SettingsRepositoryContract;
+use Nexus\Erp\SettingsManagement\Contracts\SettingsServiceContract;
+use Nexus\Erp\SettingsManagement\Models\Setting;
+use Nexus\Erp\SettingsManagement\Policies\SettingPolicy;
+use Nexus\Erp\SettingsManagement\Repositories\DatabaseSettingsRepository;
+use Nexus\Erp\SettingsManagement\Services\SettingsService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 

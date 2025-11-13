@@ -49,7 +49,7 @@ Solves the critical problem of **cash accuracy verification** by:
 ### Composer Package Information
 
 - **Package:** `azaharizaman/erp-banking`
-- **Namespace:** `Azaharizaman\Erp\Banking`
+- **Namespace:** `Nexus\Erp\Banking`
 - **Monorepo:** `/packages/banking/`
 
 ---

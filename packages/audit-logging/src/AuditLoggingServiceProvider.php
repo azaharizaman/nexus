@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\AuditLogging;
+namespace Nexus\Erp\AuditLogging;
 
-use Azaharizaman\Erp\AuditLogging\Commands\PurgeExpiredLogsCommand;
-use Azaharizaman\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
-use Azaharizaman\Erp\AuditLogging\Contracts\LogExporterContract;
-use Azaharizaman\Erp\AuditLogging\Contracts\LogFormatterContract;
-use Azaharizaman\Erp\AuditLogging\Events\ActivityLoggedEvent;
-use Azaharizaman\Erp\AuditLogging\Listeners\NotifyHighValueActivityListener;
-use Azaharizaman\Erp\AuditLogging\Policies\AuditLogPolicy;
-use Azaharizaman\Erp\AuditLogging\Repositories\DatabaseAuditLogRepository;
-use Azaharizaman\Erp\AuditLogging\Services\LogExporterService;
-use Azaharizaman\Erp\AuditLogging\Services\LogFormatterService;
+use Nexus\Erp\AuditLogging\Commands\PurgeExpiredLogsCommand;
+use Nexus\Erp\AuditLogging\Contracts\AuditLogRepositoryContract;
+use Nexus\Erp\AuditLogging\Contracts\LogExporterContract;
+use Nexus\Erp\AuditLogging\Contracts\LogFormatterContract;
+use Nexus\Erp\AuditLogging\Events\ActivityLoggedEvent;
+use Nexus\Erp\AuditLogging\Listeners\NotifyHighValueActivityListener;
+use Nexus\Erp\AuditLogging\Policies\AuditLogPolicy;
+use Nexus\Erp\AuditLogging\Repositories\DatabaseAuditLogRepository;
+use Nexus\Erp\AuditLogging\Services\LogExporterService;
+use Nexus\Erp\AuditLogging\Services\LogFormatterService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;

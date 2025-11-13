@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Listeners;
+namespace Nexus\Erp\Core\Listeners;
 
-use Azaharizaman\Erp\Core\Events\TenantCreatedEvent;
-use Azaharizaman\Erp\Core\Models\Tenant;
+use Nexus\Erp\Core\Events\TenantCreatedEvent;
+use Nexus\Erp\Core\Models\Tenant;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 

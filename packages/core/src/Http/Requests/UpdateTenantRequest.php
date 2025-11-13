@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\Core\Http\Requests;
+namespace Nexus\Erp\Core\Http\Requests;
 
-use Azaharizaman\Erp\Core\Enums\TenantStatus;
+use Nexus\Erp\Core\Enums\TenantStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Azaharizaman\Erp\SerialNumbering\Http\Middleware;
+namespace Nexus\Erp\SerialNumbering\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;

@@ -43,7 +43,7 @@ php artisan migrate
 Add the `Auditable` trait to any model you want to audit:
 
 ```php
-use Azaharizaman\Erp\AuditLogging\Traits\Auditable;
+use Nexus\Erp\AuditLogging\Traits\Auditable;
 
 class Invoice extends Model
 {
@@ -72,7 +72,7 @@ class Invoice extends Model
 For cron jobs, queue workers, or CLI commands:
 
 ```php
-use Azaharizaman\Erp\AuditLogging\Traits\LogsSystemActivity;
+use Nexus\Erp\AuditLogging\Traits\LogsSystemActivity;
 
 class ImportDataCommand extends Command
 {
