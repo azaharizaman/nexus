@@ -53,12 +53,16 @@ laravel-erp/
 │       ├── storage/
 │       ├── tests/
 │       └── composer.json
-├── packages/
-│   └── core/                     # Core ERP package
-│       ├── src/                  # Source code (Nexus\Erp\Core namespace)
-│       ├── tests/                # Package tests
-│       ├── composer.json         # Package dependencies
-│       └── README.md             # Package documentation
+├── packages/                     # Atomic business packages
+│   ├── nexus-audit-log/          # Audit logging (Nexus\AuditLog)
+│   ├── nexus-backoffice-management/  # Organization structure (Nexus\BackofficeManagement)
+│   ├── nexus-contracts/          # Shared contracts (Nexus\Contracts)
+│   ├── core/                     # Core orchestration (Nexus\Core)
+│   ├── nexus-inventory-management/   # Inventory operations (Nexus\InventoryManagement)
+│   ├── nexus-sequencing-management/  # Serial numbering (Nexus\SequencingManagement)
+│   ├── nexus-settings-management/    # Settings system (Nexus\SettingsManagement)
+│   ├── nexus-tenancy-management/     # Multi-tenancy (Nexus\TenancyManagement)
+│   └── nexus-uom-management/         # Unit of measure (Nexus\UomManagement)
 ├── docs/                         # Documentation
 ├── composer.json                 # Monorepo root composer.json
 └── README.md                     # This file
@@ -82,24 +86,25 @@ laravel-erp/
 
 ## ✨ Features
 
-### Core Infrastructure (packages/core)
-- ✅ **Multi-Tenancy System** - Complete tenant isolation with automatic scoping
-- ✅ **Authentication & Authorization** - Sanctum API tokens + Spatie Permission
-- ✅ **Audit Logging** - Complete activity tracking with Spatie Activitylog
-- ✅ **Serial Numbering** - Configurable document numbering system
-- ✅ **Settings Management** - Tenant-scoped configuration system
+### Core Infrastructure
+- ✅ **Multi-Tenancy System** - Complete tenant isolation (nexus-tenancy-management)
+- ✅ **Authentication & Authorization** - Sanctum API tokens + Spatie Permission (core)
+- ✅ **Audit Logging** - Complete activity tracking (nexus-audit-log)
+- ✅ **Serial Numbering** - Configurable document numbering (nexus-sequencing-management)
+- ✅ **Settings Management** - Tenant-scoped configuration (nexus-settings-management)
+- ✅ **Contracts Foundation** - Shared interfaces for all packages (nexus-contracts)
 
-### Backoffice Management
-- ✅ **Company Management** - Multi-company support with laravel-backoffice package
+### Backoffice Management (nexus-backoffice-management)
+- ✅ **Company Management** - Multi-company support
 - ✅ **Office Management** - Office hierarchy with location tracking
 - ✅ **Department Management** - Department structure with cost centers
 - ✅ **Staff Management** - Employee records with organizational hierarchy
 
-### Inventory Management
-- 🚧 **Item Master** - Product/material master data (Planned)
-- 🚧 **Warehouse Management** - Multi-warehouse support (Planned)
-- 🚧 **Stock Management** - Real-time inventory tracking (Planned)
-- 🚧 **UOM Management** - Unit of measure conversions (Planned)
+### Inventory Management (nexus-inventory-management)
+- ✅ **Item Master** - Product/material master data
+- ✅ **Warehouse Management** - Multi-warehouse support
+- ✅ **Stock Management** - Real-time inventory tracking
+- ✅ **UOM Management** - Unit of measure conversions (nexus-uom-management)
 
 ### Sales Management
 - 🚧 **Customer Management** - Customer master data (Planned)
@@ -129,13 +134,18 @@ laravel-erp/
 
 ### Key Packages
 
-#### Business Packages (Internal)
+#### Business Packages (Monorepo - Internal)
 ```json
 {
-  "azaharizaman/laravel-uom-management": "dev-main",
-  "azaharizaman/laravel-inventory-management": "dev-main",
-  "azaharizaman/laravel-backoffice": "dev-main",
-  "azaharizaman/laravel-serial-numbering": "dev-main"
+  "nexus/audit-log": "dev-main",
+  "nexus/backoffice-management": "dev-main",
+  "nexus/contracts": "dev-main",
+  "nexus/core": "dev-main",
+  "nexus/inventory-management": "dev-main",
+  "nexus/sequencing-management": "dev-main",
+  "nexus/settings-management": "dev-main",
+  "nexus/tenancy-management": "dev-main",
+  "nexus/uom-management": "dev-main"
 }
 ```
 
