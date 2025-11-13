@@ -6,7 +6,7 @@ namespace App\Repositories;
 
 use App\Contracts\UserRepositoryContract;
 use App\Models\User;
-use Nexus\Core\Enums\UserStatus;
+use App\Enums\UserStatus;
 use Illuminate\Container\Attributes\Bind;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;

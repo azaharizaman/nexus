@@ -9,7 +9,7 @@ use App\Support\Traits\HasActivityLogging;
 use App\Support\Traits\HasPermissions;
 use App\Support\Traits\HasTokens;
 use App\Support\Traits\IsSearchable;
-use Nexus\Core\Enums\UserStatus;
+use App\Enums\UserStatus;
 use Nexus\TenancyManagement\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

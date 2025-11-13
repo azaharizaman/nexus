@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Support\Contracts\PermissionServiceContract;
-use Nexus\Core\Enums\UserStatus;
+use App\Enums\UserStatus;
 use Nexus\TenancyManagement\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
