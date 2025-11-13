@@ -717,7 +717,7 @@ class Staff extends Model
         ?Carbon $effectiveDate = null,
         ?Department $toDepartment = null,
         ?Staff $toSupervisor = null,
-        ?string $toPosition = null,
+        ?Position $toPosition = null,
         ?string $reason = null,
         bool $isImmediate = false
     ): StaffTransfer {
@@ -752,7 +752,7 @@ class Staff extends Model
         Staff $requestedBy,
         ?Department $toDepartment = null,
         ?Staff $toSupervisor = null,
-        ?string $toPosition = null,
+        ?Position $toPosition = null,
         ?string $reason = null
     ): StaffTransfer {
         return $this->requestTransfer(
