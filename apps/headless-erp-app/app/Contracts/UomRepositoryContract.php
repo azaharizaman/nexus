@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Contracts;
+namespace Nexus\Erp\Contracts;
 
-use App\Enums\UomCategory;
-use App\Models\Uom;
+use Nexus\Erp\Enums\UomCategory;
+use Nexus\Erp\Models\Uom;
 use Illuminate\Database\Eloquent\Collection;
 
 /**

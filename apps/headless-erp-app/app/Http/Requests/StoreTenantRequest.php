@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace Nexus\Erp\Http\Requests;
 
 use Nexus\TenancyManagement\Enums\TenantStatus;
 use Nexus\TenancyManagement\Models\Tenant;

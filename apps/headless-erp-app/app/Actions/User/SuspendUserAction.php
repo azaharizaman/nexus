@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\User;
+namespace Nexus\Erp\Actions\User;
 
-use App\Events\Auth\UserSuspendedEvent;
-use App\Models\User;
-use App\Support\Contracts\ActivityLoggerContract;
-use App\Support\Contracts\TokenServiceContract;
-use App\Enums\UserStatus;
+use Nexus\Erp\Events\Auth\UserSuspendedEvent;
+use Nexus\Erp\Models\User;
+use Nexus\Erp\Support\Contracts\ActivityLoggerContract;
+use Nexus\Erp\Support\Contracts\TokenServiceContract;
+use Nexus\Erp\Enums\UserStatus;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 /**

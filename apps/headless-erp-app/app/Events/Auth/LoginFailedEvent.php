@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Events\Auth;
+namespace Nexus\Erp\Events\Auth;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;

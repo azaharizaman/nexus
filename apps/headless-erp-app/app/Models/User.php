@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace Nexus\Erp\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Support\Traits\HasActivityLogging;
-use App\Support\Traits\HasPermissions;
-use App\Support\Traits\HasTokens;
-use App\Support\Traits\IsSearchable;
-use App\Enums\UserStatus;
+use Nexus\Erp\Support\Traits\HasActivityLogging;
+use Nexus\Erp\Support\Traits\HasPermissions;
+use Nexus\Erp\Support\Traits\HasTokens;
+use Nexus\Erp\Support\Traits\IsSearchable;
+use Nexus\Erp\Enums\UserStatus;
 use Nexus\TenancyManagement\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

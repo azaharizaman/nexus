@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace Nexus\Erp\Providers;
 
-use App\Support\Contracts\SearchServiceContract;
-use App\Support\Services\Search\ScoutSearchService;
+use Nexus\Erp\Support\Contracts\SearchServiceContract;
+use Nexus\Erp\Support\Services\Search\ScoutSearchService;
 use Illuminate\Support\ServiceProvider;
 
 /**

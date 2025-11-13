@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace Nexus\Erp\Providers;
 
-use App\Support\Contracts\PermissionServiceContract;
-use App\Support\Services\Permission\SpatiePermissionService;
+use Nexus\Erp\Support\Contracts\PermissionServiceContract;
+use Nexus\Erp\Support\Services\Permission\SpatiePermissionService;
 use Illuminate\Support\ServiceProvider;
 
 /**

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\UnitOfMeasure;
+namespace Nexus\Erp\Actions\UnitOfMeasure;
 
-use App\Contracts\UomRepositoryContract;
-use App\Exceptions\UnitOfMeasure\UomNotFoundException;
-use App\Models\Uom;
+use Nexus\Erp\Contracts\UomRepositoryContract;
+use Nexus\Erp\Exceptions\UnitOfMeasure\UomNotFoundException;
+use Nexus\Erp\Models\Uom;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 

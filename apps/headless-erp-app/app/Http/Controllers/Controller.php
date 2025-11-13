@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace Nexus\Erp\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Auth;
+namespace Nexus\Erp\Actions\Auth;
 
-use App\Contracts\UserRepositoryContract;
-use App\Events\Auth\PasswordResetRequestedEvent;
+use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Events\Auth\PasswordResetRequestedEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\Concerns\AsAction;

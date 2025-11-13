@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\UnitOfMeasure;
+namespace Nexus\Erp\Actions\UnitOfMeasure;
 
-use App\Contracts\UomRepositoryContract;
-use App\Models\Uom;
+use Nexus\Erp\Contracts\UomRepositoryContract;
+use Nexus\Erp\Models\Uom;
 
 /**
  * Validate UOM Compatibility Action

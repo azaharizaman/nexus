@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Exceptions\UnitOfMeasure;
+namespace Nexus\Erp\Exceptions\UnitOfMeasure;
 
 use RuntimeException;
 

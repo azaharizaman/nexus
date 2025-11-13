@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\V1;
+namespace Nexus\Erp\Http\Controllers\Api\V1;
 
-use App\Actions\Auth\LoginAction;
-use App\Actions\Auth\LogoutAction;
-use App\Actions\Auth\RegisterUserAction;
-use App\Actions\Auth\RequestPasswordResetAction;
-use App\Actions\Auth\ResetPasswordAction;
-use App\Exceptions\AccountLockedException;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\ForgotPasswordRequest;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Requests\Auth\ResetPasswordRequest;
-use App\Http\Resources\Auth\TokenResource;
-use App\Http\Resources\Auth\UserResource;
+use Nexus\Erp\Actions\Auth\LoginAction;
+use Nexus\Erp\Actions\Auth\LogoutAction;
+use Nexus\Erp\Actions\Auth\RegisterUserAction;
+use Nexus\Erp\Actions\Auth\RequestPasswordResetAction;
+use Nexus\Erp\Actions\Auth\ResetPasswordAction;
+use Nexus\Erp\Exceptions\AccountLockedException;
+use Nexus\Erp\Http\Controllers\Controller;
+use Nexus\Erp\Http\Requests\Auth\ForgotPasswordRequest;
+use Nexus\Erp\Http\Requests\Auth\LoginRequest;
+use Nexus\Erp\Http\Requests\Auth\RegisterRequest;
+use Nexus\Erp\Http\Requests\Auth\ResetPasswordRequest;
+use Nexus\Erp\Http\Resources\Auth\TokenResource;
+use Nexus\Erp\Http\Resources\Auth\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Attribute\Get;
 use Illuminate\Routing\Attribute\Middleware;

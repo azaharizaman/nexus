@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace Nexus\Erp\Providers;
 
-use App\Models\User;
-use App\Policies\RolePolicy;
-use App\Policies\UserPolicy;
-use App\Support\Contracts\TokenServiceContract;
-use App\Support\Services\Auth\SanctumTokenService;
+use Nexus\Erp\Models\User;
+use Nexus\Erp\Policies\RolePolicy;
+use Nexus\Erp\Policies\UserPolicy;
+use Nexus\Erp\Support\Contracts\TokenServiceContract;
+use Nexus\Erp\Support\Services\Auth\SanctumTokenService;
 use Nexus\TenancyManagement\Models\Tenant;
 use Nexus\TenancyManagement\Policies\TenantPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;

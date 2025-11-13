@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Middleware;
+namespace Nexus\Erp\Http\Middleware;
 
-use App\Exceptions\AccountLockedException;
+use Nexus\Erp\Exceptions\AccountLockedException;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;

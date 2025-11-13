@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\V1\Admin;
+namespace Nexus\Erp\Http\Controllers\Api\V1\Admin;
 
-use App\Actions\User\SuspendUserAction;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Auth\UserResource;
-use App\Models\User;
-use App\Support\Contracts\PermissionServiceContract;
-use App\Enums\UserStatus;
+use Nexus\Erp\Actions\User\SuspendUserAction;
+use Nexus\Erp\Http\Controllers\Controller;
+use Nexus\Erp\Http\Resources\Auth\UserResource;
+use Nexus\Erp\Models\User;
+use Nexus\Erp\Support\Contracts\PermissionServiceContract;
+use Nexus\Erp\Enums\UserStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

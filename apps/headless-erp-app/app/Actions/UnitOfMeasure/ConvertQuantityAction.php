@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\UnitOfMeasure;
+namespace Nexus\Erp\Actions\UnitOfMeasure;
 
-use App\Exceptions\UnitOfMeasure\InvalidQuantityException;
-use App\Services\UnitOfMeasure\UomConversionService;
+use Nexus\Erp\Exceptions\UnitOfMeasure\InvalidQuantityException;
+use Nexus\Erp\Services\UnitOfMeasure\UomConversionService;
 use Brick\Math\BigDecimal;
 use Brick\Math\Exception\MathException;
 use Illuminate\Console\Command;

@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\V1\Admin\UserManagementController;
-use App\Http\Controllers\Api\V1\TenantController;
+use Nexus\Erp\Http\Controllers\Api\V1\Admin\UserManagementController;
+use Nexus\Erp\Http\Controllers\Api\V1\TenantController;
 use Illuminate\Support\Facades\Route;
 
 /*

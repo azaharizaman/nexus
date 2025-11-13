@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Services\UnitOfMeasure;
+namespace Nexus\Erp\Services\UnitOfMeasure;
 
-use App\Contracts\UomRepositoryContract;
-use App\Exceptions\UnitOfMeasure\IncompatibleUomException;
-use App\Exceptions\UnitOfMeasure\UomNotFoundException;
-use App\Models\Uom;
+use Nexus\Erp\Contracts\UomRepositoryContract;
+use Nexus\Erp\Exceptions\UnitOfMeasure\IncompatibleUomException;
+use Nexus\Erp\Exceptions\UnitOfMeasure\UomNotFoundException;
+use Nexus\Erp\Models\Uom;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 

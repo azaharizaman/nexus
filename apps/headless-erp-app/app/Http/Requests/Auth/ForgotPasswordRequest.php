@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Auth;
+namespace Nexus\Erp\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 

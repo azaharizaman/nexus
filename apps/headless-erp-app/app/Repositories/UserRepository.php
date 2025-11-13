@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories;
+namespace Nexus\Erp\Repositories;
 
-use App\Contracts\UserRepositoryContract;
-use App\Models\User;
-use App\Enums\UserStatus;
+use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Models\User;
+use Nexus\Erp\Enums\UserStatus;
 use Illuminate\Container\Attributes\Bind;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;

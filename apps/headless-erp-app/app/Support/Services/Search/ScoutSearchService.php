@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Support\Services\Search;
+namespace Nexus\Erp\Support\Services\Search;
 
-use App\Support\Contracts\SearchServiceContract;
+use Nexus\Erp\Support\Contracts\SearchServiceContract;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;

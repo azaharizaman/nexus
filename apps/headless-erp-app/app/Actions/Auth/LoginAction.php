@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Auth;
+namespace Nexus\Erp\Actions\Auth;
 
-use App\Contracts\UserRepositoryContract;
-use App\Events\Auth\LoginFailedEvent;
-use App\Events\Auth\UserLoggedInEvent;
-use App\Exceptions\AccountLockedException;
-use App\Models\User;
+use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Events\Auth\LoginFailedEvent;
+use Nexus\Erp\Events\Auth\UserLoggedInEvent;
+use Nexus\Erp\Exceptions\AccountLockedException;
+use Nexus\Erp\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;

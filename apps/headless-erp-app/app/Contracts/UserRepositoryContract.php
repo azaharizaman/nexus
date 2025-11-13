@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Contracts;
+namespace Nexus\Erp\Contracts;
 
-use App\Models\User;
+use Nexus\Erp\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 

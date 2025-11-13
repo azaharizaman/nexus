@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace Nexus\Erp\Providers;
 
-use App\Support\Contracts\ActivityLoggerContract;
-use App\Support\Services\Logging\SpatieActivityLogger;
+use Nexus\Erp\Support\Contracts\ActivityLoggerContract;
+use Nexus\Erp\Support\Services\Logging\SpatieActivityLogger;
 use Illuminate\Support\ServiceProvider;
 
 /**

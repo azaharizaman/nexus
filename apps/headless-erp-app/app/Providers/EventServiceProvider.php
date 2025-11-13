@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace Nexus\Erp\Providers;
 
 use Nexus\TenancyManagement\Events\TenantArchivedEvent;
 use Nexus\TenancyManagement\Events\TenantCreatedEvent;

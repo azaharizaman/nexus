@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Middleware;
+namespace Nexus\Erp\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;

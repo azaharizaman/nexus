@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Support\Contracts;
+namespace Nexus\Erp\Support\Contracts;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

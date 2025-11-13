@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Auth;
+namespace Nexus\Erp\Actions\Auth;
 
-use App\Events\Auth\UserLoggedOutEvent;
-use App\Models\User;
+use Nexus\Erp\Events\Auth\UserLoggedOutEvent;
+use Nexus\Erp\Models\User;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 /**

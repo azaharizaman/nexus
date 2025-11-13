@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\V1;
+namespace Nexus\Erp\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTenantRequest;
-use App\Http\Requests\UpdateTenantRequest;
-use App\Http\Resources\TenantResource;
+use Nexus\Erp\Http\Controllers\Controller;
+use Nexus\Erp\Http\Requests\StoreTenantRequest;
+use Nexus\Erp\Http\Requests\UpdateTenantRequest;
+use Nexus\Erp\Http\Resources\TenantResource;
 use Nexus\TenancyManagement\Actions\ArchiveTenantAction;
 use Nexus\TenancyManagement\Actions\CreateTenantAction;
 use Nexus\TenancyManagement\Actions\UpdateTenantAction;

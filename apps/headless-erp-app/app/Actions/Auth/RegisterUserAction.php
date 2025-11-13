@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Auth;
+namespace Nexus\Erp\Actions\Auth;
 
-use App\Contracts\UserRepositoryContract;
-use App\Events\Auth\UserRegisteredEvent;
-use App\Models\User;
+use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Events\Auth\UserRegisteredEvent;
+use Nexus\Erp\Models\User;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 /**

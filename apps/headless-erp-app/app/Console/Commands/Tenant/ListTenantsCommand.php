@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands\Tenant;
+namespace Nexus\Erp\Console\Commands\Tenant;
 
 use Nexus\TenancyManagement\Contracts\TenantRepositoryContract;
 use Nexus\TenancyManagement\Enums\TenantStatus;

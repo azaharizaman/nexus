@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Permission;
+namespace Nexus\Erp\Actions\Permission;
 
-use App\Events\Permission\RoleAssignedEvent;
-use App\Models\User;
-use App\Support\Contracts\ActivityLoggerContract;
-use App\Support\Contracts\PermissionServiceContract;
+use Nexus\Erp\Events\Permission\RoleAssignedEvent;
+use Nexus\Erp\Models\User;
+use Nexus\Erp\Support\Contracts\ActivityLoggerContract;
+use Nexus\Erp\Support\Contracts\PermissionServiceContract;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 

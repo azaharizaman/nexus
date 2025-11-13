@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Support\Services\Auth;
+namespace Nexus\Erp\Support\Services\Auth;
 
-use App\Models\User;
-use App\Support\Contracts\TokenServiceContract;
+use Nexus\Erp\Models\User;
+use Nexus\Erp\Support\Contracts\TokenServiceContract;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Sanctum\PersonalAccessToken;
 

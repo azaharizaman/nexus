@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Listeners\Auth;
+namespace Nexus\Erp\Listeners\Auth;
 
-use App\Events\Auth\UserLoggedInEvent;
+use Nexus\Erp\Events\Auth\UserLoggedInEvent;
 use Illuminate\Events\Attribute\Listen;
 use Illuminate\Support\Facades\Log;
 

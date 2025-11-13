@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Support\Services\Permission;
+namespace Nexus\Erp\Support\Services\Permission;
 
-use App\Support\Contracts\PermissionServiceContract;
+use Nexus\Erp\Support\Contracts\PermissionServiceContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Permission;

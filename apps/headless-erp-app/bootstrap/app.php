@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Domains\Core\Middleware\IdentifyTenant;
-use App\Exceptions\UnitOfMeasure\IncompatibleUomException;
-use App\Exceptions\UnitOfMeasure\InvalidQuantityException;
-use App\Exceptions\UnitOfMeasure\UomConversionException;
-use App\Exceptions\UnitOfMeasure\UomNotFoundException;
-use App\Http\Middleware\EnsureAccountNotLocked;
-use App\Http\Middleware\ValidateSanctumToken;
+use Nexus\Erp\Domains\Core\Middleware\IdentifyTenant;
+use Nexus\Erp\Exceptions\UnitOfMeasure\IncompatibleUomException;
+use Nexus\Erp\Exceptions\UnitOfMeasure\InvalidQuantityException;
+use Nexus\Erp\Exceptions\UnitOfMeasure\UomConversionException;
+use Nexus\Erp\Exceptions\UnitOfMeasure\UomNotFoundException;
+use Nexus\Erp\Http\Middleware\EnsureAccountNotLocked;
+use Nexus\Erp\Http\Middleware\ValidateSanctumToken;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;

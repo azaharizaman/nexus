@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Support\Services\Logging;
+namespace Nexus\Erp\Support\Services\Logging;
 
-use App\Support\Contracts\ActivityLoggerContract;
+use Nexus\Erp\Support\Contracts\ActivityLoggerContract;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
