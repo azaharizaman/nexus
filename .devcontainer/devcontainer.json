@@ -14,12 +14,16 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [
 		8080,
-		9000
+		9003
 	],
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers-extra/features/composer:1": {}
-	}
+	},
+	"mounts": [
+		"source=${localWorkspaceFolder}/.devcontainer/php/conf.d/20-xdebug.ini,target=/usr/local/etc/php/conf.d/20-xdebug.ini,type=bind,consistency=cached"
+	]
+
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "sudo chmod a+x \"$(pwd)\" && sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html"
