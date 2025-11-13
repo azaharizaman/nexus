@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Core\Policies;
 
 use App\Models\User;
-use Nexus\Erp\Core\Models\Tenant;
-use Nexus\Erp\Core\Policies\TenantPolicy;
+use Nexus\TenancyManagement\Models\Tenant;
+use Nexus\TenancyManagement\Policies\TenantPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

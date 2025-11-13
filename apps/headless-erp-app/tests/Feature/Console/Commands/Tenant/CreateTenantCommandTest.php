@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console\Commands\Tenant;
 
-use Nexus\Erp\Core\Models\Tenant;
+use Nexus\TenancyManagement\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

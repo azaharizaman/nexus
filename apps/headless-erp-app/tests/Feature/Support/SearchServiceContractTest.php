@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Support\Contracts\SearchServiceContract;
-use Nexus\Erp\Core\Models\Tenant;
+use Nexus\TenancyManagement\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 

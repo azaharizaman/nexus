@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Core\Services;
 
 use App\Models\User;
-use Nexus\Erp\Core\Contracts\TenantManagerContract;
-use Nexus\Erp\Core\Enums\TenantStatus;
-use Nexus\Erp\Core\Models\Tenant;
-use Nexus\Erp\Core\Services\TenantManager;
+use Nexus\TenancyManagement\Contracts\TenantManagerContract;
+use Nexus\TenancyManagement\Enums\TenantStatus;
+use Nexus\TenancyManagement\Models\Tenant;
+use Nexus\TenancyManagement\Services\TenantManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;

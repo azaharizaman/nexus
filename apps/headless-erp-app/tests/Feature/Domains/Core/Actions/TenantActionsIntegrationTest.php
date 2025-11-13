@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domains\Core\Actions;
 
-use Nexus\Erp\Core\Actions\ArchiveTenantAction;
-use Nexus\Erp\Core\Actions\CreateTenantAction;
-use Nexus\Erp\Core\Actions\UpdateTenantAction;
-use Nexus\Erp\Core\Enums\TenantStatus;
-use Nexus\Erp\Core\Events\TenantArchivedEvent;
-use Nexus\Erp\Core\Events\TenantCreatedEvent;
-use Nexus\Erp\Core\Events\TenantUpdatedEvent;
+use Nexus\TenancyManagement\Actions\ArchiveTenantAction;
+use Nexus\TenancyManagement\Actions\CreateTenantAction;
+use Nexus\TenancyManagement\Actions\UpdateTenantAction;
+use Nexus\TenancyManagement\Enums\TenantStatus;
+use Nexus\TenancyManagement\Events\TenantArchivedEvent;
+use Nexus\TenancyManagement\Events\TenantCreatedEvent;
+use Nexus\TenancyManagement\Events\TenantUpdatedEvent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -144,7 +144,7 @@ class TenantActionsIntegrationTest extends TestCase
 
         // Verify create event data
         Event::assertDispatched(TenantCreatedEvent::class, function ($event) use ($tenant) {
-            return $event->tenant instanceof \Nexus\Erp\Core\Models\Tenant
+            return $event->tenant instanceof \Nexus\TenancyManagement\Models\Tenant
                 && $event->tenant->id === $tenant->id
                 && $event->tenant->name === 'Event Test Tenant';
         });
@@ -158,7 +158,7 @@ class TenantActionsIntegrationTest extends TestCase
 
         // Verify update event contains both current and original data
         Event::assertDispatched(TenantUpdatedEvent::class, function ($event) use ($tenant) {
-            return $event->tenant instanceof \Nexus\Erp\Core\Models\Tenant
+            return $event->tenant instanceof \Nexus\TenancyManagement\Models\Tenant
                 && $event->tenant->id === $tenant->id
                 && $event->tenant->name === 'Updated Event Test Tenant'
                 && $event->tenant->status === TenantStatus::SUSPENDED

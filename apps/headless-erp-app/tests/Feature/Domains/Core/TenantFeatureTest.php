@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domains\Core;
 
-use Nexus\Erp\Core\Enums\TenantStatus;
-use Nexus\Erp\Core\Models\Tenant;
+use Nexus\TenancyManagement\Enums\TenantStatus;
+use Nexus\TenancyManagement\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

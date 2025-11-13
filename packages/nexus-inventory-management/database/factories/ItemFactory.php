@@ -3,7 +3,7 @@
 namespace Nexus\InventoryManagement\Database\Factories;
 
 use Nexus\InventoryManagement\Models\Item;
-use Azaharizaman\LaravelUomManagement\Models\UomUnit;
+use Nexus\UomManagement\Models\UomUnit;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

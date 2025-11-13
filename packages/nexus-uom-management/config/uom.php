@@ -22,7 +22,7 @@ return [
     ],
 
     'seeders' => [
-        'class' => \Azaharizaman\LaravelUomManagement\Database\Seeders\UomDatabaseSeeder::class,
+        'class' => \Nexus\UomManagement\Database\Seeders\UomDatabaseSeeder::class,
         'publish_tag' => 'laravel-uom-management-seeders',
     ],
 ];

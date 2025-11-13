@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Support\Helpers;
 
-use Nexus\Erp\Core\Contracts\TenantManagerContract;
-use Nexus\Erp\Core\Models\Tenant;
+use Nexus\TenancyManagement\Contracts\TenantManagerContract;
+use Nexus\TenancyManagement\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

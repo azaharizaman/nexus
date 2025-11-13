@@ -6,7 +6,7 @@ return [
         'location' => \Nexus\InventoryManagement\Models\Location::class,
         'stock' => \Nexus\InventoryManagement\Models\Stock::class,
         'stock_movement' => \Nexus\InventoryManagement\Models\StockMovement::class,
-        'unit' => \Azaharizaman\LaravelUomManagement\Models\UomUnit::class,
+        'unit' => \Nexus\UomManagement\Models\UomUnit::class,
 
         // Transaction models
         'transactions' => [

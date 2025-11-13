@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Core\Actions;
 
-use Nexus\Erp\Core\Actions\ArchiveTenantAction;
-use Nexus\Erp\Core\Contracts\TenantRepositoryContract;
-use Nexus\Erp\Core\Enums\TenantStatus;
-use Nexus\Erp\Core\Events\TenantArchivedEvent;
-use Nexus\Erp\Core\Models\Tenant;
+use Nexus\TenancyManagement\Actions\ArchiveTenantAction;
+use Nexus\TenancyManagement\Contracts\TenantRepositoryContract;
+use Nexus\TenancyManagement\Enums\TenantStatus;
+use Nexus\TenancyManagement\Events\TenantArchivedEvent;
+use Nexus\TenancyManagement\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Support\Contracts\ActivityLoggerContract;
-use Nexus\Erp\Core\Models\Tenant;
+use Nexus\TenancyManagement\Models\Tenant;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;

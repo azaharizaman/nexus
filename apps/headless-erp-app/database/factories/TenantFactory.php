@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use Nexus\Erp\Core\Enums\TenantStatus;
-use Nexus\Erp\Core\Models\Tenant;
+use Nexus\TenancyManagement\Enums\TenantStatus;
+use Nexus\TenancyManagement\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Nexus\Erp\Core\Models\Tenant>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Nexus\TenancyManagement\Models\Tenant>
  */
 class TenantFactory extends Factory
 {
