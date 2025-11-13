@@ -19,6 +19,7 @@ RUN apk update && apk add --no-cache \
     autoconf \
     automake \
     libtool \
+    linux-headers\
     # Git and version control
     git \
     openssh-client \
@@ -95,7 +96,7 @@ RUN pecl install redis && docker-php-ext-enable redis
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Configure PHP for development
-COPY --chown=www-data:www-data docker/php.ini /usr/local/etc/php/conf.d/99-laravel-erp.ini
+COPY --chown=www-data:www-data .devcontainer/docker/php.ini /usr/local/etc/php/conf.d/99-laravel-erp.ini
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

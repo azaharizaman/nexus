@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
-    container_name: laravel-erp-app
+    container_name: nexus-erp-app
     working_dir: /workspace
     environment:
       APP_NAME: "Laravel ERP"
@@ -76,7 +76,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
-    container_name: laravel-erp-postgres
+    container_name: nexus-erp-postgres
     environment:
       POSTGRES_DB: laravel_erp
       POSTGRES_USER: erp_user
@@ -99,7 +99,7 @@ services:
   # Redis Cache & Queue
   redis:
     image: redis:7-alpine
-    container_name: laravel-erp-redis
+    container_name: nexus-erp-redis
     command: redis-server --appendonly yes --requirepass ""
     volumes:
       - redis_data:/data
@@ -114,71 +114,71 @@ services:
       timeout: 5s
       retries: 5
 
-  # Meilisearch (Full-text Search)
-  meilisearch:
-    image: getmeili/meilisearch:v1.7
-    container_name: laravel-erp-meilisearch
-    environment:
-      MEILI_NO_ANALYTICS: "true"
-      MEILI_ENV: development
-      MEILI_MASTER_KEY: masterKey
-    volumes:
-      - meilisearch_data:/meili_data
-    ports:
-      - "7700:7700"
-    networks:
-      - laravel-erp
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # # Meilisearch (Full-text Search)
+  # meilisearch:
+  #   image: getmeili/meilisearch:v1.7
+  #   container_name: nexus-erp-meilisearch
+  #   environment:
+  #     MEILI_NO_ANALYTICS: "true"
+  #     MEILI_ENV: development
+  #     MEILI_MASTER_KEY: masterKey
+  #   volumes:
+  #     - meilisearch_data:/meili_data
+  #   ports:
+  #     - "7700:7700"
+  #   networks:
+  #     - laravel-erp
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
-  # PgAdmin (PostgreSQL Management)
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: laravel-erp-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@laravel-erp.local
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-      PGADMIN_CONFIG_ENHANCED_SECURITY: "False"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-      - .devcontainer/docker/pgadmin-servers.json:/pgadmin4/servers.json:ro
-    ports:
-      - "5050:80"
-    networks:
-      - laravel-erp
-    depends_on:
-      - postgres
-    restart: unless-stopped
+  # # PgAdmin (PostgreSQL Management)
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: nexus-erp-pgadmin
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@laravel-erp.local
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #     PGADMIN_CONFIG_SERVER_MODE: "False"
+  #     PGADMIN_CONFIG_ENHANCED_SECURITY: "False"
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
+  #     - .devcontainer/docker/pgadmin-servers.json:/pgadmin4/servers.json:ro
+  #   ports:
+  #     - "5050:80"
+  #   networks:
+  #     - laravel-erp
+  #   depends_on:
+  #     - postgres
+  #   restart: unless-stopped
 
-  # Mailhog (Email Testing)
-  mailhog:
-    image: mailhog/mailhog:latest
-    container_name: laravel-erp-mailhog
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-    networks:
-      - laravel-erp
-    restart: unless-stopped
+  # # Mailhog (Email Testing)
+  # mailhog:
+  #   image: mailhog/mailhog:latest
+  #   container_name: nexus-erp-mailhog
+  #   ports:
+  #     - "1025:1025"
+  #     - "8025:8025"
+  #   networks:
+  #     - laravel-erp
+  #   restart: unless-stopped
 
-  # Redis Commander (Redis Management)
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    container_name: laravel-erp-redis-commander
-    environment:
-      REDIS_HOSTS: local:redis:6379:0:""
-    ports:
-      - "8081:8081"
-    networks:
-      - laravel-erp
-    depends_on:
-      - redis
-    restart: unless-stopped
+  # # Redis Commander (Redis Management)
+  # redis-commander:
+  #   image: rediscommander/redis-commander:latest
+  #   container_name: nexus-erp-redis-commander
+  #   environment:
+  #     REDIS_HOSTS: local:redis:6379:0:""
+  #   ports:
+  #     - "8081:8081"
+  #   networks:
+  #     - laravel-erp
+  #   depends_on:
+  #     - redis
+  #   restart: unless-stopped
 
 networks:
   laravel-erp:

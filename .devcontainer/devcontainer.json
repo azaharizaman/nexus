@@ -30,7 +30,7 @@
 		}
 	},
 	"runServices": [
-		"app", "db"
+		"app", "postgres", "redis"
 	],
 	"postCreateCommand": "composer install && cp .env.example .env && php artisan key:generate && npm install && npm run dev",
 	"customizations": {
