@@ -17,7 +17,6 @@
         "spatie/laravel-permission": "^6.0"
     },
     "require-dev": {
-        "pestphp/pest": "^4.0",
         "laravel/pint": "^1.18"
     },
     "autoload": {

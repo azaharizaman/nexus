@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Contracts\UserRepositoryContract;
+use App\Repositories\UserRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -16,10 +18,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Bind UOM Repository
         $this->app->bind(
-            \App\Contracts\UomRepositoryContract::class,
-            \App\Repositories\DatabaseUomRepository::class
+            UserRepositoryContract::class,
+            UserRepository::class
         );
     }
 

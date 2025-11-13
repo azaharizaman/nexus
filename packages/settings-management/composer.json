@@ -16,7 +16,6 @@
         "azaharizaman/erp-core": "dev-main"
     },
     "require-dev": {
-        "pestphp/pest": "^4.0",
         "laravel/pint": "^1.18"
     },
     "autoload": {

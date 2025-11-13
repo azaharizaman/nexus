@@ -7,26 +7,23 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "azaharizaman/erp-core": "dev-main",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.2",
         "laravel/scout": "^10.0",
         "laravel/tinker": "^2.10.1",
         "lorisleiva/laravel-actions": "^2.0",
+        "predis/predis": "^3.2",
         "spatie/laravel-activitylog": "^4.0",
-        "spatie/laravel-permission": "^6.0",
-        "azaharizaman/erp-core": "dev-main"
+        "spatie/laravel-permission": "^6.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "laravel/boost": "^1.7",
-        "laravel/pail": "^1.2.2",
-        "laravel/pint": "^1.24",
-        "laravel/pulse": "^1.0",
-        "laravel/sail": "^1.41",
+        "laravel/pint": "^1.18",
+        "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "^4.0",
-        "phpunit/phpunit": "^12.0"
+        "nunomaduro/collision": "^8.0",
+        "phpunit/phpunit": "^11.0.1"
     },
     "autoload": {
         "psr-4": {
@@ -95,7 +92,6 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }
     },
