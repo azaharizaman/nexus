@@ -1,8 +1,8 @@
 {
-    "name": "azaharizaman/laravel-erp-monorepo",
-    "type": "project",
-    "description": "Laravel ERP Monorepo - Headless ERP system with modular architecture",
-    "keywords": ["laravel", "erp", "monorepo", "headless", "api"],
+    "name": "nexus/erp",
+    "type": "library",
+    "description": "Nexus ERP - Enterprise-grade headless ERP system for Laravel",
+    "keywords": ["laravel", "erp", "headless", "api", "multi-tenant", "enterprise"],
     "license": "MIT",
     "authors": [
         {
@@ -12,21 +12,45 @@
     ],
     "require": {
         "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "nexus/tenancy": "dev-main",
+        "nexus/sequencing": "dev-main",
+        "nexus/settings": "dev-main",
+        "nexus/backoffice": "dev-main",
+        "nexus/inventory": "dev-main",
+        "nexus/uom": "dev-main",
+        "nexus/audit-log": "dev-main",
         "composer-phar/phpcbf": "^4.0"
     },
     "require-dev": {
         "laravel/pint": "^1.18",
         "phpunit/phpunit": "^12.0",
-        "squizlabs/php_codesniffer": "^4.0"
+        "squizlabs/php_codesniffer": "^4.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "autoload": {
-        "psr-4": {}
+        "psr-4": {
+            "Nexus\\Erp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     },
     "scripts": {
         "test": "phpunit",
         "test:app": "cd apps/headless-erp-app && composer test",
         "lint": "pint",
         "lint:app": "cd apps/headless-erp-app && composer lint"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nexus\\Erp\\ErpServiceProvider"
+            ]
+        }
     },
     "config": {
         "optimize-autoloader": true,

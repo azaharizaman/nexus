@@ -7,22 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "laravel/framework": "^12.0",
-        "laravel/sanctum": "^4.2",
-        "laravel/scout": "^10.0",
-        "laravel/tinker": "^2.10.1",
-        "lorisleiva/laravel-actions": "^2.0",
-        "nexus/audit-log": "dev-main",
-        "nexus/backoffice": "dev-main",
-        "nexus/contracts": "dev-main",
-        "nexus/inventory": "dev-main",
-        "nexus/sequencing": "dev-main",
-        "nexus/settings": "dev-main",
-        "nexus/tenancy": "dev-main",
-        "nexus/uom": "dev-main",
-        "predis/predis": "^3.2",
-        "spatie/laravel-activitylog": "^4.0",
-        "spatie/laravel-permission": "^6.0"
+        "nexus/erp": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -36,13 +21,9 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": ["app/", "src/"],
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        },
-        "files": [
-            "app/Support/Helpers/tenant.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
