@@ -35,7 +35,7 @@ use Nexus\Backoffice\Commands\ProcessStaffTransfersCommand;
  * Registers all package components including models, observers, policies,
  * commands, and configuration.
  */
-class BackOfficeServiceProvider extends ServiceProvider
+class BackofficeServiceProvider extends ServiceProvider
 {
     /**
      * All of the container bindings that should be registered.

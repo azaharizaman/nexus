@@ -7,7 +7,7 @@ use Nexus\Inventory\Services\InventoryService;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
-class InventoryManagementServiceProvider extends ServiceProvider
+class InventoryServiceProvider extends ServiceProvider
 {
     public function boot()
     {

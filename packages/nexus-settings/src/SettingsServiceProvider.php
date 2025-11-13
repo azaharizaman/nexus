@@ -19,7 +19,7 @@ use Illuminate\Support\ServiceProvider;
  *
  * Registers and bootstraps the settings management package.
  */
-class SettingsManagementServiceProvider extends ServiceProvider
+class SettingsServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
