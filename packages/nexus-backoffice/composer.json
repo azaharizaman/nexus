@@ -36,19 +36,19 @@
     },
     "autoload": {
         "psr-4": {
-            "Nexus\\BackofficeManagement\\": "src/",
-            "Nexus\\BackofficeManagement\\Database\\Factories\\": "database/factories/"
+            "Nexus\\Backoffice\\": "src/",
+            "Nexus\\Backoffice\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nexus\\BackofficeManagement\\Tests\\": "tests/"
+            "Nexus\\Backoffice\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Nexus\\BackofficeManagement\\BackOfficeServiceProvider"
+                "Nexus\\Backoffice\\BackofficeServiceProvider"
             ]
         }
     },

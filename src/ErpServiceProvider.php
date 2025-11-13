@@ -34,11 +34,13 @@ class ErpServiceProvider extends ServiceProvider
         // Register service contracts
         $this->registerContracts();
 
-        // Merge package configuration
-        $this->mergeConfigFrom(
-            __DIR__.'/../apps/headless-erp-app/config/app.php',
-            'nexus-erp'
-        );
+        // Merge package configuration (if exists)
+        if (file_exists(__DIR__.'/../apps/edward/config/app.php')) {
+            $this->mergeConfigFrom(
+                __DIR__.'/../apps/edward/config/app.php',
+                'nexus-erp'
+            );
+        }
     }
 
     /**
@@ -51,22 +53,26 @@ class ErpServiceProvider extends ServiceProvider
         // Load helper functions
         require_once __DIR__.'/Support/Helpers/tenant.php';
 
-        // Load routes
-        $this->loadRoutesFrom(__DIR__.'/../apps/headless-erp-app/routes/api.php');
-
-        // Load migrations
-        $this->loadMigrationsFrom(__DIR__.'/../apps/headless-erp-app/database/migrations');
-
-        // Publish configuration
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../apps/headless-erp-app/config/app.php' => config_path('nexus-erp.php'),
-            ], 'nexus-erp-config');
-
-            $this->publishes([
-                __DIR__.'/../apps/headless-erp-app/database/migrations' => database_path('migrations'),
-            ], 'nexus-erp-migrations');
+        // Load routes (if api.php exists in Edward)
+        if (file_exists(__DIR__.'/../apps/edward/routes/api.php')) {
+            $this->loadRoutesFrom(__DIR__.'/../apps/edward/routes/api.php');
         }
+
+        // Load migrations (if migrations directory exists in Edward)
+        if (is_dir(__DIR__.'/../apps/edward/database/migrations')) {
+            $this->loadMigrationsFrom(__DIR__.'/../apps/edward/database/migrations');
+        }
+
+        // Publish configuration (optional, commented for CLI-only apps)
+        // if ($this->app->runningInConsole()) {
+        //     $this->publishes([
+        //         __DIR__.'/../apps/edward/config/app.php' => config_path('nexus-erp.php'),
+        //     ], 'nexus-erp-config');
+        //
+        //     $this->publishes([
+        //         __DIR__.'/../apps/edward/database/migrations' => database_path('migrations'),
+        //     ], 'nexus-erp-migrations');
+        // }
     }
 
     /**

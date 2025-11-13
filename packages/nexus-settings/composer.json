@@ -13,7 +13,6 @@
         "php": "^8.2",
         "laravel/framework": "^12.0",
         "laravel/scout": "^10.0",
-        "nexus/core": "dev-main",
         "nexus/contracts": "dev-main"
     },
     "require-dev": {
@@ -21,21 +20,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Nexus\\SettingsManagement\\": "src/"
+            "Nexus\\Settings\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nexus\\SettingsManagement\\Tests\\": "tests/"
+            "Nexus\\Settings\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Nexus\\SettingsManagement\\SettingsManagementServiceProvider"
+                "Nexus\\Settings\\SettingsServiceProvider"
             ],
             "aliases": {
-                "Settings": "Nexus\\SettingsManagement\\Facades\\Settings"
+                "Settings": "Nexus\\Settings\\Facades\\Settings"
             }
         }
     },

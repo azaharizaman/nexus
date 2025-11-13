@@ -1,12 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "azaharizaman/headless-erp-app",
+    "name": "azaharizaman/edward",
     "type": "project",
-    "description": "Headless ERP application built on Laravel framework.",
-    "keywords": ["laravel", "erp", "headless", "api"],
+    "description": "Edward - Terminal-based ERP interface powered by Nexus ERP. A homage to JD Edwards ERP systems.",
+    "keywords": ["laravel", "erp", "cli", "terminal", "nexus"],
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "laravel/sanctum": "*",
         "nexus/erp": "dev-main"
     },
     "require-dev": {
@@ -21,6 +22,7 @@
     },
     "autoload": {
         "psr-4": {
+            "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
@@ -69,6 +71,13 @@
     "repositories": [
         {
             "type": "path",
+            "url": "../../",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
             "url": "../../packages/*"
         }
     ],
@@ -87,6 +96,6 @@
             "composer/installers": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

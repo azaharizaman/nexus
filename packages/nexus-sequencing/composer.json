@@ -20,18 +20,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Nexus\\SequencingManagement\\": "src/"
+            "Nexus\\Sequencing\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nexus\\SequencingManagement\\Tests\\": "tests/"
+            "Nexus\\Sequencing\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Nexus\\SequencingManagement\\SerialNumberingServiceProvider"
+                "Nexus\\Sequencing\\SequencingServiceProvider"
             ]
         }
     },

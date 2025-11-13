@@ -24,14 +24,14 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Nexus\\UomManagement\\": "src/",
-            "Nexus\\UomManagement\\Database\\Seeders\\": "database/seeders/"
+            "Nexus\\Uom\\": "src/",
+            "Nexus\\Uom\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nexus\\UomManagement\\Database\\Factories\\": "database/factories/",
-            "Nexus\\UomManagement\\Tests\\": "tests/"
+            "Nexus\\Uom\\Database\\Factories\\": "database/factories/",
+            "Nexus\\Uom\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -49,7 +49,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Nexus\\UomManagement\\UomManagementServiceProvider"
+                "Nexus\\Uom\\UomServiceProvider"
             ]
         }
     }

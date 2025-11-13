@@ -5,21 +5,21 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Nexus\\InventoryManagement\\": "src/"
+            "Nexus\\Inventory\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nexus\\InventoryManagement\\Database\\Factories\\": "database/factories/"
+            "Nexus\\Inventory\\Database\\Factories\\": "database/factories/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Nexus\\InventoryManagement\\InventoryManagementServiceProvider"
+                "Nexus\\Inventory\\InventoryServiceProvider"
             ],
             "aliases": {
-                "Inventory": "Nexus\\InventoryManagement\\Facades\\Inventory"
+                "Inventory": "Nexus\\Inventory\\Facades\\Inventory"
             }
         }
     },
@@ -39,8 +39,8 @@
         "composer/installers": "^2.2",
         "nesbot/carbon": "^2.71 || ^3.0",
         "nexus/contracts": "dev-main",
-        "nexus/uom-management": "dev-main",
-        "nexus/backoffice-management": "dev-main"
+        "nexus/uom": "dev-main",
+        "nexus/backoffice": "dev-main"
     },
     "require-dev": {
         "phpunit/phpunit": "12.5.x-dev"

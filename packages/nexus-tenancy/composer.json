@@ -31,18 +31,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Nexus\\TenancyManagement\\": "src/"
+            "Nexus\\Tenancy\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nexus\\TenancyManagement\\Tests\\": "tests/"
+            "Nexus\\Tenancy\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Nexus\\TenancyManagement\\TenancyManagementServiceProvider"
+                "Nexus\\Tenancy\\TenancyServiceProvider"
             ]
         }
     },
