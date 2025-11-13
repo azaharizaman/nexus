@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nexus\Erp\Actions\Auth;
 
-use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Support\Contracts\UserRepositoryContract;
 use Nexus\Erp\Events\Auth\UserRegisteredEvent;
 use Nexus\Erp\Models\User;
 use Lorisleiva\Actions\Concerns\AsAction;

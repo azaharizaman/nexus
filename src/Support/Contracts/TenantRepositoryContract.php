@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Contracts\Contracts;
+namespace Nexus\Erp\Support\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -10,7 +10,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 /**
  * Tenant repository contract
  *
- * @package Nexus\Contracts
+ * @package Nexus\Erp\Support\Contracts
  */
 interface TenantRepositoryContract extends RepositoryContract
 {

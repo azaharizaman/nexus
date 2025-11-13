@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Erp\Actions\UnitOfMeasure;
+namespace Edward\Actions\UnitOfMeasure;
 
-use Nexus\Erp\Contracts\UomRepositoryContract;
+use Nexus\Erp\Support\Contracts\UomRepositoryContract;
 use Nexus\Erp\Models\Uom;
 
 /**

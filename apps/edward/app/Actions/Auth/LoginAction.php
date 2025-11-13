@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Erp\Actions\Auth;
+namespace Edward\Actions\Auth;
 
-use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Support\Contracts\UserRepositoryContract;
 use Nexus\Erp\Events\Auth\LoginFailedEvent;
 use Nexus\Erp\Events\Auth\UserLoggedInEvent;
 use Nexus\Erp\Exceptions\AccountLockedException;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Erp\Actions\Auth;
+namespace Edward\Actions\Auth;
 
-use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Support\Contracts\UserRepositoryContract;
 use Nexus\Erp\Events\Auth\PasswordResetRequestedEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

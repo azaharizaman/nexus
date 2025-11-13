@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Erp\Contracts;
+namespace Nexus\Erp\Support\Contracts;
 
 use Nexus\Erp\Enums\UomCategory;
 use Nexus\Erp\Models\Uom;

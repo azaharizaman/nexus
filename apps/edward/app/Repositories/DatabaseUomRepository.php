@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Erp\Repositories;
+namespace Edward\Repositories;
 
-use Nexus\Erp\Contracts\UomRepositoryContract;
+use Nexus\Erp\Support\Contracts\UomRepositoryContract;
 use Nexus\Erp\Enums\UomCategory;
 use Nexus\Erp\Models\Uom;
 use Illuminate\Database\Eloquent\Collection;

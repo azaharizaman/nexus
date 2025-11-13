@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nexus\Erp\Services\UnitOfMeasure;
 
-use Nexus\Erp\Contracts\UomRepositoryContract;
+use Nexus\Erp\Support\Contracts\UomRepositoryContract;
 use Nexus\Erp\Exceptions\UnitOfMeasure\IncompatibleUomException;
 use Nexus\Erp\Exceptions\UnitOfMeasure\UomNotFoundException;
 use Nexus\Erp\Models\Uom;

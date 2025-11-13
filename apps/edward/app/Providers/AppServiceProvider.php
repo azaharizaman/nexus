@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Erp\Providers;
+namespace Edward\Providers;
 
-use Nexus\Erp\Contracts\UserRepositoryContract;
-use Nexus\Erp\Repositories\UserRepository;
+use Nexus\Erp\Support\Contracts\UserRepositoryContract;
+use Edward\Repositories\UserRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;

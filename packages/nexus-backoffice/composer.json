@@ -24,8 +24,7 @@
         "php": "^8.2",
         "illuminate/support": "^10.0 || ^11.0 || ^12.0 || 13.0.x-dev",
         "illuminate/database": "^10.0 || ^11.0 || ^12.0 || 13.0.x-dev",
-        "illuminate/console": "^10.0 || ^11.0 || ^12.0 || 13.0.x-dev",
-        "nexus/contracts": "dev-main"
+        "illuminate/console": "^10.0 || ^11.0 || ^12.0 || 13.0.x-dev"
     },
     "require-dev": {
         "mockery/mockery": "^1.6",

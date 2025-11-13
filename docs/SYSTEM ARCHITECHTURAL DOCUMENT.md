@@ -4,11 +4,12 @@
 
 | Field | Description |
 | :---- | :---- |
-| **TL;DR (Too Long; Didn't Read)** | Nexus ERP is built as a collection of small, independent (atomic) Laravel packages. This ensures **Maximum Atomicity**, making the ERP infinitely scalable, extensible, and reusable. The main Nexus ERP application serves only as a lean **Orchestrator** and **API Presentation Layer**. |
+| **TL;DR (Too Long; Didn't Read)** | Nexus ERP is built as a collection of small, independent (atomic) Laravel packages. This ensures **Maximum Atomicity**, making the ERP infinitely scalable, extensible, and reusable. The **nexus/erp** composer package serves as a lean **Orchestrator** and **API Presentation Layer**, distributable via `composer require nexus/erp`. |
 | **Purpose of this Document** | To serve as the single, authoritative architectural blueprint defining the boundaries, technical stack, naming conventions, communication protocols (Contracts & Events), and decomposition of all packages within the Nexus ERP project. |
 | **Addressed Pain Points** | Monolithic architecture complexity, circular dependencies, difficulty in scaling individual components, and high cost/risk when modifying core business logic. |
 | **Motivation** | To cut the 6-12 month slug of building a complex ERP by providing a reusable, atomic foundation, fulfilling the vision: "What if the future of Enterprise Software is not to be bought but to be built." |
 | **Intended Audience** | The Architectural Review Board (ARB), Core Nexus ERP Developers, Package Developers, and System Integrators building on the Nexus platform. |
+| **Project Structure** | **Monorepo Design:** Source code in `src/` with `Nexus\Erp` namespace, distributable as `nexus/erp` package. **Edward CLI Demo:** Terminal-only Laravel app in `apps/edward/` demonstrating Nexus ERP capabilities (tribute to JD Edwards terminal ERP systems). |
 
 ### **Table of Contents**
 
@@ -50,21 +51,37 @@ Packages are self-contained Laravel applications/services that are **headless** 
 | **Domain Logic** | All models, migrations, business rules, calculations, and validators for a single domain. | UOM conversion algorithms, Serial Number voiding logic. |
 | **Data Persistence** | Handling all CRUD operations for the package's specific models. | UomRepository, SerialTracker model. |
 | **API Endpoints (Internal)** | Packages MUST define their own API routes, but these are for **internal use only** (e.g., for local testing or package-internal calls) and are not the public-facing ERP API. | GET /api/uom-management/uoms |
-| **Isolation** | A package **MUST NOT** be aware of the existence of other atomic packages. | nexus-uom-management cannot directly call a class from nexus-accounting. |
+| **Isolation** | A package **MUST NOT** be aware of the existence of other atomic packages. | nexus-uom cannot directly call a class from nexus-accounting. |
 
 How Packages Communicate:  
 Packages must communicate via Contracts (Interfaces) and Events. If Package A needs to use Package B, Package A defines a PHP Interface (Contract) for the service it needs, and the Nexus ERP Core binds the concrete implementation from Package B to that interface.
 
 ### **B. Nexus ERP Core (The "Orchestrator")**
 
-The main Nexus ERP application is the **API Presentation Layer** and the **Service Orchestrator**. It is itself a true headless applications that only communicate to the external world via API, GraphQL and WebSockets. It contains the bare minimum code necessary to make the system function as a unified ERP to the users of this ERP. The main users are system integrators, developes or machine to machines, rarely the end users as the “Head” part needs to be developed by other developer before it can be made public.
+The **nexus/erp** package is the **API Presentation Layer** and the **Service Orchestrator**, distributable via composer. It is a true headless application that only communicates to the external world via API, GraphQL and WebSockets. It contains the bare minimum code necessary to make the system function as a unified ERP.
+
+**Package Structure:**
+- **Namespace:** `Nexus\Erp`
+- **Location:** Root-level `src/` directory
+- **Installation:** `composer require nexus/erp`
+- **Auto-Discovery:** ErpServiceProvider for Laravel package auto-discovery
+
+The main users are system integrators, developers or machine-to-machine services, rarely the end users as the "Head" part needs to be developed by other developers before it can be made public.
 
 | Responsibility | Description | Example Code |
 | :---- | :---- | :---- |
 | **Public API Routes** | Defines the external, unified ERP API endpoints that consumers (frontends) will use. **Includes API Documentation (OpenAPI/Swagger).** | GET /api/v1/purchase-orders |
-| **Orchestration** | Logic that requires coordinating data or actions across **two or more** atomic packages. | Creating a Purchase Order that requires models from nexus-accounting and serial numbers from nexus-model-serialization. |
-| **Service Container Binding** | The entire AppServiceProvider and configuration logic that binds the concrete package implementations to the contracts defined by other packages. | \\App\\Providers\\AppServiceProvider logic. |
+| **Orchestration** | Logic that requires coordinating data or actions across **two or more** atomic packages. | Creating a Purchase Order that requires models from nexus-accounting and serial numbers from nexus-sequencing. |
+| **Service Container Binding** | ErpServiceProvider and configuration logic that binds the concrete package implementations to the contracts defined by other packages. | `Nexus\Erp\ErpServiceProvider` |
 | **High-Level Configuration** | Configuration that affects the application as a whole (e.g., middleware stacking, global rate limiting, CORS). **Includes setup for Laravel first-party packages like Sanctum (API Auth) and Reverb/Echo (WebSockets).** | config/app.php overrides. |
+
+**Edward CLI Demo:**
+- **Purpose:** Terminal-only Laravel application demonstrating Nexus ERP capabilities
+- **Location:** `apps/edward/` directory
+- **Inspiration:** Tribute to JD Edwards terminal ERP systems (1970s-1990s)
+- **Usage:** `cd apps/edward && php artisan edward:menu`
+- **Features:** Interactive CLI interface with ASCII art banner, 7 module menus (Tenant, User, Inventory, Settings, Reports, Search, Audit)
+- **Target Users:** Developers, system integrators, automated workflows, CI/CD pipelines
 
 ## **3\. Technical Stack**
 
@@ -202,7 +219,7 @@ The CI/CD pipeline **MUST** be designed to manage the monorepo efficiently using
 
 | Stage | Process | Rationale |
 | :---- | :---- | :---- |
-| **Change Detection (Pre-Build)** | Pipeline detects which specific packages/directories (e.g., packages/nexus-uom-management) have changed since the last successful build using Git history. | Saves time and resources by only testing and building affected packages. |
+| **Change Detection (Pre-Build)** | Pipeline detects which specific packages/directories (e.g., packages/nexus-uom) have changed since the last successful build using Git history. | Saves time and resources by only testing and building affected packages. |
 | **Build Artifacts** | Build Docker images for the affected Atomic Packages and the Nexus ERP Core. | Creates immutable, versioned artifacts ready for deployment. |
 | **Testing** | Run unit, feature, and integration tests, ensuring tests specific to *changed* packages are executed first. | Guarantees quality and validates inter-package Contracts. |
 | **Staging Deployment** | Deploy new images to the Staging environment using K8s manifests. | Provides a safe environment for quality assurance (QA) and regression testing. |
@@ -224,7 +241,7 @@ The package suffix dictates its primary responsibility, data volatility, and arc
 | Suffix | Architectural Role | Responsibility | Data Type / Volatility | Examples |
 | :---- | :---- | :---- | :---- | :---- |
 | **\-master** | **Master Data Definition** (The "What") | Defines, stores, and validates the static core reference data for a domain. | Low Volatility (Reference data), High Reusability. | nexus-item-master, nexus-employee-master |
-| **\-management** | **Transactional State & Rules** (The "How") | Manages state changes, applies complex business rules, and persists transactional data within a domain. | High Volatility (Transactional records), State Persistence. | nexus-uom-management, nexus-inventory-management, nexus-workflow-management |
+| **\-management** | **Transactional State & Rules** (The "How") | Manages state changes, applies complex business rules, and persists transactional data within a domain. **Note:** As of Phase 8.2, core packages simplified names (nexus-uom, nexus-inventory, nexus-sequencing, nexus-settings, nexus-tenancy, nexus-backoffice). | High Volatility (Transactional records), State Persistence. | nexus-workflow-management, nexus-procurement-management |
 | **\-interface** | **External Abstraction** (The "Boundary") | Provides a stable façade (Contract) for interacting with complex internal logic or external systems. Hides underlying implementation complexity. | Medium Volatility (Swappable implementation logic). | nexus-ledger-interface, nexus-payment-interface |
 | **\-engine** | **Stateless Execution** (The "Calculation") | Executes pure, computational logic, algorithms, or rule-sets based on inputs, without maintaining persistence for the execution itself. | Stateless, High Performance/Computation. | nexus-workflow-engine, nexus-reporting-engine |
 
@@ -237,17 +254,18 @@ Use this checklist for every new file or feature.
 | **1\.** | **Is this logic exclusively about a single domain (e.g., only UOMs, only Currencies, only User Permissions)?** | Yes, it is **atomic**. | **The Atomic Package** |
 | **2\.** | **Does this logic need to call, reference, or be aware of a class or model from *another* Nexus atomic package?** | Yes, it requires cross-package knowledge (Coordination). | **Nexus ERP Core (Orchestration Layer)** |
 | **3\.** | **Is this code a public-facing endpoint for a client application to consume (e.g., part of the v1 API)?** | Yes, this is **presentation**. | **Nexus ERP Core (Routes)** |
-| **4\.** | **Is this an Interface/Contract that defines *how* a specific service should be consumed?** | Yes, this promotes decoupling. | **The Atomic Package** that consumes the service, OR a very thin nexus-contracts package. |
+| **4\.** | **Is this an Interface/Contract that defines *how* a specific service should be consumed?** | Yes, this promotes decoupling. | **nexus/erp** (Contracts directory) - The orchestration layer manages all inter-package contracts. |
 | **5\.** | **Is this code responsible for registering a package's service provider or setting up global environment variables?** | Yes, this is **bootstrapping**. | **Nexus ERP Core (Service Providers)** |
+| **6\.** | **Is this code can be release as an individual composer package that make sense to be use in othe applications and with meaningful purpose to be use on its own?** | Yes, this is **Purposeful Composer Package**. | **The Atomic Package** |
 
 ### **Example Scenarios:**
 
 | Scenario | Location | Rationale |
 | :---- | :---- | :---- |
-| **Calculating volume conversion (Liters to Gallons).** | nexus-uom-management | Pure, atomic domain logic. |
+| **Calculating volume conversion (Liters to Gallons).** | nexus-uom | Pure, atomic domain logic. |
 | **Defining the structure of the PurchaseOrder model.** | nexus-accounting | Atomic domain logic for the accounting module. |
-| **The API endpoint POST /api/v1/po/create which takes a PurchaseOrder request, validates the UOMs using the UOM service, and requests a serial number for the PO from the Serialization service.** | **Nexus ERP Core** | This orchestrates two different packages (accounting and serialization). |
-| **The logic for checking if a serial number has been voided.** | nexus-model-serialization | Pure, atomic domain logic. |
+| **The API endpoint POST /api/v1/po/create which takes a PurchaseOrder request, validates the UOMs using the UOM service, and requests a serial number for the PO from the Serialization service.** | **nexus/erp** (Core) | This orchestrates two different packages (accounting and sequencing). |
+| **The logic for checking if a serial number has been voided.** | nexus-sequencing | Pure, atomic domain logic. |
 
 ## **9\. Technical Refactoring Directives**
 
@@ -255,10 +273,10 @@ Use this checklist for every new file or feature.
 
 **NEVER** directly reference another package's concrete class.
 
-* **Bad:** new \\Nexus\\UomManagement\\Services\\UomConverter();  
+* **Bad:** new \\Nexus\\Uom\\Services\\UomConverter();  
 * **Good:** app(\\Nexus\\Contracts\\UomConverterInterface::class)-\>convert(...)
 
-The binding of UomConverterInterface to \\Nexus\\UomManagement\\Services\\UomConverter is handled centrally in the **Nexus ERP Core's** service providers.
+The binding of UomConverterInterface to \\Nexus\\Uom\\Services\\UomConverter is handled centrally in the **nexus/erp** ErpServiceProvider.
 
 ### **B. Event-Driven Architecture (EDA)**
 
@@ -269,7 +287,7 @@ For reactive updates between packages, use Laravel Events to ensure packages rem
 | **Triggering an action** | **Atomic Package** | Dispatch a Domain Event (e.g., UomUpdated::dispatch($uom)). |
 | **Reacting to an action** | **Nexus ERP Core** | Define a Listener in the Core's EventServiceProvider that executes cross-package orchestration logic. |
 
-Example: When a Serial Number is voided in nexus-model-serialization, it dispatches SerialNumberVoided. The Nexus ERP Core listens for this event and then calls the updateStatus method on the relevant PurchaseOrder via the accounting service. The serialization package never knew what consumed the event.
+Example: When a Serial Number is voided in nexus-sequencing, it dispatches SerialNumberVoided. The nexus/erp Core listens for this event and then calls the updateStatus method on the relevant PurchaseOrder via the accounting service. The sequencing package never knew what consumed the event.
 
 ### **C. Laravel Version and Headless Focus**
 
@@ -277,74 +295,7 @@ Example: When a Serial Number is voided in nexus-model-serialization, it dispatc
 2. **Laravel 12 Standard:** All package structures must adhere strictly to the Laravel 12 package development best practices.  
 3. **Monorepo Tools:** We will continue to leverage the monorepo structure for parallel development and unified testing, but adherence to the atomic principles is the priority.
 
-### **D. Runtime Vetting Guardrail (Layer 2 Enforcement)**
 
-This mechanism is the ultimate runtime enforcement of the **Contracts-First** rule, catching any violations that bypass Layer 1 (Static Analysis).
-
-#### **Goal**
-
-To prevent **Architectural Drift** at runtime by strictly enforcing the **Contracts-First** rule. If one Atomic Package (e.g., nexus-uom-management) attempts to directly call a concrete class from another Atomic Package (e.g., Nexus\\Accounting\\Services\\LedgerService), an explicit exception must be thrown.
-
-#### **Component: ArchitectureGuardServiceProvider (Nexus ERP Core)**
-
-This provider will be registered in the Nexus ERP Core and will hook into the global Laravel Service Container resolution process.
-
-##### **1\. The Container Hook**
-
-The boot() method of this Service Provider will use the container's resolving event to intercept object creation.
-
-// Pseudo-code for ArchitectureGuardServiceProvider.php
-
-public function boot()  
-{  
-    // This event fires every time the container resolves an instance.  
-    $this-\>app-\>resolving(function ($object, $app) {  
-        // 1\. Check if the object belongs to an Atomic Package namespace  
-        if ($this-\>isAtomicPackageClass($object)) {  
-            // 2\. Perform the expensive check only when necessary  
-            $this-\>vetCaller($object);  
-        }  
-    });  
-}
-
-##### **2\. The Vetting Logic (vetCaller method)**
-
-This is the core of the runtime guardrail, utilizing PHP's debug\_backtrace().
-
-###### **Step 2a: Identify the Concrete Target**
-
-The class being resolved is the **Target**. If the Target is a concrete service (e.g., Nexus\\UomManagement\\Services\\Converter), it should only be called through its interface, or by the Core Orchestrator.
-
-###### **Step 2b: Analyze the Call Stack**
-
-We use debug\_backtrace(DEBUG\_BACKTRACE\_IGNORE\_ARGS, 15\) to get the call stack, limiting the depth to maintain performance.
-
-1. **Filter Framework Calls:** Iterate through the trace frames, ignoring all frames belonging to the Illuminate\\ or framework-specific namespaces (like Facade).  
-2. **Find the Caller:** The first non-framework class found in the stack is the **Caller** (the code that initiated the resolution).
-
-###### **Step 2c: Apply the Enforcement Rule**
-
-Once the **Target Namespace** and the **Caller Namespace** are identified, apply the violation check:
-
-| Condition | Action |
-| :---- | :---- |
-| **IF** Caller Namespace is NOT the Nexus ERP Core (App\\, Nexus\\Core\\) | **AND** Target Namespace is NOT the same as the Caller Namespace |
-| **OTHERWISE** (e.g., Caller is the Core, or Caller is in the same package) | **PASS** |
-
-##### **3\. The Explicit Exception**
-
-If a violation is detected, throw a highly descriptive exception:
-
-throw new \\RuntimeException(sprintf(  
-    'Architectural Violation: Direct call to Concrete Service \[%s\] from Package \[%s\] is forbidden. You MUST only consume this service via its PHP Contract (Interface) bound in the Nexus ERP Core.',  
-    $targetClassName,  
-    $callerClassName  
-));
-
-##### **Performance Mitigation Summary**
-
-1. **Singleton Reliance:** This check has the overhead of debug\_backtrace() and reflection. Since all core business services are registered as singletons, this overhead is incurred **once per service per HTTP request/Job execution**, not on every subsequent use of the already-instantiated object.  
-2. **Targeted Vetting:** The hook only proceeds with the expensive backtrace if the resolved object is confirmed to be a class that belongs to one of the Atomic Package namespaces (i.e., we skip checking common framework classes, models, or config objects).
 
 ### **E. Foundational Principles: SOLID**
 
@@ -457,12 +408,11 @@ This section clarifies why certain complex patterns are **not mandated system-wi
 
 ### **A. Architectural & Decoupling Core (The System Foundation)**
 
-These packages manage the environment, security boundaries, and communication structure for the entire application.
+These packages manage the environment, security boundaries, and runtime isolation for the entire application. **Note:** Contract definitions (PHP Interfaces) for inter-package communication are managed by **nexus/erp** as the orchestration layer, not in a separate package.
 
 | Package Name | Domain Responsibility |
 | :---- | :---- |
-| **nexus-contracts** | **Decoupling Layer:** Holds all PHP Interfaces (Contracts) used for inter-package communication, ensuring no package references another's concrete classes. |
-| **nexus-tenancy-management** | **Multi-Tenancy:** Manages the definition, configuration, and runtime isolation of data and resources for separate tenants/companies. |
+| **nexus-tenancy** | **Multi-Tenancy:** Manages the definition, configuration, and runtime isolation of data and resources for separate tenants/companies. |
 | **nexus-identity-management** | User, Role, and Permission management (Authentication, Authorization, RBAC). |
 | **nexus-feature-toggling-management** | **Feature Flag Persistence:** Manages the definition, storage, and CRUD operations for feature flags at the system, tenant, and user levels. |
 
@@ -474,10 +424,10 @@ These packages manage system constants and configuration that all other business
 | :---- | :---- |
 | **nexus-organization-master** | Defines the organizational structure, including Offices, Departments, Teams, Units, and Staffing Hierarchy. |
 | **nexus-fiscal-calendar-master** | Defines static master data for Fiscal Years, Periods, and statutory holidays. |
-| **nexus-sequencing-management** | Controls the generation, persistence, and validation of all document numbering sequences (e.g., PO-0001, Invoice-0002). |
+| **nexus-sequencing** | Controls the generation, persistence, and validation of all document numbering sequences (e.g., PO-0001, Invoice-0002). |
 | **nexus-tax-management** | Centralized tax codes, rates, rules, and jurisdiction handling. |
 | **nexus-currency-management** | Currency codes, exchange rates, conversion rates and history. |
-| **nexus-uom-management** | Unit of Measure (UOM) codes, conversion logic, precision, and packaging rules. |
+| **nexus-uom** | Unit of Measure (UOM) codes, conversion logic, precision, and packaging rules. |
 | **nexus-reporting-engine** | Financial report generation, report templates, and data aggregation logic. |
 
 ### **C. Core Financial & Operational Packages (The Business Engine)**
@@ -502,12 +452,12 @@ These packages provide critical cross-cutting capabilities but are not strictly 
 | :---- | :---- |
 | **nexus-ai-automation-management** | **AI/ML Inference and Orchestration:** Provides standardized contracts and services for AI/ML inference (e.g., document classification, data extraction, demand prediction, sentiment analysis). Handles external API calls, model response normalization, and cost/usage tracking. |
 | **nexus-audit-log** | **Cross-cutting Logging:** Provides standardized, transactional tracking of model changes (who, what, when, field changes). All packages will be configured to use this service. |
-| **nexus-model-serialization** | Unique serial number generation, versioning, status tracking, and voiding (as described in the prompt). |
+| **nexus-sequencing** | Unique serial number generation, versioning, status tracking, and voiding (as described in the prompt). |
 | **nexus-workflow-engine** | **Execution Logic:** The pure, stateless computation of state transitions, rule evaluation, **approval logic**, and **escalation triggers.** |
 | **nexus-workflow-management** | **State Persistence:** Tracking the status, history, users, and instance data of all running workflows (e.g., preventing duplicate workflows for a given document). |
 | **nexus-document-management** | Secure storage, version control, and access control for attachments and documents. |
 | **nexus-notification-service** | Centralized queueing and dispatching of notifications (Email, SMS, internal alerts, WebSockets). |
-| **nexus-settings-management** | Key-value store for global application, tenant, or user-specific settings. |
+| **nexus-settings** | Key-value store for global application, tenant, or user-specific settings. |
 
 ### **E. Universal Commerce & Operations Packages (Strongly Recommended)**
 
@@ -517,7 +467,7 @@ These packages manage fundamental business transactions and resources (inventory
 | :---- | :---- | :---- |
 | **nexus-purchase-order-management** | Purchase requests, purchase orders, vendor bill reconciliation. | All (General, Manufacturing, Maintenance, Fleet, Legal, Medical, Gov) |
 | **nexus-sales-order-management** | Sales quotes, sales orders, invoicing, returns, and fulfillment coordination. | All (General, Manufacturing, Legal, Maintenance, Medical) |
-| **nexus-inventory-management** | Stock levels, basic costing (FIFO/LIFO/Average), material movements, stocktake. | General, Manufacturing, Warehouse, Fleet (Spares/Fuel), Medical (Supplies) |
+| **nexus-inventory** | Stock levels, basic costing (FIFO/LIFO/Average), material movements, stocktake. | General, Manufacturing, Warehouse, Fleet (Spares/Fuel), Medical (Supplies) |
 | **nexus-asset-management** | Tracking internal (or customer-owned) fixed assets, warranty, depreciation, and service history. | Manufacturing, Maintenance, Fleet, Government, Legal (IT/Equipment) |
 | **nexus-time-activity-management** | Highly granular time entry tracking (e.g., for employee time or client billing), activity logs, and expense association. | General Service, Manufacturing (Labor), Legal, Maintenance, Medical |
 
@@ -599,21 +549,21 @@ These packages are necessary for the vertical functionality required by a specif
 ### **Assumptions**
 
 1. **Strict Monorepo Adherence:** Development and testing will be contained within a single monorepo structure utilizing package discovery and management tools.  
-2. **Contracts First:** All cross-package functionality will be implemented and consumed via PHP Contracts (nexus-contracts) before any concrete implementation is written.  
-3. **Laravel Ecosystem:** The Nexus ERP Core will exclusively use Laravel's standard features and first-party packages (e.g., Sanctum, Reverb) for API and communication tooling.  
-4. **Database Isolation (Tenancy):** The nexus-tenancy-management package will enforce logical data isolation for tenants, allowing for either single-database or multi-database tenancy configurations.
+2. **Contracts First:** All cross-package functionality will be implemented and consumed via PHP Contracts defined in **nexus/erp** (the orchestration layer) before any concrete implementation is written.  
+3. **Laravel Ecosystem:** The nexus/erp Core will exclusively use Laravel's standard features and first-party packages (e.g., Sanctum, Reverb) for API and communication tooling.  
+4. **Database Isolation (Tenancy):** The nexus-tenancy package will enforce logical data isolation for tenants, allowing for either single-database or multi-database tenancy configurations.
 
 ### **Risks & Mitigation Plan**
 
 | Risk | Impact | Mitigation Plan |
 | :---- | :---- | :---- |
-| **Architectural Drift** | Packages start referencing concrete classes, leading to a "distributed monolith" and loss of atomicity. | **Layer 1: Static (Build-Time) Enforcement:** Implement **Static Analysis** (e.g., PHPStan/Rector rules) to detect cross-package concrete references before commit/build. **Layer 2: Runtime Vetting Guardrail:** Implement a custom Service Container hook (e.g., ArchitectureGuardServiceProvider) that uses reflection and the call stack during resolution (detailed in 9D). This component throws an explicit exception if an atomic package attempts to instantiate a forbidden external class directly, enforcing the Contracts-First rule at execution time. |
+| **Architectural Drift** | Packages start referencing concrete classes, leading to a "distributed monolith" and loss of atomicity. | **Layer 1: Static (Build-Time) Enforcement:** Implement **Static Analysis** (e.g., PHPStan/Rector rules) to detect cross-package concrete references before commit/build. |
 | **Performance Overhead** | Excessive use of Events and Service Container resolution may introduce latency in high-volume transactions. | **Asynchronous Processing:** Critical updates and non-time-sensitive coordination must be moved to queues (Listeners) to decouple execution and ensure low latency for user-facing API calls. |
 | **Dependency Hell** | Over-reliance on internal packages for minor features. | **Minimum Atomicity Threshold:** Enforce a rule that a package must contain at least 5 core models or 500 lines of unique business logic to justify its existence; otherwise, its logic belongs in the Core Orchestrator or an existing package. |
 
 ### **Extendability and Scalability**
 
-* **Horizontal Scalability:** The Atomic Package design ensures that individual domains (e.g., nexus-inventory-management) can be conceptually isolated and even deployed as standalone microservices if volume demands it, simply by moving its database and API routes out of the Core Orchestrator's scope.  
+* **Horizontal Scalability:** The Atomic Package design ensures that individual domains (e.g., nexus-inventory) can be conceptually isolated and even deployed as standalone microservices if volume demands it, simply by moving its database and API routes out of the nexus/erp Core Orchestrator's scope.  
 * **Easy Extension:** New industry-specific packages (Section 10F) can be added by simply creating the new package and registering its Service Provider in the Nexus ERP Core, without modifying any existing business logic.
 
 ### **Future Innovation Path**
@@ -644,7 +594,7 @@ To support a global user base, all language strings and regional data formatting
 ### **12.3 Currency and UOM Management**
 
 * **nexus-currency-management:** This package serves as the **single source of truth** for all currency-related calculations, including display precision and exchange rate conversions. No other package should hard-code currency display logic.  
-* **nexus-uom-management:** This package is the **single source of truth** for unit conversion, ensuring that all metric/imperial/custom conversions use the same, centralized logic, which is critical for consistent ERP inventory and manufacturing data.
+* **nexus-uom:** This package is the **single source of truth** for unit conversion, ensuring that all metric/imperial/custom conversions use the same, centralized logic, which is critical for consistent ERP inventory and manufacturing data.
 
 Date of Approval: TBD  
 Version: DRAFT 1.3

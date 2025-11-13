@@ -38,7 +38,6 @@
         "symfony/polyfill-mbstring": "^1.27",
         "composer/installers": "^2.2",
         "nesbot/carbon": "^2.71 || ^3.0",
-        "nexus/contracts": "dev-main",
         "nexus/uom": "dev-main",
         "nexus/backoffice": "dev-main"
     },

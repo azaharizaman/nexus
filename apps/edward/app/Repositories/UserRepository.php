@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Erp\Repositories;
+namespace Edward\Repositories;
 
-use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Support\Contracts\UserRepositoryContract;
 use Nexus\Erp\Models\User;
 use Nexus\Erp\Enums\UserStatus;
 use Illuminate\Container\Attributes\Bind;

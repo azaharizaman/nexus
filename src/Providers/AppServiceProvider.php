@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nexus\Erp\Providers;
 
-use Nexus\Erp\Contracts\UserRepositoryContract;
+use Nexus\Erp\Support\Contracts\UserRepositoryContract;
 use Nexus\Erp\Repositories\UserRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;

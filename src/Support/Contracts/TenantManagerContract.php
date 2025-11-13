@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Nexus\Contracts\Contracts;
+namespace Nexus\Erp\Support\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Tenant manager service contract
  *
- * @package Nexus\Contracts
+ * @package Nexus\Erp\Support\Contracts
  */
 interface TenantManagerContract
 {
