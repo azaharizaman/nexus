@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace Nexus\AuditLog;
 
-use Nexus\AuditLog\Commands\PurgeExpiredLogsCommand;
 use Nexus\AuditLog\Contracts\AuditLogRepositoryContract;
 use Nexus\AuditLog\Contracts\LogExporterContract;
 use Nexus\AuditLog\Contracts\LogFormatterContract;
 use Nexus\AuditLog\Events\ActivityLoggedEvent;
 use Nexus\AuditLog\Listeners\NotifyHighValueActivityListener;
-use Nexus\AuditLog\Policies\AuditLogPolicy;
 use Nexus\AuditLog\Repositories\DatabaseAuditLogRepository;
 use Nexus\AuditLog\Services\LogExporterService;
 use Nexus\AuditLog\Services\LogFormatterService;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use Spatie\Activitylog\Models\Activity;
 
 /**
  * Audit Logging Service Provider
  *
- * Registers the audit logging package services, bindings, and components.
+ * Registers the atomic audit logging package services and bindings.
+ * 
+ * NOTE: This is an ATOMIC package - contains only domain logic, no presentation layer.
+ * HTTP controllers, commands, routes, and policies are handled by Nexus\Erp orchestration.
  */
 class AuditLoggingServiceProvider extends ServiceProvider
 {
@@ -77,21 +76,8 @@ class AuditLoggingServiceProvider extends ServiceProvider
             __DIR__.'/../database/migrations' => database_path('migrations'),
         ], 'audit-logging-migrations');
 
-        // Load routes
-        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
-
-        // Register commands
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                PurgeExpiredLogsCommand::class,
-            ]);
-        }
-
         // Register event listeners
         $this->registerEventListeners();
-
-        // Register policies
-        $this->registerPolicies();
     }
 
     /**
@@ -108,13 +94,5 @@ class AuditLoggingServiceProvider extends ServiceProvider
         }
 
         // Additional event listeners can be registered here
-    }
-
-    /**
-     * Register authorization policies
-     */
-    protected function registerPolicies(): void
-    {
-        Gate::policy(Activity::class, AuditLogPolicy::class);
     }
 }

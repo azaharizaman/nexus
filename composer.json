@@ -22,6 +22,7 @@
         "nexus/tenancy": "dev-main",
         "nexus/uom": "dev-main",
         "nexus/workflow": "dev-main",
+        "spatie/laravel-activitylog": "^4.8",
         "spatie/laravel-permission": "^6.23"
     },
     "require-dev": {

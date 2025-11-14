@@ -11,6 +11,8 @@ use Nexus\Erp\Support\Contracts\SearchServiceContract;
 use Nexus\Erp\Support\Contracts\TokenServiceContract;
 use Nexus\Erp\Support\Services\Auth\SanctumTokenService;
 use Nexus\Erp\Support\Services\Logging\SpatieActivityLogger;
+use Nexus\AuditLog\Contracts\AuditLogRepositoryContract;
+use Nexus\Erp\Support\Services\Logging\SpatieActivityLoggerAdapter;
 use Nexus\Erp\Support\Services\Permission\SpatiePermissionService;
 use Nexus\Erp\Support\Services\Search\ScoutSearchService;
 
@@ -53,6 +55,10 @@ class ErpServiceProvider extends ServiceProvider
         // Load helper functions
         require_once __DIR__.'/Support/Helpers/tenant.php';
 
+        // Load Nexus ERP routes
+        $this->loadRoutesFrom(__DIR__.'/../routes/audit-log.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/console.php');
+
         // Load routes (if api.php exists in Edward)
         if (file_exists(__DIR__.'/../apps/edward/routes/api.php')) {
             $this->loadRoutesFrom(__DIR__.'/../apps/edward/routes/api.php');
@@ -82,9 +88,19 @@ class ErpServiceProvider extends ServiceProvider
      */
     protected function registerContracts(): void
     {
+        // Register Spatie Activity Logger Adapter
+        $this->app->singleton(SpatieActivityLoggerAdapter::class, function ($app) {
+            return new SpatieActivityLoggerAdapter(
+                $app->make(AuditLogRepositoryContract::class)
+            );
+        });
+
         // Activity Logger
         $this->app->singleton(ActivityLoggerContract::class, function ($app) {
-            return new SpatieActivityLogger();
+            return new SpatieActivityLogger(
+                $app->make(AuditLogRepositoryContract::class),
+                $app->make(SpatieActivityLoggerAdapter::class)
+            );
         });
 
         // Search Service

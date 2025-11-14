@@ -7,13 +7,16 @@ namespace Nexus\AuditLog\Contracts;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
-use Spatie\Activitylog\Models\Activity;
+use Nexus\AuditLog\Models\AuditLog;
 
 /**
  * Audit Log Repository Contract
  *
  * Defines the interface for audit log data access operations.
  * Implementations must provide append-only storage with tenant isolation.
+ * 
+ * NOTE: Uses internal AuditLog model to remove external dependencies
+ * and enable independent testing of the atomic package.
  */
 interface AuditLogRepositoryContract
 {
@@ -23,17 +26,17 @@ interface AuditLogRepositoryContract
      * This is an append-only operation - no updates or deletes allowed.
      *
      * @param  array<string, mixed>  $data  Log entry data
-     * @return Activity Created activity log instance
+     * @return AuditLog Created audit log instance
      */
-    public function create(array $data): Activity;
+    public function create(array $data): AuditLog;
 
     /**
      * Find an audit log by ID
      *
-     * @param  int  $id  Activity log ID
-     * @return Activity|null Activity log instance or null if not found
+     * @param  int  $id  Audit log ID
+     * @return AuditLog|null Audit log instance or null if not found
      */
-    public function find(int $id): ?Activity;
+    public function find(int $id): ?AuditLog;
 
     /**
      * Search audit logs with filters and pagination
@@ -62,7 +65,7 @@ interface AuditLogRepositoryContract
      * @param  string  $subjectType  Model class name
      * @param  int  $subjectId  Model ID
      * @param  int  $limit  Maximum results
-     * @return Collection<int, Activity> Activity logs collection
+     * @return Collection<int, AuditLog> Audit logs collection
      */
     public function getForSubject(string $subjectType, int $subjectId, int $limit = 100): Collection;
 
@@ -72,7 +75,7 @@ interface AuditLogRepositoryContract
      * @param  string  $causerType  Model class name
      * @param  int  $causerId  Model ID
      * @param  int  $limit  Maximum results
-     * @return Collection<int, Activity> Activity logs collection
+     * @return Collection<int, AuditLog> Audit logs collection
      */
     public function getByCauser(string $causerType, int $causerId, int $limit = 100): Collection;
 
@@ -82,7 +85,7 @@ interface AuditLogRepositoryContract
      * @param  Carbon  $from  Start date
      * @param  Carbon  $to  End date
      * @param  string|null  $tenantId  Tenant ID for filtering
-     * @return Collection<int, Activity> Activity logs collection
+     * @return Collection<int, AuditLog> Audit logs collection
      */
     public function getByDateRange(Carbon $from, Carbon $to, ?string $tenantId = null): Collection;
 
@@ -113,7 +116,7 @@ interface AuditLogRepositoryContract
      *
      * @param  array<string, mixed>  $filters  Export filters
      * @param  int  $maxRecords  Maximum records to export
-     * @return Collection<int, Activity> Activity logs collection
+     * @return Collection<int, AuditLog> Audit logs collection
      */
     public function export(array $filters, int $maxRecords = 10000): Collection;
 }

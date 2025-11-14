@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Nexus\AuditLog\Repositories;
 
 use Nexus\AuditLog\Contracts\AuditLogRepositoryContract;
+use Nexus\AuditLog\Models\AuditLog;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
-use Spatie\Activitylog\Models\Activity;
 
 /**
  * Database Audit Log Repository
  *
  * Implements audit log storage using the database driver (PostgreSQL/MySQL).
  * Provides append-only storage with tenant isolation.
+ * 
+ * NOTE: Uses internal AuditLog model to remove Spatie dependency
+ * and enable independent testing.
  */
 class DatabaseAuditLogRepository implements AuditLogRepositoryContract
 {
@@ -22,18 +25,18 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
      * Create a new audit log entry
      *
      * @param  array<string, mixed>  $data  Log entry data
-     * @return Activity Created activity log instance
+     * @return AuditLog Created audit log instance
      */
-    public function create(array $data): Activity
+    public function create(array $data): AuditLog
     {
         // Ensure tenant_id is present for tenant-scoped logs
         if (! isset($data['tenant_id']) && auth()->check() && isset(auth()->user()->tenant_id)) {
             $data['tenant_id'] = auth()->user()->tenant_id;
         }
 
-        // Create the activity log entry (append-only)
-        /** @var Activity $activity */
-        $activity = Activity::create([
+        // Create the audit log entry (append-only)
+        /** @var AuditLog $auditLog */
+        $auditLog = AuditLog::create([
             'tenant_id' => $data['tenant_id'] ?? null,
             'log_name' => $data['log_name'] ?? 'default',
             'description' => $data['description'],
@@ -45,21 +48,23 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
             'properties' => $data['properties'] ?? [],
             'ip_address' => $data['ip_address'] ?? null,
             'user_agent' => $data['user_agent'] ?? null,
-            'request_id' => $data['request_id'] ?? null,
+            'batch_uuid' => $data['batch_uuid'] ?? null,
+            'audit_level' => $data['audit_level'] ?? 1,
+            'retention_days' => $data['retention_days'] ?? config('audit-logging.retention_days', 90),
         ]);
 
-        return $activity;
+        return $auditLog;
     }
 
     /**
      * Find an audit log by ID
      *
-     * @param  int  $id  Activity log ID
-     * @return Activity|null Activity log instance or null if not found
+     * @param  int  $id  Audit log ID
+     * @return AuditLog|null Audit log instance or null if not found
      */
-    public function find(int $id): ?Activity
+    public function find(int $id): ?AuditLog
     {
-        return Activity::with(['subject', 'causer'])->find($id);
+        return AuditLog::with(['subject', 'causer'])->find($id);
     }
 
     /**
@@ -71,7 +76,7 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
      */
     public function search(array $filters, int $perPage = 50): LengthAwarePaginator
     {
-        $query = Activity::query();
+        $query = AuditLog::query();
 
         // Always apply tenant_id filter for tenant isolation
         if (isset($filters['tenant_id'])) {
@@ -144,11 +149,11 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
      * @param  string  $subjectType  Model class name
      * @param  int  $subjectId  Model ID
      * @param  int  $limit  Maximum results
-     * @return Collection<int, Activity> Activity logs collection
+     * @return Collection<int, AuditLog> Activity logs collection
      */
     public function getForSubject(string $subjectType, int $subjectId, int $limit = 100): Collection
     {
-        return Activity::where('subject_type', $subjectType)
+        return AuditLog::where('subject_type', $subjectType)
             ->where('subject_id', $subjectId)
             ->with(['causer'])
             ->orderBy('created_at', 'desc')
@@ -162,11 +167,11 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
      * @param  string  $causerType  Model class name
      * @param  int  $causerId  Model ID
      * @param  int  $limit  Maximum results
-     * @return Collection<int, Activity> Activity logs collection
+     * @return Collection<int, AuditLog> Activity logs collection
      */
     public function getByCauser(string $causerType, int $causerId, int $limit = 100): Collection
     {
-        return Activity::where('causer_type', $causerType)
+        return AuditLog::where('causer_type', $causerType)
             ->where('causer_id', $causerId)
             ->with(['subject'])
             ->orderBy('created_at', 'desc')
@@ -180,11 +185,11 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
      * @param  Carbon  $from  Start date
      * @param  Carbon  $to  End date
      * @param  string|null  $tenantId  Tenant ID for filtering
-     * @return Collection<int, Activity> Activity logs collection
+     * @return Collection<int, AuditLog> Activity logs collection
      */
     public function getByDateRange(Carbon $from, Carbon $to, ?string $tenantId = null): Collection
     {
-        $query = Activity::whereBetween('created_at', [$from, $to])
+        $query = AuditLog::whereBetween('created_at', [$from, $to])
             ->with(['subject', 'causer'])
             ->orderBy('created_at', 'desc');
 
@@ -204,7 +209,7 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
      */
     public function purgeExpired(Carbon $before, ?string $tenantId = null): int
     {
-        $query = Activity::where('created_at', '<', $before);
+        $query = AuditLog::where('created_at', '<', $before);
 
         if ($tenantId !== null) {
             $query->where('tenant_id', $tenantId);
@@ -221,7 +226,7 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
      */
     public function getStatistics(array $filters = []): array
     {
-        $query = Activity::query();
+        $query = AuditLog::query();
 
         // Apply tenant filter
         if (isset($filters['tenant_id'])) {
@@ -270,11 +275,11 @@ class DatabaseAuditLogRepository implements AuditLogRepositoryContract
      *
      * @param  array<string, mixed>  $filters  Export filters
      * @param  int  $maxRecords  Maximum records to export
-     * @return Collection<int, Activity> Activity logs collection
+     * @return Collection<int, AuditLog> Activity logs collection
      */
     public function export(array $filters, int $maxRecords = 10000): Collection
     {
-        $query = Activity::query();
+        $query = AuditLog::query();
 
         // Apply same filters as search
         if (isset($filters['tenant_id'])) {

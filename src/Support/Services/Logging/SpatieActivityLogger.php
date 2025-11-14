@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nexus\Erp\Support\Services\Logging;
 
 use Nexus\Erp\Support\Contracts\ActivityLoggerContract;
+use Nexus\AuditLog\Contracts\AuditLogRepositoryContract;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -13,11 +14,19 @@ use Spatie\Activitylog\Models\Activity;
 /**
  * Spatie Activity Logger
  *
- * Adapter implementation using Spatie Laravel Activitylog package.
- * This isolates the Spatie package from our business logic.
+ * Orchestration layer implementation that uses the internal atomic AuditLog package
+ * while maintaining backward compatibility with Spatie ActivityLog interfaces.
+ * 
+ * This service provides the bridge between external expectations (Spatie models)
+ * and internal atomic package implementation.
  */
 class SpatieActivityLogger implements ActivityLoggerContract
 {
+    public function __construct(
+        private AuditLogRepositoryContract $auditLogRepository,
+        private SpatieActivityLoggerAdapter $adapter
+    ) {}
+
     /**
      * Log an activity on a model
      *
@@ -34,21 +43,22 @@ class SpatieActivityLogger implements ActivityLoggerContract
         array $properties = [],
         ?string $logName = null
     ): void {
-        $activity = activity()
-            ->performedOn($subject)
-            ->withProperties($properties);
+        // Prepare data for internal audit log
+        $data = [
+            'log_name' => $logName ?? 'default',
+            'description' => $description,
+            'subject_type' => get_class($subject),
+            'subject_id' => $subject->getKey(),
+            'causer_type' => $causer ? get_class($causer) : (auth()->check() ? get_class(auth()->user()) : null),
+            'causer_id' => $causer ? $causer->getKey() : (auth()->check() ? auth()->id() : null),
+            'properties' => $properties,
+            'ip_address' => request()?->ip(),
+            'user_agent' => request()?->header('User-Agent'),
+            'tenant_id' => $this->getCurrentTenantId(),
+        ];
 
-        if ($logName !== null) {
-            $activity->useLog($logName);
-        }
-
-        if ($causer !== null) {
-            $activity->causedBy($causer);
-        } elseif (auth()->check()) {
-            $activity->causedBy(auth()->user());
-        }
-
-        $activity->log($description);
+        // Use internal audit log repository through adapter
+        $this->adapter->logActivity($data);
     }
 
     /**
@@ -59,10 +69,16 @@ class SpatieActivityLogger implements ActivityLoggerContract
      */
     public function getActivities(Model $subject): Collection
     {
-        return Activity::forSubject($subject)
-            ->with(['causer', 'subject'])
-            ->latest()
-            ->get();
+        // Use internal repository for consistency
+        $internalLogs = $this->auditLogRepository->getForSubject(
+            get_class($subject),
+            $subject->getKey()
+        );
+
+        // Convert to Spatie-compatible collection for backward compatibility
+        return $internalLogs->map(function ($log) {
+            return $this->adapter->convertToSpatieActivity($log);
+        });
     }
 
     /**
@@ -75,16 +91,17 @@ class SpatieActivityLogger implements ActivityLoggerContract
      */
     public function getByDateRange(Carbon $from, Carbon $to, ?string $logName = null): Collection
     {
-        $query = Activity::query()
-            ->whereBetween('created_at', [$from, $to])
-            ->with(['causer', 'subject'])
-            ->latest();
-
+        // Use internal repository
+        $internalLogs = $this->auditLogRepository->getByDateRange($from, $to);
+        
         if ($logName !== null) {
-            $query->where('log_name', $logName);
+            $internalLogs = $internalLogs->where('log_name', $logName);
         }
 
-        return $query->get();
+        // Convert to Spatie-compatible collection
+        return $internalLogs->map(function ($log) {
+            return $this->adapter->convertToSpatieActivity($log);
+        });
     }
 
     /**
@@ -96,11 +113,17 @@ class SpatieActivityLogger implements ActivityLoggerContract
      */
     public function getByCauser(Model $causer, int $limit = 50): Collection
     {
-        return Activity::causedBy($causer)
-            ->with(['subject'])
-            ->latest()
-            ->limit($limit)
-            ->get();
+        // Use internal repository
+        $internalLogs = $this->auditLogRepository->getByCauser(
+            get_class($causer),
+            $causer->getKey(),
+            $limit
+        );
+
+        // Convert to Spatie-compatible collection
+        return $internalLogs->map(function ($log) {
+            return $this->adapter->convertToSpatieActivity($log);
+        });
     }
 
     /**
@@ -111,41 +134,8 @@ class SpatieActivityLogger implements ActivityLoggerContract
      */
     public function getStatistics(array $filters = []): array
     {
-        $query = Activity::query();
-
-        // Apply date range filter if provided
-        if (isset($filters['from']) && isset($filters['to'])) {
-            $query->whereBetween('created_at', [$filters['from'], $filters['to']]);
-        }
-
-        // Apply log name filter if provided
-        if (isset($filters['log_name'])) {
-            $query->where('log_name', $filters['log_name']);
-        }
-
-        $totalCount = $query->count();
-
-        $byLogName = (clone $query)
-            ->selectRaw('log_name, COUNT(*) as count')
-            ->groupBy('log_name')
-            ->pluck('count', 'log_name')
-            ->toArray();
-
-        $byDay = (clone $query)
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
-            ->groupBy('date')
-            ->orderBy('date', 'desc')
-            ->limit(30)
-            ->pluck('count', 'date')
-            ->toArray();
-
-        return [
-            'total_count' => $totalCount,
-            'by_log_name' => $byLogName,
-            'by_day' => $byDay,
-            'first_activity' => $query->min('created_at'),
-            'last_activity' => $query->max('created_at'),
-        ];
+        // Use internal repository for statistics
+        return $this->auditLogRepository->getStatistics($filters);
     }
 
     /**
@@ -156,8 +146,41 @@ class SpatieActivityLogger implements ActivityLoggerContract
      */
     public function cleanup(Carbon $before): int
     {
-        $deleted = Activity::where('created_at', '<', $before)->delete();
+        // Use internal repository for cleanup
+        return $this->auditLogRepository->purgeExpired($before);
+    }
 
-        return $deleted === false || $deleted === null ? 0 : $deleted;
+    /**
+     * Get the current tenant ID for multi-tenant logging
+     */
+    private function getCurrentTenantId(): ?string
+    {
+        // Try to get from authenticated user's method first
+        if (auth()->check() && method_exists(auth()->user(), 'getTenantId')) {
+            return auth()->user()->getTenantId();
+        }
+        
+        // Try to get from authenticated user's property
+        if (auth()->check() && property_exists(auth()->user(), 'tenant_id')) {
+            return auth()->user()->tenant_id;
+        }
+
+        // Try to get from current tenant context
+        if (function_exists('currentTenant')) {
+            $tenant = currentTenant();
+            if ($tenant && method_exists($tenant, 'getId')) {
+                return $tenant->getId();
+            }
+            if ($tenant && isset($tenant->id)) {
+                return $tenant->id;
+            }
+        }
+
+        // Try to get from session/request
+        if (session()->has('tenant_id')) {
+            return session()->get('tenant_id');
+        }
+
+        return null;
     }
 }

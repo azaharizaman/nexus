@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-use Nexus\Erp\AuditLogging\Http\Controllers\AuditLogController;
+use Nexus\Erp\Actions\AuditLog\SearchAuditLogsAction;
+use Nexus\Erp\Actions\AuditLog\ShowAuditLogAction;
+use Nexus\Erp\Actions\AuditLog\ExportAuditLogsAction;
+use Nexus\Erp\Actions\AuditLog\GetAuditLogStatisticsAction;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,20 +27,20 @@ Route::prefix('api/v1')
             ->name('audit-logs.')
             ->group(function () {
                 // List audit logs with filters
-                Route::get('/', [AuditLogController::class, 'index'])
+                Route::get('/', SearchAuditLogsAction::class)
                     ->name('index');
 
                 // Get audit log statistics
-                Route::get('/statistics', [AuditLogController::class, 'statistics'])
+                Route::get('/statistics', GetAuditLogStatisticsAction::class)
                     ->name('statistics');
 
                 // Show specific audit log
-                Route::get('/{id}', [AuditLogController::class, 'show'])
+                Route::get('/{id}', ShowAuditLogAction::class)
                     ->name('show')
                     ->where('id', '[0-9]+');
 
                 // Export audit logs
-                Route::post('/export', [AuditLogController::class, 'export'])
+                Route::post('/export', ExportAuditLogsAction::class)
                     ->name('export');
             });
     });
