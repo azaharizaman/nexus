@@ -15,7 +15,11 @@ declare(strict_types=1);
 
 uses(
     Orchestra\Testbench\TestCase::class,
-)->in('Feature');
+    Illuminate\Foundation\Testing\RefreshDatabase::class,
+)->beforeEach(function () {
+    // Load migrations before each test
+    $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+})->in('Feature');
 
 uses(
     PHPUnit\Framework\TestCase::class,
@@ -56,3 +60,18 @@ function getPackageProviders($app): array
         \Nexus\Workflow\WorkflowServiceProvider::class,
     ];
 }
+
+/**
+ * Define environment setup.
+ */
+function getEnvironmentSetUp($app): void
+{
+    // Setup default database to use sqlite :memory:
+    $app['config']->set('database.default', 'testbench');
+    $app['config']->set('database.connections.testbench', [
+        'driver' => 'sqlite',
+        'database' => ':memory:',
+        'prefix' => '',
+    ]);
+}
+
