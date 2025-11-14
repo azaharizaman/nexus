@@ -15,6 +15,9 @@
         "league/csv": "^9.0"
     },
     "require-dev": {
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^2.0",
+        "pestphp/pest-plugin-laravel": "^2.0",
         "laravel/pint": "^1.18",
         "barryvdh/laravel-dompdf": "^2.0"
     },
@@ -28,11 +31,29 @@
             "Nexus\\AuditLog\\Tests\\": "tests/"
         }
     },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "test-ci": "vendor/bin/pest --coverage --min=90",
+        "test-isolated": [
+            "@composer install --no-dev",
+            "@test",
+            "@composer install"
+        ]
+    },
     "extra": {
         "laravel": {
             "providers": [
                 "Nexus\\AuditLog\\AuditLoggingServiceProvider"
             ]
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     },
     "minimum-stability": "dev",
