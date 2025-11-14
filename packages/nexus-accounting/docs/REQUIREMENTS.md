@@ -1,21 +1,35 @@
 # nexus-accounting Package Requirements
 
-**Package Name:** `azaharizaman/nexus-accounting`  
+**Package Name:** `nexus/accounting`  
 **Namespace:** `Nexus\Accounting`  
 **Version:** 1.0.0  
-**Status:** Draft  
-**Created:** November 14, 2025
+**Status:** Design Phase  
+**Created:** November 14, 2025  
+**Updated:** November 15, 2025
 
 ---
 
 ## Executive Summary
 
-Complete Financial Management package integrating General Ledger, Chart of Accounts, Journal Entries, Accounts Payable, Accounts Receivable, Cash and Bank Management, and Payment Processing.
+Complete Financial Management atomic package implementing General Ledger, Chart of Accounts, Journal Entries, Accounts Payable, Accounts Receivable, Cash and Bank Management following the **Maximum Atomicity** architectural principles.
 
-### Architectural Rationale
+### Architectural Context
+
+**Atomic Package Compliance:**
+This package MUST adhere to Maximum Atomicity principles defined in the [System Architectural Document](../../../docs/SYSTEM%20ARCHITECHTURAL%20DOCUMENT.md):
+- ✅ **Headless Design** - Contains only domain logic, no presentation layer
+- ✅ **Independent Testability** - Complete test suite runnable with `composer test` 
+- ✅ **Zero Cross-Package Dependencies** - Cannot directly depend on other Nexus packages
+- ✅ **Contract-Based Communication** - External integration via interfaces and events
+- ✅ **Laravel Actions Integration** - Business logic exposed via orchestration layer
+
+**Orchestration Pattern:**
+- Presentation layer (HTTP/CLI) handled by `Nexus\Erp` orchestration using Laravel Actions
+- Package provides domain logic and contracts; orchestration provides API endpoints
+- Integration testing performed at orchestration level, not within atomic package
 
 **Consolidated From:** 6 Sub-PRDs
-- PRD01-SUB07-CHART-OF-ACCOUNTS.md
+- PRD01-SUB07-CHART-OF-ACCOUNTS.md  
 - PRD01-SUB08-GENERAL-LEDGER.md
 - PRD01-SUB09-JOURNAL-ENTRIES.md
 - PRD01-SUB10-BANKING.md
@@ -23,17 +37,56 @@ Complete Financial Management package integrating General Ledger, Chart of Accou
 - PRD01-SUB12-ACCOUNTS-RECEIVABLE.md
 
 **Why Consolidated:**
-These components are consolidated because they:
-1. **Communicate constantly** (AP → GL, AR → GL, Payments → Bank → GL)
-2. **Share domain context** (financial accounting)
-3. **Always deployed together** in production
-4. **Cannot be meaningfully used independently**
+These financial components are consolidated because they:
+1. **Share tight domain coupling** - AP/AR/Bank transactions automatically post to GL
+2. **Have constant data flow** - Every financial transaction requires GL posting
+3. **Cannot function independently** - Chart of Accounts required by all submodules
+4. **Share transaction semantics** - All use same double-entry accounting principles
+5. **Violate atomicity if separated** - Would require complex cross-package choreography
 
-**Internal Modularity:**
-Maintained through:
-- Namespace separation (`Nexus\Accounting\ChartOfAccounts`, `Nexus\Accounting\GeneralLedger`, etc.)
-- Bounded contexts with clear interfaces
-- Domain events for internal communication
+**Internal Modularity Maintained:**
+- Namespace separation (`Nexus\Accounting\ChartOfAccounts`, `Nexus\Accounting\GeneralLedger`)
+- Bounded contexts with clear internal interfaces  
+- Domain events for internal component communication
+- Separate repositories and services per subdomain
+
+---
+
+## Architectural Compliance
+
+### Maximum Atomicity Requirements
+
+| Requirement | Status | Implementation Notes |
+|-------------|---------|---------------------|
+| **No HTTP Controllers** | ✅ Must Comply | Controllers moved to `Nexus\Erp\Actions\Accounting\*` |
+| **No CLI Commands** | ✅ Must Comply | Commands converted to Actions in orchestration layer |
+| **No Routes Definition** | ✅ Must Comply | Routes handled by `Nexus\Erp` service provider |
+| **Independent Testability** | ✅ Must Comply | Complete test suite with Orchestra Testbench |
+| **Zero Package Dependencies** | ✅ Must Comply | Communication via contracts and events only |
+| **Contract-Based Integration** | ✅ Must Comply | Define interfaces for external dependencies |
+
+### Package Dependencies
+
+**Allowed Dependencies:**
+- `laravel/framework` (framework core)
+- `kalnoy/nestedset` (hierarchical account structure)
+- Testing packages (`orchestra/testbench`, `pestphp/pest`)
+
+**Forbidden Dependencies:**
+- Other `nexus/*` packages (violates atomicity)
+- HTTP presentation packages (`inertiajs/inertia-laravel`)
+- Package-specific external services (must be abstracted)
+
+**External Integration:**
+```php
+// ✅ CORRECT: Define contracts for external dependencies
+interface TaxCalculatorContract {
+    public function calculateTax(TaxableAmount $amount): TaxCalculation;
+}
+
+// ✅ CORRECT: Register in Nexus\Erp orchestration layer  
+$this->app->bind(TaxCalculatorContract::class, SpatieVatCalculator::class);
+```
 
 ---
 
@@ -135,25 +188,100 @@ Maintained through:
 
 | Requirement ID | Description | Scope |
 |----------------|-------------|-------|
-| **DR-ACC-001** | Accounts table with: code, name, type, category, parent_id, lft, rgt, level, is_active, reporting_group | COA |
-| **DR-ACC-002** | Use **nested set model** (lft, rgt columns) for hierarchical queries with `kalnoy/nestedset` | COA |
-| **DR-ACC-003** | Store **aggregated monthly balances** for high-performance reporting | GL |
-| **DR-ACC-004** | GL entries with: date, account_id, amount, currency, exchange_rate, memo, posted_status, source_module | GL |
-| **DR-ACC-005** | Bank accounts with: account_number, bank_name, currency, balance, is_active | BANK |
-| **DR-ACC-006** | Vendor invoices with: vendor_id, invoice_number, amount, due_date, payment_status | AP |
-| **DR-ACC-007** | Customer invoices with: customer_id, invoice_number, amount, due_date, payment_status | AR |
+| **DR-ACC-001** | Chart of accounts with nested set model: code, name, type, parent_id, lft, rgt, level, is_active | COA |
+| **DR-ACC-002** | Use `kalnoy/nestedset` package for efficient hierarchical queries and operations | COA |
+| **DR-ACC-003** | GL entries table: date, account_id, amount, currency, exchange_rate, description, batch_uuid | GL |
+| **DR-ACC-004** | Monthly account balance aggregation table for performance optimization | GL |
+| **DR-ACC-005** | Journal entry headers with line items for multi-account transactions | JE |
+| **DR-ACC-006** | Bank accounts with reconciliation status tracking | BANK |
+| **DR-ACC-007** | Vendor invoices with payment allocation tracking | AP |
+| **DR-ACC-008** | Customer invoices with payment application history | AR |
 
 ---
 
 ## Integration Requirements
 
-| Requirement ID | Description | Priority |
-|----------------|-------------|----------|
-| **IR-ACC-001** | Integrate with **nexus-inventory** for automatic COGS/inventory GL posting | High |
-| **IR-ACC-002** | Integrate with **nexus-purchase-order** for PO-GR-Invoice three-way matching | High |
-| **IR-ACC-003** | Integrate with **nexus-sales-order** for automatic AR invoice generation | High |
-| **IR-ACC-004** | Expose **posting API** for external modules to post GL entries | High |
-| **IR-ACC-005** | Integrate with **nexus-tax-management** for automatic tax calculation | Medium |
+### Internal Package Communication
+
+| Component | Integration Method | Implementation |
+|-----------|-------------------|----------------|
+| **Nexus\Tenancy** | Event-driven | Listen to `TenantCreated` event for COA setup |
+| **Nexus\AuditLog** | Service contract | Use `ActivityLoggerContract` for change tracking |
+| **External Tax Service** | Service contract | Define `TaxCalculatorContract` interface |
+| **External Payment Gateway** | Service contract | Define `PaymentProcessorContract` interface |
+
+### API Contracts Definition
+
+```php
+// Package defines contracts for external services
+interface TaxCalculatorContract {
+    public function calculateTax(InvoiceLineItem $item): TaxAmount;
+}
+
+interface PaymentProcessorContract {  
+    public function processPayment(PaymentRequest $request): PaymentResult;
+}
+
+// Orchestration layer binds implementations
+class ErpServiceProvider extends ServiceProvider {
+    public function register(): void {
+        $this->app->bind(TaxCalculatorContract::class, VatCalculatorService::class);
+    }
+}
+```
+---
+
+## Orchestration Layer Integration
+
+### Laravel Actions Implementation
+
+The presentation layer is handled by `Nexus\Erp\Actions\Accounting\*` following the Laravel Actions pattern:
+
+```php
+// Atomic package provides business logic
+namespace Nexus\Accounting\Services;
+class ChartOfAccountsService {
+    public function createAccount(CreateAccountData $data): Account {
+        // Domain logic implementation
+    }
+}
+
+// Orchestration layer exposes via Actions  
+namespace Nexus\Erp\Actions\Accounting;
+class CreateAccountAction {
+    use AsAction;
+    
+    public function handle(CreateAccountRequest $request): Account {
+        return app(ChartOfAccountsService::class)->createAccount(
+            CreateAccountData::fromRequest($request)
+        );
+    }
+    
+    // Can be invoked as HTTP, CLI, Job, Event Listener
+    public function asController(CreateAccountRequest $request) { 
+        return $this->handle($request); 
+    }
+}
+```
+
+### Event-Driven Architecture
+
+```php
+// Package publishes domain events
+namespace Nexus\Accounting\Events;
+class AccountCreated {
+    public function __construct(public Account $account) {}
+}
+
+// External packages subscribe via orchestration layer
+class ErpEventServiceProvider extends EventServiceProvider {
+    protected $listen = [
+        AccountCreated::class => [
+            UpdateReportingStructureListener::class,
+        ],
+    ];
+}
+```
 
 ---
 
@@ -165,6 +293,7 @@ Maintained through:
 | **PR-ACC-002** | Account balance inquiry with drill-down | < 500ms |
 | **PR-ACC-003** | Bank reconciliation for 10K transactions | < 5 seconds |
 | **PR-ACC-004** | Aging report generation (30/60/90 days) | < 3 seconds |
+| **PR-ACC-005** | Chart of accounts hierarchical query performance | < 100ms |
 
 ---
 
@@ -172,97 +301,177 @@ Maintained through:
 
 | Requirement ID | Description |
 |----------------|-------------|
-| **SR-ACC-001** | Enforce **role-based access control** for all accounting operations |
-| **SR-ACC-002** | Implement **audit logging** for all GL postings and reversals |
-| **SR-ACC-003** | Require **dual authorization** for payment runs above threshold |
-| **SR-ACC-004** | Enforce **tenant isolation** for all accounting data |
+| **SR-ACC-001** | Implement audit logging for all GL postings using `ActivityLoggerContract` |
+| **SR-ACC-002** | Enforce tenant isolation for all accounting data via tenant scoping |
+| **SR-ACC-003** | Support authorization policies through contract-based permission system |
+| **SR-ACC-004** | Validate business rules at domain layer (before orchestration) |
+| **SR-ACC-005** | Implement immutable posting (entries cannot be modified once posted) |
 
 ---
 
 ## Dependencies
 
-**Mandatory Package Dependencies:**
-- `azaharizaman/nexus-tenancy` - Multi-tenancy isolation
-- `azaharizaman/nexus-audit-log` - Change tracking
-- `kalnoy/nestedset` - Hierarchical account structure
+### Framework Dependencies
+```json
+{
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^12.0",
+        "kalnoy/nestedset": "^7.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^2.0",
+        "pestphp/pest-plugin-laravel": "^2.0"
+    }
+}
+```
 
-**Optional Package Dependencies:**
-- `azaharizaman/nexus-inventory` - Inventory GL posting
-- `azaharizaman/nexus-purchase-order` - Purchase order integration
-- `azaharizaman/nexus-sales-order` - Sales order integration
-- `azaharizaman/nexus-tax-management` - Tax calculation
+### Service Contracts
+External dependencies MUST be abstracted behind contracts:
 
-**Framework Dependencies:**
-- Laravel Framework ≥ 12.x
-- PHP ≥ 8.2
-- PostgreSQL or MySQL
+| Service | Contract Interface | Bound In Orchestration |
+|---------|-------------------|----------------------|
+| Activity Logging | `ActivityLoggerContract` | `Nexus\Erp\ErpServiceProvider` |
+| Tax Calculation | `TaxCalculatorContract` | `Nexus\Erp\ErpServiceProvider` |
+| Payment Processing | `PaymentProcessorContract` | `Nexus\Erp\ErpServiceProvider` |
+| Inventory Posting | `InventoryGLContract` | `Nexus\Erp\ErpServiceProvider` |
 
 ---
 
 ## Implementation Notes
 
-### Internal Package Structure
+### Atomic Package Structure
 
 ```
 packages/nexus-accounting/
 ├── src/
-│   ├── ChartOfAccounts/
-│   │   ├── Models/
-│   │   ├── Actions/
-│   │   ├── Services/
-│   │   └── Repositories/
-│   ├── GeneralLedger/
-│   │   ├── Models/
-│   │   ├── Actions/
-│   │   └── Services/
-│   ├── JournalEntries/
-│   ├── Banking/
-│   ├── AccountsPayable/
-│   └── AccountsReceivable/
+│   ├── Models/                     # Domain models
+│   │   ├── Account.php
+│   │   ├── GeneralLedgerEntry.php
+│   │   ├── JournalEntry.php
+│   │   └── ...
+│   ├── Services/                   # Business logic services  
+│   │   ├── ChartOfAccountsService.php
+│   │   ├── GeneralLedgerService.php
+│   │   └── ...
+│   ├── Repositories/               # Data access layer
+│   │   ├── AccountRepository.php
+│   │   └── ...
+│   ├── Contracts/                  # External service contracts
+│   │   ├── TaxCalculatorContract.php
+│   │   └── PaymentProcessorContract.php
+│   ├── Events/                     # Domain events
+│   │   ├── AccountCreated.php
+│   │   └── TransactionPosted.php
+│   ├── Data/                       # DTOs and Value Objects
+│   │   ├── CreateAccountData.php
+│   │   └── PostingData.php
+│   └── AccountingServiceProvider.php
 ├── database/
-│   ├── migrations/
-│   └── seeders/
-├── tests/
+│   ├── migrations/                 # Database schema
+│   └── factories/                  # Test data factories
+├── tests/                          # Independent test suite
+│   ├── Feature/
+│   ├── Unit/
+│   ├── TestCase.php
+│   └── bootstrap.php
+├── config/
+│   └── accounting.php             # Package configuration
+├── composer.json                  # Package dependencies
+├── phpunit.xml                   # Test configuration
 └── docs/
     └── REQUIREMENTS.md (this file)
 ```
 
-### Development Phases
+### Orchestration Structure
 
-**Phase 1: Foundation (Week 1)**
-- Chart of Accounts structure
-- Basic account CRUD operations
-- Nested set implementation
+```
+src/Actions/Accounting/            # In Nexus\Erp namespace
+├── ChartOfAccounts/
+│   ├── CreateAccountAction.php
+│   ├── UpdateAccountAction.php
+│   └── DeleteAccountAction.php  
+├── GeneralLedger/
+│   ├── PostTransactionAction.php
+│   └── GenerateTrialBalanceAction.php
+└── ...
 
-**Phase 2: Core GL (Week 2)**
-- GL entry posting
-- Balance calculations
-- Multi-currency support
+routes/accounting.php              # In Nexus\Erp namespace
+console/accounting.php             # Console commands via Actions
+```
 
-**Phase 3: Journal Entries (Week 3)**
-- Manual JE creation
-- Entry validation
-- Reversal functionality
+### Implementation Strategy
 
-**Phase 4: Banking (Week 4)**
-- Bank account management
-- Transaction recording
-- Bank reconciliation
+**Phase 1: Domain Foundation (Week 1)**
+- Chart of Accounts models and nested set implementation
+- Basic account CRUD operations with business rule validation
+- Independent test suite setup with Orchestra Testbench
 
-**Phase 5: AP/AR (Weeks 5-6)**
-- Vendor invoice management
-- Customer invoice management
-- Payment processing
-- Aging reports
+**Phase 2: General Ledger Core (Week 2)**
+- GL entry models and posting services
+- Multi-currency support and balance calculations
+- Event-driven architecture for posting notifications
+
+**Phase 3: Journal Entries (Week 3)** 
+- Manual journal entry creation and validation
+- Entry reversal and recurring entry functionality
+- Attachment support for supporting documents
+
+**Phase 4: Banking Integration (Week 4)**
+- Bank account management and transaction recording
+- Bank reconciliation algorithms and matching
+- Cash flow statement generation logic
+
+**Phase 5: AP/AR Implementation (Weeks 5-6)**
+- Vendor and customer invoice management
+- Payment processing and allocation algorithms
+- Aging report generation and analytics
+
+**Phase 6: Orchestration Layer (Week 7)**
+- Laravel Actions implementation for all business operations
+- HTTP/CLI/Job/Event integration via orchestration layer
+- API documentation and external service contracts
+
+### Testing Strategy
+
+**Atomic Package Tests:**
+```bash
+cd packages/nexus-accounting
+composer test                     # Run independent test suite
+composer test-coverage           # Generate coverage reports  
+composer test-isolated          # Test without dev dependencies
+```
+
+**Integration Tests:**
+- Performed at `Nexus\Erp` orchestration layer level
+- Test Actions and external service integrations
+- End-to-end testing in Edward demo application
+
+### Compliance Verification
+
+To verify Maximum Atomicity compliance:
+
+```bash
+# 1. Test package independence
+cd packages/nexus-accounting && composer test
+
+# 2. Check for architectural violations
+find src -name "*Controller*" -o -name "*Command*" | wc -l  # Should be 0
+grep -r "Nexus\\\\" src/ | grep -v "Nexus\\Accounting"     # Should be empty
+
+# 3. Verify contract dependencies only
+composer show --tree | grep nexus                          # Should show none
+```
 
 ---
 
 **Document Maintenance:**
-- Update after each sprint or major feature completion
-- Review during architectural changes
-- Sync with master SYSTEM ARCHITECTURAL DOCUMENT
+- Update after each development phase completion
+- Review during architectural changes and refactoring
+- Sync with [System Architectural Document](../../../docs/SYSTEM%20ARCHITECHTURAL%20DOCUMENT.md)
 
 **Related Documents:**
-- [SYSTEM ARCHITECTURAL DOCUMENT](../../../docs/SYSTEM%20ARCHITECHTURAL%20DOCUMENT.md)
+- [System Architectural Document](../../../docs/SYSTEM%20ARCHITECHTURAL%20DOCUMENT.md)
 - [Master PRD](../../../docs/prd/PRD01-MVP.md)
-- Original Sub-PRDs in `/docs/prd/prd-01/`
+- [Package Implementation Examples](../../../packages/nexus-audit-log/TESTING.md)
