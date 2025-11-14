@@ -76,17 +76,20 @@ return [
 
         /*
         | List of atomic packages to integrate when auto_register is enabled.
+        | 
+        | NOTE: The following packages are listed as placeholders for future phases.
+        | They are not yet implemented or refactored. Set to false by default.
         */
         'enabled' => [
             'backoffice' => true,
-            'audit-log' => true,
-            'sequencing' => true,
-            'tenancy' => true,
-            'settings' => true,
-            'uom' => true,
-            'workflow' => true,
-            'accounting' => true,
-            'inventory' => true,
+            'audit-log' => false,      // Not yet implemented
+            'sequencing' => false,     // Not yet implemented
+            'tenancy' => false,        // Not yet implemented
+            'settings' => false,       // Not yet implemented
+            'uom' => false,            // Not yet implemented
+            'workflow' => false,       // Not yet implemented
+            'accounting' => false,     // Not yet implemented
+            'inventory' => false,      // Not yet implemented
         ],
     ],
 ];

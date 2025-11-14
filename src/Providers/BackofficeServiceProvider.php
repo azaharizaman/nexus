@@ -83,7 +83,7 @@ class BackofficeServiceProvider extends ServiceProvider
      */
     protected function registerCommands(): void
     {
-        if ($this->app->runningInConsole()) {
+        if ($this->app->runningInConsole() && config('nexus.backoffice.enable_commands', true)) {
             $this->commands([
                 InstallBackofficeCommand::class,
                 CreateOfficeTypesCommand::class,

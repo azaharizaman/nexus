@@ -183,21 +183,22 @@ class ProcessStaffTransfersCommand extends Command
      */
     protected function getSystemProcessor(): ?Staff
     {
-        // Try to find an HR staff member or system admin
+        // Only allow staff with explicit HR department or specific authorized positions
+        $allowedPositions = [
+            'HR Manager',
+            'System Administrator',
+            'Backoffice Admin',
+            'HR Officer',
+        ];
+        
         return Staff::query()
             ->active()
-            ->where(function ($query) {
+            ->where(function ($query) use ($allowedPositions) {
                 $query->whereHas('department', function ($q) {
                     $q->where('code', 'HR');
                 })
-                ->orWhereHas('position', function ($q) {
-                    $q->where('name', 'like', '%HR%');
-                })
-                ->orWhereHas('position', function ($q) {
-                    $q->where('name', 'like', '%admin%');
-                })
-                ->orWhereHas('position', function ($q) {
-                    $q->where('name', 'like', '%system%');
+                ->orWhereHas('position', function ($q) use ($allowedPositions) {
+                    $q->whereIn('name', $allowedPositions);
                 });
             })
             ->first();

@@ -33,17 +33,17 @@ class ErpServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Merge Nexus ERP configuration FIRST
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/nexus.php',
+            'nexus'
+        );
+
         // Register service contracts
         $this->registerContracts();
 
         // Register atomic package orchestration providers
         $this->registerOrchestrationProviders();
-
-        // Merge Nexus ERP configuration
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/nexus.php',
-            'nexus'
-        );
 
         // Merge package configuration (if exists)
         if (file_exists(__DIR__.'/../apps/edward/config/app.php')) {
@@ -135,6 +135,11 @@ class ErpServiceProvider extends ServiceProvider
      */
     protected function registerOrchestrationProviders(): void
     {
+        // Check if auto-registration is enabled
+        if (!config('nexus.packages.auto_register', true)) {
+            return;
+        }
+
         // Register orchestration providers for atomic packages
         $providers = [];
 
