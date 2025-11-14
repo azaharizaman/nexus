@@ -126,8 +126,8 @@ class Unit extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \Nexus\BackofficeManagement\Database\Factories\UnitFactory
+    protected static function newFactory(): \Nexus\Backoffice\Database\Factories\UnitFactory
     {
-        return \Nexus\BackofficeManagement\Database\Factories\UnitFactory::new();
+        return \Nexus\Backoffice\Database\Factories\UnitFactory::new();
     }
 }

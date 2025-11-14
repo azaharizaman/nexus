@@ -3,7 +3,7 @@
 namespace Nexus\Backoffice\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
-use Nexus\Backoffice\BackOfficeServiceProvider;
+use Nexus\Backoffice\BackofficeServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
@@ -19,7 +19,7 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app)
     {
         return [
-            BackOfficeServiceProvider::class,
+            BackofficeServiceProvider::class,
         ];
     }
 

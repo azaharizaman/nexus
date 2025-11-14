@@ -195,8 +195,8 @@ class Office extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \Nexus\BackofficeManagement\Database\Factories\OfficeFactory
+    protected static function newFactory(): \Nexus\Backoffice\Database\Factories\OfficeFactory
     {
-        return \Nexus\BackofficeManagement\Database\Factories\OfficeFactory::new();
+        return \Nexus\Backoffice\Database\Factories\OfficeFactory::new();
     }
 }

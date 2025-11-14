@@ -221,8 +221,8 @@ class Position extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \Nexus\BackofficeManagement\Database\Factories\PositionFactory
+    protected static function newFactory(): \Nexus\Backoffice\Database\Factories\PositionFactory
     {
-        return \Nexus\BackofficeManagement\Database\Factories\PositionFactory::new();
+        return \Nexus\Backoffice\Database\Factories\PositionFactory::new();
     }
 }

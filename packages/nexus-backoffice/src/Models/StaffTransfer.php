@@ -581,8 +581,8 @@ class StaffTransfer extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \Nexus\BackofficeManagement\Database\Factories\StaffTransferFactory
+    protected static function newFactory(): \Nexus\Backoffice\Database\Factories\StaffTransferFactory
     {
-        return \Nexus\BackofficeManagement\Database\Factories\StaffTransferFactory::new();
+        return \Nexus\Backoffice\Database\Factories\StaffTransferFactory::new();
     }
 }

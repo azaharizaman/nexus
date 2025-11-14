@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property \Illuminate\Support\Carbon|null $resignation_date
  * @property string|null $resignation_reason
  * @property \Illuminate\Support\Carbon|null $resigned_at
- * @property \Nexus\BackofficeManagement\Enums\StaffStatus $status
+ * @property \Nexus\Backoffice\Enums\StaffStatus $status
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -812,8 +812,8 @@ class Staff extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \Nexus\BackofficeManagement\Database\Factories\StaffFactory
+    protected static function newFactory(): \Nexus\Backoffice\Database\Factories\StaffFactory
     {
-        return \Nexus\BackofficeManagement\Database\Factories\StaffFactory::new();
+        return \Nexus\Backoffice\Database\Factories\StaffFactory::new();
     }
 }

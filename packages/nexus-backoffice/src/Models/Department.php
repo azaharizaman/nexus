@@ -155,8 +155,8 @@ class Department extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \Nexus\BackofficeManagement\Database\Factories\DepartmentFactory
+    protected static function newFactory(): \Nexus\Backoffice\Database\Factories\DepartmentFactory
     {
-        return \Nexus\BackofficeManagement\Database\Factories\DepartmentFactory::new();
+        return \Nexus\Backoffice\Database\Factories\DepartmentFactory::new();
     }
 }

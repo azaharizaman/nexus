@@ -87,8 +87,8 @@ class OfficeType extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \Nexus\BackofficeManagement\Database\Factories\OfficeTypeFactory
+    protected static function newFactory(): \Nexus\Backoffice\Database\Factories\OfficeTypeFactory
     {
-        return \Nexus\BackofficeManagement\Database\Factories\OfficeTypeFactory::new();
+        return \Nexus\Backoffice\Database\Factories\OfficeTypeFactory::new();
     }
 }

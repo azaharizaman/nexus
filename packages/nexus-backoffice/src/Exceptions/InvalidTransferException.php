@@ -11,7 +11,7 @@ use InvalidArgumentException;
  * 
  * Thrown when a staff transfer operation is invalid or cannot be completed.
  * 
- * @package Nexus\BackofficeManagement\Exceptions
+ * @package Nexus\Backoffice\Exceptions
  */
 class InvalidTransferException extends InvalidArgumentException
 {

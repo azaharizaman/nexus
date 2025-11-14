@@ -148,7 +148,7 @@ class Company extends Model
      */
     public function getOrganizationalChart(): array
     {
-        return \Nexus\BackofficeManagement\Helpers\OrganizationalChart::forCompany($this);
+        return \Nexus\Backoffice\Helpers\OrganizationalChart::forCompany($this);
     }
 
     /**
@@ -156,7 +156,7 @@ class Company extends Model
      */
     public function getOrganizationalStatistics(): array
     {
-        return \Nexus\BackofficeManagement\Helpers\OrganizationalChart::statistics($this);
+        return \Nexus\Backoffice\Helpers\OrganizationalChart::statistics($this);
     }
 
     /**
@@ -190,8 +190,8 @@ class Company extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \Nexus\BackofficeManagement\Database\Factories\CompanyFactory
+    protected static function newFactory(): \Nexus\Backoffice\Database\Factories\CompanyFactory
     {
-        return \Nexus\BackofficeManagement\Database\Factories\CompanyFactory::new();
+        return \Nexus\Backoffice\Database\Factories\CompanyFactory::new();
     }
 }
