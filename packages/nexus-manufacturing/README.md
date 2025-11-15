@@ -78,9 +78,18 @@ Manufacturing implements a **cohesive bounded context** (NOT maximum atomicity) 
 ```
 nexus-manufacturing/
 ├── src/
-│   ├── Contracts/
-│   │   ├── Repositories/          # Repository interfaces
-│   │   └── Services/              # Service interfaces
+│   ├── Contracts/                 # All service and repository interfaces (flat structure)
+│   │   ├── BOMExplosionServiceContract.php
+│   │   ├── BillOfMaterialRepositoryContract.php
+│   │   ├── MaterialManagementServiceContract.php
+│   │   ├── ProductionCostingServiceContract.php
+│   │   ├── ProductionExecutionServiceContract.php
+│   │   ├── ProductionReportRepositoryContract.php
+│   │   ├── QualityInspectionRepositoryContract.php
+│   │   ├── QualityManagementServiceContract.php
+│   │   ├── TraceabilityServiceContract.php
+│   │   ├── WorkOrderPlanningServiceContract.php
+│   │   └── WorkOrderRepositoryContract.php
 │   ├── Enums/                     # Domain enums (5)
 │   ├── Events/                    # Domain events (4)
 │   ├── Models/                    # Eloquent models (16)

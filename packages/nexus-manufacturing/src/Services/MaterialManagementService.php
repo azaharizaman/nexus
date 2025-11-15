@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Nexus\Manufacturing\Services;
 
-use Nexus\Manufacturing\Contracts\Services\MaterialManagementServiceContract;
-use Nexus\Manufacturing\Contracts\Repositories\WorkOrderRepositoryContract;
+use Nexus\Manufacturing\Contracts\MaterialManagementServiceContract;
+use Nexus\Manufacturing\Contracts\WorkOrderRepositoryContract;
 use Nexus\Manufacturing\Models\WorkOrder;
 use Nexus\Manufacturing\Models\MaterialAllocation;
 use Illuminate\Support\Collection;
@@ -17,7 +17,7 @@ class MaterialManagementService implements MaterialManagementServiceContract
         private readonly WorkOrderRepositoryContract $workOrderRepository
     ) {}
 
-    public function issueMaterials(string $workOrderId, array $materials): void
+    public function issueMaterials(string $workOrderId, array $materials): array
     {
         $workOrder = $this->workOrderRepository->find($workOrderId);
         if (!$workOrder) {
@@ -27,6 +27,8 @@ class MaterialManagementService implements MaterialManagementServiceContract
         if (!$workOrder->canStartProduction() && $workOrder->status->value !== 'in_production') {
             throw new InvalidArgumentException("Work order must be released or in production to issue materials");
         }
+
+        $updatedAllocations = [];
 
         foreach ($materials as $material) {
             $allocation = $workOrder->materialAllocations()
@@ -43,17 +45,23 @@ class MaterialManagementService implements MaterialManagementServiceContract
                 'lot_number' => $material['lot_number'] ?? $allocation->lot_number,
             ]);
 
+            $updatedAllocations[] = $allocation->fresh();
+
             // Trigger MaterialConsumed event (placeholder for event dispatch)
             // event(new MaterialConsumed($workOrder, $allocation, $material['quantity']));
         }
+
+        return $updatedAllocations;
     }
 
-    public function backflushMaterials(string $workOrderId, float $quantityProduced): void
+    public function backflushMaterials(string $workOrderId, float $quantityProduced): array
     {
         $workOrder = $this->workOrderRepository->find($workOrderId);
         if (!$workOrder) {
             throw new InvalidArgumentException("Work order not found: {$workOrderId}");
         }
+
+        $updatedAllocations = [];
 
         // Backflush materials based on BOM quantities and actual production
         foreach ($workOrder->materialAllocations as $allocation) {
@@ -72,29 +80,22 @@ class MaterialManagementService implements MaterialManagementServiceContract
                     'quantity_consumed' => $allocation->quantity_consumed + $quantityToConsume,
                 ]);
 
+                $updatedAllocations[] = $allocation->fresh();
+
                 // Trigger MaterialConsumed event
                 // event(new MaterialConsumed($workOrder, $allocation, $quantityToConsume));
             }
         }
+
+        return $updatedAllocations;
     }
 
-    public function returnMaterial(
-        string $workOrderId,
-        string $componentProductId,
-        float $quantity,
-        ?string $reason = null
-    ): void {
-        $workOrder = $this->workOrderRepository->find($workOrderId);
-        if (!$workOrder) {
-            throw new InvalidArgumentException("Work order not found: {$workOrderId}");
-        }
-
-        $allocation = $workOrder->materialAllocations()
-            ->where('component_product_id', $componentProductId)
-            ->first();
+    public function returnMaterial(string $allocationId, float $quantity): MaterialAllocation
+    {
+        $allocation = MaterialAllocation::find($allocationId);
 
         if (!$allocation) {
-            throw new InvalidArgumentException("Material allocation not found");
+            throw new InvalidArgumentException("Material allocation not found: {$allocationId}");
         }
 
         if ($quantity > $allocation->quantity_issued) {
@@ -108,9 +109,11 @@ class MaterialManagementService implements MaterialManagementServiceContract
 
         // Log the return (in production, would create MaterialReturn record)
         // MaterialReturn::create([...]);
+
+        return $allocation->fresh();
     }
 
-    public function getMaterialVariance(string $workOrderId): Collection
+    public function getMaterialVariance(string $workOrderId): array
     {
         $workOrder = $this->workOrderRepository->find($workOrderId);
         if (!$workOrder) {
@@ -127,7 +130,7 @@ class MaterialManagementService implements MaterialManagementServiceContract
                 'variance_percentage' => $allocation->getVariancePercentage(),
                 'is_over_consumed' => $allocation->getVariance() > 0,
             ];
-        });
+        })->toArray();
     }
 
     public function checkMaterialAvailability(string $workOrderId): array

@@ -16,85 +16,85 @@ class WorkOrderWorkflow
         return [
             'name' => 'work_order_workflow',
             'description' => 'Manages work order lifecycle from planning to completion',
-            'initial_state' => WorkOrderStatus::Planned->value,
+            'initial_state' => WorkOrderStatus::PLANNED->value,
             'states' => [
-                WorkOrderStatus::Planned->value => [
+                WorkOrderStatus::PLANNED->value => [
                     'label' => 'Planned',
                     'description' => 'Work order is planned but not yet released',
                 ],
-                WorkOrderStatus::Released->value => [
+                WorkOrderStatus::RELEASED->value => [
                     'label' => 'Released',
                     'description' => 'Work order is released and ready for production',
                 ],
-                WorkOrderStatus::InProduction->value => [
+                WorkOrderStatus::IN_PRODUCTION->value => [
                     'label' => 'In Production',
                     'description' => 'Work order is actively being produced',
                 ],
-                WorkOrderStatus::OnHold->value => [
+                WorkOrderStatus::ON_HOLD->value => [
                     'label' => 'On Hold',
                     'description' => 'Work order is temporarily paused',
                 ],
-                WorkOrderStatus::Completed->value => [
+                WorkOrderStatus::COMPLETED->value => [
                     'label' => 'Completed',
                     'description' => 'Work order is completed',
                 ],
-                WorkOrderStatus::Cancelled->value => [
+                WorkOrderStatus::CANCELLED->value => [
                     'label' => 'Cancelled',
                     'description' => 'Work order is cancelled',
                 ],
             ],
             'transitions' => [
                 'release' => [
-                    'from' => [WorkOrderStatus::Planned->value],
-                    'to' => WorkOrderStatus::Released->value,
+                    'from' => [WorkOrderStatus::PLANNED->value],
+                    'to' => WorkOrderStatus::RELEASED->value,
                     'label' => 'Release',
                     'description' => 'Release work order for production',
                 ],
                 'start_production' => [
-                    'from' => [WorkOrderStatus::Released->value],
-                    'to' => WorkOrderStatus::InProduction->value,
+                    'from' => [WorkOrderStatus::RELEASED->value],
+                    'to' => WorkOrderStatus::IN_PRODUCTION->value,
                     'label' => 'Start Production',
                     'description' => 'Begin production on work order',
                 ],
                 'pause' => [
-                    'from' => [WorkOrderStatus::InProduction->value],
-                    'to' => WorkOrderStatus::OnHold->value,
+                    'from' => [WorkOrderStatus::IN_PRODUCTION->value],
+                    'to' => WorkOrderStatus::ON_HOLD->value,
                     'label' => 'Pause',
                     'description' => 'Temporarily pause work order',
                 ],
                 'resume' => [
-                    'from' => [WorkOrderStatus::OnHold->value],
-                    'to' => WorkOrderStatus::InProduction->value,
+                    'from' => [WorkOrderStatus::ON_HOLD->value],
+                    'to' => WorkOrderStatus::IN_PRODUCTION->value,
                     'label' => 'Resume',
                     'description' => 'Resume paused work order',
                 ],
                 'complete' => [
-                    'from' => [WorkOrderStatus::InProduction->value],
-                    'to' => WorkOrderStatus::Completed->value,
+                    'from' => [WorkOrderStatus::IN_PRODUCTION->value],
+                    'to' => WorkOrderStatus::COMPLETED->value,
                     'label' => 'Complete',
                     'description' => 'Complete work order',
                 ],
                 'cancel_from_planned' => [
-                    'from' => [WorkOrderStatus::Planned->value],
-                    'to' => WorkOrderStatus::Cancelled->value,
+                    'from' => [WorkOrderStatus::PLANNED->value],
+                    'to' => WorkOrderStatus::CANCELLED->value,
                     'label' => 'Cancel',
                     'description' => 'Cancel planned work order',
                 ],
                 'cancel_from_released' => [
-                    'from' => [WorkOrderStatus::Released->value],
-                    'to' => WorkOrderStatus::Cancelled->value,
+                    'from' => [WorkOrderStatus::RELEASED->value],
+                    'to' => WorkOrderStatus::CANCELLED->value,
                     'label' => 'Cancel',
                     'description' => 'Cancel released work order',
                 ],
                 'cancel_from_production' => [
-                    'from' => [WorkOrderStatus::InProduction->value],
-                    'to' => WorkOrderStatus::Cancelled->value,
+                    'from' => [WorkOrderStatus::IN_PRODUCTION->value],
+                    'to' => WorkOrderStatus::CANCELLED->value,
                     'label' => 'Cancel',
                     'description' => 'Cancel work order in production',
                 ],
                 'cancel_from_hold' => [
-                    'from' => [WorkOrderStatus::OnHold->value],
-                    'to' => WorkOrderStatus::Cancelled->value,
+                    'from' => [WorkOrderStatus::ON_HOLD->value],
+                    'to' => WorkOrderStatus::CANCELLED->value,
                     'label' => 'Cancel',
                     'description' => 'Cancel work order on hold',
                 ],

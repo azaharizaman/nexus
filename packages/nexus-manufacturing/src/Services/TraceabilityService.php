@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Nexus\Manufacturing\Services;
 
-use Nexus\Manufacturing\Contracts\Services\TraceabilityServiceContract;
-use Nexus\Manufacturing\Contracts\Repositories\WorkOrderRepositoryContract;
+use Nexus\Manufacturing\Contracts\TraceabilityServiceContract;
+use Nexus\Manufacturing\Contracts\WorkOrderRepositoryContract;
 use Nexus\Manufacturing\Models\BatchGenealogy;
 use Nexus\Manufacturing\Models\WorkOrder;
 use Illuminate\Support\Collection;
@@ -17,7 +17,7 @@ class TraceabilityService implements TraceabilityServiceContract
         private readonly WorkOrderRepositoryContract $workOrderRepository
     ) {}
 
-    public function recordBatchGenealogy(string $workOrderId, array $rawMaterialLots): void
+    public function recordBatchGenealogy(string $workOrderId, string $finishedGoodsLot, array $rawMaterialLots): array
     {
         $workOrder = $this->workOrderRepository->find($workOrderId);
         if (!$workOrder) {
@@ -27,7 +27,7 @@ class TraceabilityService implements TraceabilityServiceContract
         // Get or create batch genealogy for this work order
         $genealogy = BatchGenealogy::firstOrCreate([
             'work_order_id' => $workOrderId,
-            'finished_good_lot' => $workOrder->lot_number,
+            'finished_good_lot' => $finishedGoodsLot,
         ]);
 
         // Attach raw material lots with quantities
@@ -37,6 +37,13 @@ class TraceabilityService implements TraceabilityServiceContract
                 'quantity_consumed' => $lot['quantity_consumed'],
             ]);
         }
+
+        return [
+            'genealogy_id' => $genealogy->id,
+            'finished_good_lot' => $finishedGoodsLot,
+            'raw_material_count' => count($rawMaterialLots),
+            'created_at' => $genealogy->created_at->toDateTimeString(),
+        ];
     }
 
     public function traceForward(string $lotNumber): Collection
@@ -109,7 +116,7 @@ class TraceabilityService implements TraceabilityServiceContract
         ];
     }
 
-    public function identifyRecallImpact(string $lotNumber): array
+    public function identifyRecallImpact(string $lotNumber): Collection
     {
         $impactedLots = [];
         $processedLots = [];
@@ -136,12 +143,7 @@ class TraceabilityService implements TraceabilityServiceContract
             }
         }
 
-        return [
-            'origin_lot' => $lotNumber,
-            'total_impacted_lots' => count($impactedLots),
-            'impacted_lots' => $details,
-            'recall_scope' => $this->calculateRecallScope($details),
-        ];
+        return collect($details);
     }
 
     private function recursiveTraceForward(

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Nexus\Manufacturing\Services;
 
-use Nexus\Manufacturing\Contracts\Services\QualityManagementServiceContract;
-use Nexus\Manufacturing\Contracts\Repositories\QualityInspectionRepositoryContract;
-use Nexus\Manufacturing\Contracts\Repositories\WorkOrderRepositoryContract;
+use Nexus\Manufacturing\Contracts\QualityManagementServiceContract;
+use Nexus\Manufacturing\Contracts\QualityInspectionRepositoryContract;
+use Nexus\Manufacturing\Contracts\WorkOrderRepositoryContract;
 use Nexus\Manufacturing\Models\QualityInspection;
 use Nexus\Manufacturing\Models\InspectionMeasurement;
 use Nexus\Manufacturing\Enums\InspectionResult;
@@ -37,7 +37,7 @@ class QualityManagementService implements QualityManagementServiceContract
             'inspection_plan_id' => $workOrder->product->inspectionPlans()->first()?->id,
             'inspector_id' => auth()->id(),
             'inspection_date' => now(),
-            'result' => InspectionResult::Passed, // Will be updated based on measurements
+            'result' => InspectionResult::PASSED, // Will be updated based on measurements
         ]);
 
         $allPassed = true;
@@ -74,7 +74,7 @@ class QualityManagementService implements QualityManagementServiceContract
 
         // Update overall inspection result
         $inspection->update([
-            'result' => $allPassed ? InspectionResult::Passed : InspectionResult::Failed,
+            'result' => $allPassed ? InspectionResult::PASSED : InspectionResult::FAILED,
         ]);
 
         return $inspection->fresh('measurements');
@@ -82,42 +82,48 @@ class QualityManagementService implements QualityManagementServiceContract
 
     public function setDisposition(
         string $inspectionId,
-        DispositionType $disposition,
-        ?string $notes = null
-    ): void {
+        string $disposition,
+        string $notes = ''
+    ): QualityInspection {
         $inspection = $this->inspectionRepository->find($inspectionId);
         if (!$inspection) {
             throw new InvalidArgumentException("Inspection not found: {$inspectionId}");
         }
 
-        if ($inspection->result === InspectionResult::Passed && $disposition !== DispositionType::Accept) {
+        $dispositionType = DispositionType::from($disposition);
+
+        if ($inspection->result === InspectionResult::PASSED && $dispositionType !== DispositionType::ACCEPT) {
             throw new InvalidArgumentException("Passed inspections can only have Accept disposition");
         }
 
         $inspection->update([
-            'disposition' => $disposition,
+            'disposition' => $dispositionType,
             'disposition_date' => now(),
             'disposition_notes' => $notes,
         ]);
 
         // If disposition is quarantine, mark lot as quarantined
-        if ($disposition === DispositionType::Quarantine) {
+        if ($dispositionType === DispositionType::QUARANTINE) {
             $this->quarantineLot($inspection->lot_number, $notes);
         }
+
+        return $inspection->fresh();
     }
 
-    public function quarantineLot(string $lotNumber, ?string $reason = null): void
+    public function quarantineLot(string $lotNumber, string $reason): array
     {
         // Update all inspections for this lot
         $inspections = $this->inspectionRepository->getByLotNumber($lotNumber);
         
+        $updatedInspections = [];
         foreach ($inspections as $inspection) {
             if (!$inspection->isQuarantined()) {
                 $inspection->update([
-                    'disposition' => DispositionType::Quarantine,
+                    'disposition' => DispositionType::QUARANTINE,
                     'disposition_date' => now(),
                     'disposition_notes' => $reason,
                 ]);
+                $updatedInspections[] = $inspection->fresh();
             }
         }
 
@@ -125,20 +131,27 @@ class QualityManagementService implements QualityManagementServiceContract
         // - Update inventory status to quarantined
         // - Block lot from being used/shipped
         // - Create quarantine notification/alert
+
+        return [
+            'lot_number' => $lotNumber,
+            'quarantine_date' => now()->toDateTimeString(),
+            'reason' => $reason,
+            'affected_inspections' => count($updatedInspections),
+        ];
     }
 
-    public function releaseQuarantine(string $lotNumber, ?string $notes = null): void
+    public function releaseQuarantine(string $lotNumber, string $approvedBy): bool
     {
         $inspections = $this->inspectionRepository->getByLotNumber($lotNumber);
         
         foreach ($inspections as $inspection) {
             if ($inspection->isQuarantined()) {
                 // Only release if there's a valid non-quarantine disposition
-                if ($inspection->result === InspectionResult::Passed) {
+                if ($inspection->result === InspectionResult::PASSED) {
                     $inspection->update([
-                        'disposition' => DispositionType::Accept,
+                        'disposition' => DispositionType::ACCEPT,
                         'disposition_date' => now(),
-                        'disposition_notes' => $notes,
+                        'disposition_notes' => "Released by: {$approvedBy}",
                     ]);
                 } else {
                     throw new InvalidArgumentException("Cannot release failed inspection without proper disposition");
@@ -149,29 +162,24 @@ class QualityManagementService implements QualityManagementServiceContract
         // In production, would also:
         // - Update inventory status to available
         // - Create release notification
+
+        return true;
     }
 
-    public function getQualityMetrics(?string $productId = null, ?array $dateRange = null): array
+    public function getQualityMetrics(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
     {
-        // Get all inspections (would be filtered by product/date in production)
+        // Get all inspections within date range
         $inspections = QualityInspection::query()
-            ->when($productId, function ($query, $productId) {
-                $query->whereHas('workOrder', function ($q) use ($productId) {
-                    $q->where('product_id', $productId);
-                });
-            })
-            ->when($dateRange, function ($query, $dateRange) {
-                $query->whereBetween('inspection_date', $dateRange);
-            })
+            ->whereBetween('inspection_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->get();
 
         $totalInspections = $inspections->count();
-        $passedInspections = $inspections->where('result', InspectionResult::Passed)->count();
-        $failedInspections = $inspections->where('result', InspectionResult::Failed)->count();
+        $passedInspections = $inspections->where('result', InspectionResult::PASSED)->count();
+        $failedInspections = $inspections->where('result', InspectionResult::FAILED)->count();
 
-        $quarantined = $inspections->where('disposition', DispositionType::Quarantine)->count();
-        $rejected = $inspections->where('disposition', DispositionType::Reject)->count();
-        $rework = $inspections->where('disposition', DispositionType::Rework)->count();
+        $quarantined = $inspections->where('disposition', DispositionType::QUARANTINE)->count();
+        $rejected = $inspections->where('disposition', DispositionType::REJECT)->count();
+        $rework = $inspections->where('disposition', DispositionType::REWORK)->count();
 
         return [
             'total_inspections' => $totalInspections,

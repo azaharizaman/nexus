@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Nexus\Manufacturing\Services;
 
-use Nexus\Manufacturing\Contracts\Services\ProductionCostingServiceContract;
-use Nexus\Manufacturing\Contracts\Repositories\WorkOrderRepositoryContract;
+use Nexus\Manufacturing\Contracts\ProductionCostingServiceContract;
+use Nexus\Manufacturing\Contracts\WorkOrderRepositoryContract;
 use Nexus\Manufacturing\Models\ProductionCosting;
 use Nexus\Manufacturing\Models\WorkOrder;
 use InvalidArgumentException;
@@ -124,27 +124,21 @@ class ProductionCostingService implements ProductionCostingServiceContract
         ];
     }
 
-    public function getCostPerUnit(string $workOrderId): array
+    public function getCostPerUnit(string $workOrderId): float
     {
         $workOrder = $this->workOrderRepository->find($workOrderId);
         if (!$workOrder) {
             throw new InvalidArgumentException("Work order not found: {$workOrderId}");
         }
 
-        $standardCost = $this->getStandardCost($workOrderId);
         $actualCost = $this->getActualCost($workOrderId);
-
-        $quantityOrdered = $workOrder->quantity_ordered;
         $quantityCompleted = $workOrder->quantity_completed;
 
-        return [
-            'standard_cost_per_unit' => $quantityOrdered > 0 
-                ? round($standardCost['total_cost'] / $quantityOrdered, 2) 
-                : 0,
-            'actual_cost_per_unit' => $quantityCompleted > 0 
-                ? round($actualCost['total_cost'] / $quantityCompleted, 2) 
-                : 0,
-        ];
+        if ($quantityCompleted <= 0) {
+            return 0.0;
+        }
+
+        return round($actualCost['total_cost'] / $quantityCompleted, 2);
     }
 
     private function calculateStandardMaterialCost(WorkOrder $workOrder): float

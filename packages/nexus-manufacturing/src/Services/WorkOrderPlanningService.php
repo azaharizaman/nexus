@@ -176,7 +176,7 @@ class WorkOrderPlanningService implements WorkOrderPlanningServiceContract
         );
 
         // Set planned dates
-        $endDate = $startDate->copy()->addDays($leadTime['lead_time_days']);
+        $endDate = now()->parse($startDate->format('Y-m-d'))->addDays($leadTime['lead_time_days']);
 
         return $this->workOrderRepository->update($workOrderId, [
             'planned_start_date' => $startDate,
