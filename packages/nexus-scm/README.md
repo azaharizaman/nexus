@@ -355,7 +355,7 @@ packages/nexus-scm/
 │           │   └── ScmDashboard.php
 │           ├── Commands/               # Artisan commands
 │           │   └── ProcessTimersCommand.php
-│           ├── Controllers/            # API controllers (for package testing)
+│           ├── Controllers/            # Internal API endpoints (for package testing only, not public API)
 │           │   └── ScmController.php
 │           └── ScmServiceProvider.php  # Laravel service provider
 ├── database/
@@ -379,15 +379,16 @@ packages/nexus-scm/
 │   └── scm.php                         # Package configuration
 ├── composer.json
 ├── README.md                           # This file
-└── REQUIREMENTS.md                     # Detailed requirements (legacy)
+├── REQUIREMENTS.md                     # Redirect to requirements documents
+└── REQUIREMENTS.legacy.md              # Detailed requirements (legacy)
 ```
 
 ### Key Structural Principles
 
 1. **src/Core/**: Pure PHP, no Laravel dependencies, 100% testable in isolation
 2. **src/Adapters/Laravel/**: All Laravel-specific code (Eloquent, Commands, Controllers)
-3. **Events**: Domain events for cross-package communication (via Nexus\Erp)
-4. **Contracts**: Interfaces for dependency inversion
+3. **src/Core/Events/**: Domain events for cross-package communication (via Nexus\Erp)
+4. **src/Core/Contracts/**: Interfaces for dependency inversion
 
 ---
 
@@ -688,7 +689,7 @@ MIT License - See [LICENSE.md](LICENSE.md)
 
 ## Support
 
-- **Documentation**: [REQUIREMENTS.md](REQUIREMENTS.md) (legacy detailed spec)
+- **Documentation**: [REQUIREMENTS.legacy.md](REQUIREMENTS.legacy.md) (legacy detailed spec)
 - **Issues**: GitHub Issues
 - **Discussions**: GitHub Discussions
 
