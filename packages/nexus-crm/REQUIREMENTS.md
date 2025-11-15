@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0  
 **Last Updated:** November 15, 2025  
-**Status:** Initial Draft - Progressive Disclosure Model  
+**Status:** Ready for Review  
 **Package:** `nexus-crm`  
 **Namespace:** `Nexus\Crm`
 
@@ -231,7 +231,7 @@ The nexus-crm package embodies core Nexus ERP architectural principles:
 
 | ID | Requirement | Notes |
 |----|------------|-------|
-| **MAINT-001** | Framework-agnostic core | No Laravel dependencies in `src/Core/` directory |
+| **MAINT-001** | Framework-agnostic core | No Laravel dependencies in `src/Core/` directory; Laravel dependencies permitted in `src/Adapters/Laravel/` and `src/Http/` as per architectural guidelines |
 | **MAINT-002** | Laravel adapter pattern | Framework-specific code in `src/Adapters/Laravel/` |
 | **MAINT-003** | Test coverage | >80% overall, >90% for core business logic |
 | **MAINT-004** | Domain separation | Lead, opportunity, campaign logic independent and separately testable |
@@ -598,6 +598,7 @@ The nexus-crm package integrates seamlessly with other Nexus ERP packages while 
 
 ```php
 use Nexus\Tenancy\Contracts\TenantManagerContract;
+use Nexus\Tenancy\Traits\BelongsToTenant;
 use Nexus\Crm\Traits\HasCrm;
 
 class Lead extends Model
@@ -690,26 +691,31 @@ $leadNumber = GenerateSerialNumberAction::run('LEAD-{YYYY}-{0000}');
 
 **Zero Hard Dependencies:**
 - nexus-crm does NOT require any other Nexus package to function
-- Integrations are OPTIONAL and activated via contracts
-- If nexus-tenancy is present, tenant scoping is enabled automatically
-- If nexus-audit-log is present, activity logging is enabled automatically
+- nexus-crm defines contracts it needs (e.g., `TenantManagerContract`, `ActivityLoggerContract`)
+- The Nexus ERP orchestrator (`nexus/erp`) binds concrete implementations when packages are present
+- nexus-crm uses contracts without knowledge of concrete implementations from other packages
 
 **Contract-Based Communication:**
 ```php
 // In CrmServiceProvider
 public function register(): void
 {
-    // Optional integration with tenancy
+    // Define contracts that nexus-crm needs
+    // NOTE: Do NOT bind concrete implementations from other packages here.
+    // The orchestrator (nexus/erp) is responsible for binding contracts to implementations.
+    
+    // Example: Use contracts if available
     if (interface_exists(TenantManagerContract::class)) {
-        $this->app->bind(
-            TenantManagerContract::class,
-            \Nexus\Tenancy\Services\TenantManager::class
-        );
+        // The orchestrator will have bound the concrete implementation
+        // We simply use the contract interface
+        $tenantManager = $this->app->make(TenantManagerContract::class);
+        // Use $tenantManager as needed, without knowledge of its concrete class
     }
     
     // Optional integration with audit logging
     if (interface_exists(ActivityLoggerContract::class)) {
-        $this->enableActivityLogging();
+        $activityLogger = $this->app->make(ActivityLoggerContract::class);
+        $this->enableActivityLogging($activityLogger);
     }
 }
 ```
@@ -935,7 +941,7 @@ test('lead transitions from new to qualified based on score', function () {
 
 | Dependency | Version | Purpose |
 |------------|---------|---------|
-| **PHP** | ≥8.3 | Modern language features (enums, readonly properties) |
+| **PHP** | ≥8.2 | Modern language features (enums, readonly properties) |
 | **Database** | MySQL 8+, PostgreSQL 12+, SQLite 3.35+, SQL Server | Data persistence |
 
 ### Optional Dependencies (Laravel Integration)
@@ -994,7 +1000,7 @@ composer require nexus/crm nexus/tenancy nexus/audit-log nexus/settings nexus/se
 **Status:** Ready for Review  
 **Author:** Nexus ERP Development Team  
 **Related Documents:**
-- [Nexus ERP System Architecture Document](../../docs/SYSTEM%20ARCHITECHTURAL%20DOCUMENT.md)
+- [Nexus ERP System Architecture Document](../../docs/SYSTEM%20ARCHITECTURAL%20DOCUMENT.md)
 - [Nexus ERP Coding Guidelines](../../CODING_GUIDELINES.md)
 - [nexus-tenancy Requirements](../nexus-tenancy/REQUIREMENTS.md)
 - [nexus-audit-log Requirements](../nexus-audit-log/REQUIREMENTS.md)
