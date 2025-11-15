@@ -14,9 +14,12 @@
         "php": "^8.3",
         "composer-phar/phpcbf": "^4.0",
         "laravel/framework": "^12.0",
+        "laravel/tinker": "^2.10",
         "nexus/audit-log": "dev-main",
         "nexus/backoffice": "dev-main",
+        "nexus/hrm": "dev-main",
         "nexus/inventory": "dev-main",
+        "nexus/org-structure": "dev-main",
         "nexus/sequencing": "dev-main",
         "nexus/settings": "dev-main",
         "nexus/tenancy": "dev-main",
@@ -29,6 +32,8 @@
         "infection/infection": "^0.31.9",
         "laravel/pint": "^1.18",
         "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "orchestra/testbench": "^10.0",
         "phpunit/phpunit": "^12.0",
         "squizlabs/php_codesniffer": "^4.0"
     },
@@ -86,6 +91,14 @@
         {
             "type": "path",
             "url": "packages/nexus-settings"
+        },
+        {
+            "type": "path",
+            "url": "packages/nexus-hrm"
+        },
+        {
+            "type": "path",
+            "url": "packages/nexus-org-structure"
         },
         {
             "type": "path",

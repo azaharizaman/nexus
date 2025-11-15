@@ -15,6 +15,10 @@ use Nexus\AuditLog\Contracts\AuditLogRepositoryContract;
 use Nexus\Erp\Support\Services\Logging\SpatieActivityLoggerAdapter;
 use Nexus\Erp\Support\Services\Permission\SpatiePermissionService;
 use Nexus\Erp\Support\Services\Search\ScoutSearchService;
+use Nexus\Hrm\Contracts\OrganizationServiceContract as HrmOrganizationServiceContract;
+use Nexus\OrgStructure\Contracts\OrganizationServiceContract as OrgOrganizationServiceContract;
+use Nexus\OrgStructure\Services\DefaultOrganizationService;
+use Nexus\Erp\Support\Adapters\OrgStructure\OrganizationServiceAdapter;
 
 /**
  * ERP Service Provider
@@ -127,6 +131,17 @@ class ErpServiceProvider extends ServiceProvider
         $this->app->singleton(PermissionServiceContract::class, function ($app) {
             return new SpatiePermissionService();
         });
+
+        // Organization Structure Service binding for HRM contract via adapter
+        if (class_exists(DefaultOrganizationService::class) && interface_exists(HrmOrganizationServiceContract::class)) {
+            // Bind underlying org service if not already
+            $this->app->singleton(OrgOrganizationServiceContract::class, DefaultOrganizationService::class);
+
+            // Bind HRM-facing contract to adapter
+            $this->app->singleton(HrmOrganizationServiceContract::class, function ($app) {
+                return new OrganizationServiceAdapter($app->make(OrgOrganizationServiceContract::class));
+            });
+        }
     }
 
     /**

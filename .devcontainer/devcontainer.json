@@ -1,26 +1,33 @@
-// .devcontainer/devcontainer.json
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/php
 {
-  "name": "PHP 8.3 Development Container",
-  "image": "mcr.microsoft.com/devcontainers/php:1-8.3",
-  
-  "features": {
-    // Optionally add Node.js if your project has front-end dependencies
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "latest"
-    }
-  },
+	"name": "PHP",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/php:1-8.3-bullseye",
 
-  "forwardPorts": [8080],
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
 
-  "postCreateCommand": "composer install",
+	// Configure tool-specific properties.
+	// "customizations": {},
 
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "felixfbecker.php-intellisense",
-        "felixfbecker.php-debug",
-        "bmewburn.vscode-intelephense-client"
-      ]
-    }
-  }
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		8080
+	],
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"installDirectlyFromGitHubRelease": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-extra/features/composer:1": {
+			"version": "latest"
+		}
+	}
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "sudo chmod a+x \"$(pwd)\" && sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html"
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
 }

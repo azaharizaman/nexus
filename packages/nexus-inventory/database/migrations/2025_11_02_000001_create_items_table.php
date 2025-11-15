@@ -13,14 +13,13 @@ return new class extends Migration
     public function up(): void
     {
         $itemsTable = Config::get('inventory-management.table_names.items', 'items');
-        $unitModel = Config::get('inventory-management.models.unit');
-        $unitTable = (new $unitModel())->getTable();
 
-        Schema::create($itemsTable, function (Blueprint $table) use ($unitTable) {
+        Schema::create($itemsTable, function (Blueprint $table) {
             $table->id();
             $table->string('sku')->unique();
             $table->string('name');
-            $table->foreignId('uom_id')->constrained($unitTable);
+            // Avoid hard cross-package foreign key. Enforce at application level.
+            $table->unsignedBigInteger('uom_id')->index();
             $table->timestamps();
         });
     }

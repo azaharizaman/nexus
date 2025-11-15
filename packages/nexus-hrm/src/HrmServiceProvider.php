@@ -25,6 +25,9 @@ class HrmServiceProvider extends ServiceProvider
             'hrm'
         );
 
+        // Register domain services
+        // Services are resolved directly in tests and orchestration layer
+
         // Register service contracts - implementations bound in orchestration layer
         // Examples:
         // $this->app->bind(OrganizationServiceContract::class, ...); // Bound by Nexus\Erp

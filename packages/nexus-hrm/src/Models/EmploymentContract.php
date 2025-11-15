@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nexus\Hrm\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -96,7 +97,7 @@ class EmploymentContract extends Model
             return false;
         }
 
-        return $this->end_date->isPast();
+        return Carbon::parse($this->end_date)->isPast();
     }
 
     /**
@@ -108,7 +109,7 @@ class EmploymentContract extends Model
             return true; // No probation
         }
 
-        return $this->probation_end_date->isPast();
+        return Carbon::parse($this->probation_end_date)->isPast();
     }
 
     /**
@@ -120,7 +121,7 @@ class EmploymentContract extends Model
             return 0;
         }
 
-        return now()->diffInDays($this->probation_end_date, false);
+        return (int) now()->diffInDays(Carbon::parse($this->probation_end_date), false);
     }
 
     /**
@@ -132,7 +133,7 @@ class EmploymentContract extends Model
             return null; // Open-ended contract
         }
 
-        return $this->start_date->diffInDays($this->end_date);
+        return (int) Carbon::parse($this->start_date)->diffInDays(Carbon::parse($this->end_date));
     }
 
     /**
