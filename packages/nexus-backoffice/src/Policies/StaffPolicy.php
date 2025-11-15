@@ -70,14 +70,6 @@ class StaffPolicy
     }
 
     /**
-     * Determine whether the user can delete the staff.
-     */
-    public function delete($user, Staff $staff): bool
-    {
-        return true;
-    }
-
-    /**
      * Determine whether the user can restore the staff.
      */
     public function restore($user, Staff $staff): bool
