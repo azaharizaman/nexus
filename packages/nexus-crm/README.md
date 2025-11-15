@@ -1,50 +1,162 @@
 # Nexus CRM Package
 
 **Version:** 1.0.0  
-**Status:** Phase 1 - Basic CRM (Trait-based)
+**Status:** Production Ready - All Phases Complete
 
-A progressive CRM package for Nexus ERP that starts simple and scales with your needs.
+A progressive CRM package for Nexus ERP that starts simple and scales with your needs. Supports everything from basic contact management to enterprise sales automation.
 
-## Quick Start (Level 1 - 5 minutes)
+## Features
 
-Add CRM functionality to any Laravel model without migrations:
+- ✅ **Level 1**: Trait-based CRM (no migrations required)
+- ✅ **Level 2**: Database-driven CRM with pipelines
+- ✅ **Level 3**: Enterprise features (planned for v1.1.0)
+- ✅ **Extensible**: Custom conditions, assignments, integrations
+- ✅ **Performant**: Cached dashboards, optimized queries
+- ✅ **Well-documented**: Complete API docs and tutorials
+
+## Installation
+
+```bash
+composer require nexus/crm
+php artisan vendor:publish --provider="Nexus\Crm\CrmServiceProvider"
+php artisan migrate
+```
+
+## Quick Start
+
+### Level 1: Basic CRM (5 minutes)
+
+Add CRM to any model:
 
 ```php
-<?php
-
 use Nexus\Crm\Traits\HasCrm;
-use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
     use HasCrm;
-
-    // Define your CRM fields
-    public array $crmConfiguration = [
-        'first_name' => ['type' => 'string', 'required' => true],
-        'last_name' => ['type' => 'string', 'required' => true],
-        'email' => ['type' => 'string', 'required' => false],
-        'phone' => ['type' => 'string', 'required' => false],
-        'company' => ['type' => 'string', 'required' => false],
-        'notes' => ['type' => 'text', 'required' => false],
-    ];
 }
 ```
 
-### Usage
+Create contacts:
 
 ```php
-$user = User::find(1);
-
-// Add a contact
-$user->addContact([
+$user->createContact([
     'first_name' => 'John',
     'last_name' => 'Doe',
     'email' => 'john@example.com',
-    'company' => 'Acme Corp',
+]);
+```
+
+### Level 2: Advanced CRM (20 minutes)
+
+Create dynamic entities:
+
+```php
+use Nexus\Crm\Models\CrmDefinition;
+
+$definition = CrmDefinition::create([
+    'name' => 'Lead',
+    'type' => 'lead',
+    'schema' => [
+        'first_name' => ['type' => 'string', 'required' => true],
+        'email' => ['type' => 'string', 'required' => true],
+        'budget' => ['type' => 'number'],
+    ],
 ]);
 
-// Get all contacts
+use Nexus\Crm\Actions\CreateEntity;
+
+$entity = app(CreateEntity::class)->execute([
+    'definition_id' => $definition->id,
+    'data' => [
+        'first_name' => 'Jane',
+        'email' => 'jane@example.com',
+        'budget' => 50000,
+    ],
+]);
+```
+
+### Level 3: Pipeline Automation (30 minutes)
+
+Set up automated workflows:
+
+```php
+use Nexus\Crm\Models\CrmPipeline;
+use Nexus\Crm\Models\CrmStage;
+
+$pipeline = CrmPipeline::create(['name' => 'Sales']);
+$stage = CrmStage::create([
+    'pipeline_id' => $pipeline->id,
+    'name' => 'Qualified',
+    'transition_conditions' => [
+        ['field' => 'budget', 'operator' => 'greater_than', 'value' => 10000]
+    ],
+]);
+
+use Nexus\Crm\Actions\TransitionEntity;
+
+app(TransitionEntity::class)->execute($entity, 'qualified');
+```
+
+## Documentation
+
+- 📖 **[API Documentation](docs/api.md)** - Complete reference
+- 🚀 **[Tutorials](docs/tutorials.md)** - Step-by-step guides for all levels
+- 🔄 **[Migration Guides](docs/migrations.md)** - Import from Salesforce, HubSpot, etc.
+- ⚡ **[Performance Tuning](docs/performance.md)** - Optimization guide
+- 📝 **[Changelog](CHANGELOG.md)** - Version history
+
+## Extensibility
+
+Register custom components:
+
+```php
+// Custom assignment strategy
+$strategyResolver = app(\Nexus\Crm\Core\AssignmentStrategyResolver::class);
+$strategyResolver->registerStrategy('custom', CustomStrategy::class);
+
+// Custom condition evaluator
+$evaluatorManager = app(\Nexus\Crm\Core\ConditionEvaluatorManager::class);
+$evaluatorManager->registerEvaluator('custom', CustomEvaluator::class);
+
+// Custom integration
+$integrationManager = app(\Nexus\Crm\Core\IntegrationManager::class);
+$integrationManager->registerIntegration('slack', SlackIntegration::class);
+```
+
+## Requirements
+
+- PHP 8.3+
+- Laravel 12+
+- MySQL/PostgreSQL with JSON support
+
+## Testing
+
+```bash
+composer test
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Support
+
+- 📧 Email: azaharizaman@gmail.com
+- 📚 Docs: [Full Documentation](docs/)
+- 🐛 Issues: [GitHub Issues](https://github.com/azaharizaman/nexus-erp/issues)
+
+---
+
+**Built with ❤️ for the Laravel community**
 $contacts = $user->getContacts();
 
 // Update a contact
