@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasHierarchy;
+use Nexus\Backoffice\Contracts\DepartmentInterface;
 
 /**
  * Department Model
@@ -36,7 +37,6 @@ use App\Traits\HasHierarchy;
 class Department extends Model implements DepartmentInterface
 {
     use HasFactory, SoftDeletes, HasHierarchy;
-use Nexus\Backoffice\Contracts\DepartmentInterface;
 
     /**
      * The table associated with the model.
@@ -127,6 +127,52 @@ use Nexus\Backoffice\Contracts\DepartmentInterface;
     public function isActive(): bool
     {
         return $this->is_active;
+    }
+
+    // Interface method implementations
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getOfficeId(): int
+    {
+        return $this->company_id;  // Note: Department belongs to company, not office directly
+    }
+
+    public function getParentDepartmentId(): ?int
+    {
+        return $this->parent_department_id;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deleted_at;
     }
 
     /**

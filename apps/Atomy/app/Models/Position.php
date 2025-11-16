@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Nexus\Backoffice\Enums\PositionType;
+use Nexus\Backoffice\Contracts\PositionInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,7 +42,6 @@ use Illuminate\Database\Eloquent\Builder;
 class Position extends Model implements PositionInterface
 {
     use HasFactory;
-use Nexus\Backoffice\Contracts\PositionInterface;
 
     /**
      * The table associated with the model.
@@ -185,6 +185,47 @@ use Nexus\Backoffice\Contracts\PositionInterface;
     public function getLevel(): int
     {
         return $this->type->level();
+    }
+
+    // Interface method implementations
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->name;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type?->value;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deleted_at ?? null;
     }
 
     /**

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasHierarchy;
 use App\Models\OfficeType;
+use Nexus\Backoffice\Contracts\OfficeInterface;
 
 /**
  * Office Model
@@ -150,6 +151,52 @@ class Office extends Model implements OfficeInterface
         return $this->is_active;
     }
 
+    // Interface method implementations
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getCompanyId(): int
+    {
+        return $this->company_id;
+    }
+
+    public function getParentOfficeId(): ?int
+    {
+        return $this->parent_office_id;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deleted_at;
+    }
+
     /**
      * Get the full address.
      */
@@ -189,7 +236,6 @@ class Office extends Model implements OfficeInterface
     {
         return $query->whereHas('officeTypes', function ($q) use ($officeTypeId) {
             $q->where('office_type_id', $officeTypeId);
-use Nexus\Backoffice\Contracts\OfficeInterface;
         });
     }
 

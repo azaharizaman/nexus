@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Nexus\Backoffice\Contracts\OfficeTypeInterface;
 
 /**
  * OfficeType Model
@@ -29,7 +30,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OfficeType extends Model implements OfficeTypeInterface
 {
     use HasFactory, SoftDeletes;
-use Nexus\Backoffice\Contracts\OfficeTypeInterface;
 
     /**
      * The table associated with the model.
@@ -75,6 +75,42 @@ use Nexus\Backoffice\Contracts\OfficeTypeInterface;
     public function isActive(): bool
     {
         return $this->is_active;
+    }
+
+    // Interface method implementations
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->is_active ? 'active' : 'inactive';
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
     }
 
     /**

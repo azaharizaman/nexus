@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Nexus\Backoffice\Enums\StaffTransferStatus;
+use Nexus\Backoffice\Contracts\StaffTransferInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Nexus\Backoffice\Exceptions\InvalidTransferException;
 
@@ -75,7 +76,6 @@ use Nexus\Backoffice\Exceptions\InvalidTransferException;
 class StaffTransfer extends Model implements StaffTransferInterface
 {
     use HasFactory;
-use Nexus\Backoffice\Contracts\StaffTransferInterface;
     
     protected $table = 'backoffice_staff_transfers';
     
@@ -541,6 +541,82 @@ use Nexus\Backoffice\Contracts\StaffTransferInterface;
     public function isImmediate(): bool
     {
         return $this->effective_date->isToday();
+    }
+
+    // Interface method implementations
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getStaffId(): int
+    {
+        return $this->staff_id;
+    }
+
+    public function getFromDepartmentId(): ?int
+    {
+        return $this->from_department_id;
+    }
+
+    public function getToDepartmentId(): ?int
+    {
+        return $this->to_department_id;
+    }
+
+    public function getFromPositionId(): ?int
+    {
+        return $this->from_position_id;
+    }
+
+    public function getToPositionId(): ?int
+    {
+        return $this->to_position_id;
+    }
+
+    public function getFromUnitId(): ?int
+    {
+        return null; // Units are not part of the transfer model
+    }
+
+    public function getToUnitId(): ?int
+    {
+        return null; // Units are not part of the transfer model
+    }
+
+    public function getEffectiveDate(): \DateTimeInterface
+    {
+        return $this->effective_date;
+    }
+
+    public function getReason(): ?string
+    {
+        return $this->reason;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status->value;
+    }
+
+    public function getApprovedBy(): ?int
+    {
+        return $this->approved_by_id;
+    }
+
+    public function getApprovedAt(): ?\DateTimeInterface
+    {
+        return $this->approved_at;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
     }
     
     /**

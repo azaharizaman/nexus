@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Nexus\Backoffice\Enums\StaffStatus;
+use Nexus\Backoffice\Contracts\StaffInterface;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -180,6 +181,92 @@ class Staff extends Model implements StaffInterface
     public function isActive(): bool
     {
         return $this->is_active;
+    }
+
+    // Interface method implementations
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getEmployeeNumber(): string
+    {
+        return $this->employee_id;
+    }
+
+    public function getUserId(): ?int
+    {
+        return null; // user_id field doesn't exist in the staff table
+    }
+
+    public function getFirstName(): string
+    {
+        return $this->first_name;
+    }
+
+    public function getMiddleName(): ?string
+    {
+        return null; // middle_name field doesn't exist in the staff table
+    }
+
+    public function getLastName(): string
+    {
+        return $this->last_name;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function getHireDate(): \DateTimeInterface
+    {
+        return $this->hire_date;
+    }
+
+    public function getResignationDate(): ?\DateTimeInterface
+    {
+        return $this->resignation_date;
+    }
+
+    public function getPositionId(): ?int
+    {
+        return $this->position_id;
+    }
+
+    public function getDepartmentId(): ?int
+    {
+        return $this->department_id;
+    }
+
+    public function getReportsToId(): ?int
+    {
+        return $this->supervisor_id;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status->value;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deleted_at;
     }
 
     /**
@@ -649,7 +736,6 @@ class Staff extends Model implements StaffInterface
         return $query->whereHas('supervisor', function ($q) use ($level) {
             if ($level === 1) {
                 $q->whereNull('supervisor_id');
-use Nexus\Backoffice\Contracts\StaffInterface;
             }
         });
     }

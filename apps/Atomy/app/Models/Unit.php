@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Nexus\Backoffice\Contracts\UnitInterface;
 
 /**
  * Unit Model
@@ -89,6 +90,52 @@ class Unit extends Model implements UnitInterface
         return $this->is_active;
     }
 
+    // Interface method implementations
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getUnitGroupId(): ?int
+    {
+        return $this->unit_group_id;
+    }
+
+    public function getParentUnitId(): ?int
+    {
+        return $this->parent_unit_id ?? null;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deleted_at;
+    }
+
     /**
      * Get the company through the unit group.
      */
@@ -120,7 +167,6 @@ class Unit extends Model implements UnitInterface
     {
         return $query->whereHas('unitGroup', function ($q) use ($companyId) {
             $q->where('company_id', $companyId);
-use Nexus\Backoffice\Contracts\UnitInterface;
         });
     }
 
