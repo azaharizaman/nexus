@@ -5,24 +5,19 @@ declare(strict_types=1);
 namespace App\Repositories\Backoffice;
 
 use App\Models\StaffTransfer;
-use Nexus\Backoffice\Contracts\StaffTransferInterfaceRepositoryInterface;
+use Nexus\Backoffice\Contracts\StaffTransferRepositoryInterface;
 use Nexus\Backoffice\Contracts\StaffTransferInterface;
 
 /**
  * StaffTransfer Repository
  * 
- * Concrete implementation of StaffTransferInterfaceRepositoryInterface using Eloquent ORM.
+ * Concrete implementation of StaffTransferRepositoryInterface using Eloquent ORM.
  */
-class StaffTransferRepository implements StaffTransferInterfaceRepositoryInterface
+class StaffTransferRepository implements StaffTransferRepositoryInterface
 {
     public function findById(int $id): ?StaffTransferInterface
     {
         return StaffTransfer::find($id);
-    }
-
-    public function findByCode(string $code): ?StaffTransferInterface
-    {
-        return StaffTransfer::where('code', $code)->first();
     }
 
     public function getAll(array $filters = []): iterable
@@ -36,15 +31,9 @@ class StaffTransferRepository implements StaffTransferInterfaceRepositoryInterfa
         return $query->get();
     }
 
-    public function getAllActive(): iterable
+    public function getByStaff(int $staffId): iterable
     {
-        return StaffTransfer::where('is_active', true)->get();
-    }
-
-
-    public function getByStaff(int $staff): iterable
-    {
-        return StaffTransfer::where('staff_id', $staff)->get();
+        return StaffTransfer::where('staff_id', $staffId)->get();
     }
 
     public function getByStatus(string $status): iterable
