@@ -6,38 +6,59 @@ namespace Nexus\Atomy\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-use Nexus\Backoffice\Models\Company;
-use Nexus\Backoffice\Models\Office;
-use Nexus\Backoffice\Models\Department;
-use Nexus\Backoffice\Models\Staff;
-use Nexus\Backoffice\Models\StaffTransfer;
-use Nexus\Backoffice\Observers\CompanyObserver;
-use Nexus\Backoffice\Observers\OfficeObserver;
-use Nexus\Backoffice\Observers\DepartmentObserver;
-use Nexus\Backoffice\Observers\StaffObserver;
-use Nexus\Backoffice\Observers\StaffTransferObserver;
-use Nexus\Backoffice\Policies\CompanyPolicy;
-use Nexus\Backoffice\Policies\OfficePolicy;
-use Nexus\Backoffice\Policies\DepartmentPolicy;
-use Nexus\Backoffice\Policies\StaffPolicy;
-use Nexus\Backoffice\Policies\StaffTransferPolicy;
-use Nexus\Atomy\Console\Commands\Backoffice\InstallBackofficeCommand;
-use Nexus\Atomy\Console\Commands\Backoffice\CreateOfficeTypesCommand;
-use Nexus\Atomy\Console\Commands\Backoffice\ProcessResignationsCommand;
-use Nexus\Atomy\Console\Commands\Backoffice\ProcessStaffTransfersCommand;
+
+// Models
+use App\Models\Company;
+use App\Models\Office;
+use App\Models\Department;
+use App\Models\Staff;
+use App\Models\Unit;
+use App\Models\UnitGroup;
+use App\Models\Position;
+use App\Models\OfficeType;
+use App\Models\StaffTransfer;
+
+// Observers
+use App\Observers\CompanyObserver;
+use App\Observers\OfficeObserver;
+use App\Observers\DepartmentObserver;
+use App\Observers\StaffObserver;
+use App\Observers\StaffTransferObserver;
+
+// Policies
+use App\Policies\CompanyPolicy;
+use App\Policies\OfficePolicy;
+use App\Policies\DepartmentPolicy;
+use App\Policies\StaffPolicy;
+use App\Policies\StaffTransferPolicy;
+
+// Package Contracts
+use Nexus\Backoffice\Contracts\CompanyRepositoryInterface;
+use Nexus\Backoffice\Contracts\OfficeRepositoryInterface;
+use Nexus\Backoffice\Contracts\DepartmentRepositoryInterface;
+use Nexus\Backoffice\Contracts\StaffRepositoryInterface;
+use Nexus\Backoffice\Contracts\UnitRepositoryInterface;
+use Nexus\Backoffice\Contracts\UnitGroupRepositoryInterface;
+use Nexus\Backoffice\Contracts\PositionRepositoryInterface;
+use Nexus\Backoffice\Contracts\OfficeTypeRepositoryInterface;
+use Nexus\Backoffice\Contracts\StaffTransferRepositoryInterface;
+
+// Repository Implementations
+use App\Repositories\Backoffice\CompanyRepository;
+use App\Repositories\Backoffice\OfficeRepository;
+use App\Repositories\Backoffice\DepartmentRepository;
+use App\Repositories\Backoffice\StaffRepository;
+use App\Repositories\Backoffice\UnitRepository;
+use App\Repositories\Backoffice\UnitGroupRepository;
+use App\Repositories\Backoffice\PositionRepository;
+use App\Repositories\Backoffice\OfficeTypeRepository;
+use App\Repositories\Backoffice\StaffTransferRepository;
 
 /**
- * Nexus Backoffice Orchestration Service Provider
+ * Backoffice Service Provider for Atomy
  * 
- * Handles the registration of presentation layer components for the Nexus Backoffice package.
- * This provider manages the orchestration concerns that were extracted from the atomic package
- * to maintain Maximum Atomicity compliance.
- * 
- * Responsibilities:
- * - Console command registration
- * - Model observer registration (configurable)
- * - Authorization policy registration (configurable)
- * - Orchestration layer configuration
+ * Implements the contracts from the Nexus\Backoffice package.
+ * Binds repository implementations, registers observers, and policies.
  */
 class BackofficeServiceProvider extends ServiceProvider
 {
@@ -46,8 +67,8 @@ class BackofficeServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Register orchestration-specific configurations
-        $this->registerOrchestrationConfig();
+        // Bind repository interfaces to concrete implementations
+        $this->registerRepositories();
     }
 
     /**
@@ -55,46 +76,35 @@ class BackofficeServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register console commands
-        $this->registerCommands();
-
-        // Conditionally register observers
+        // Register model observers
         if ($this->shouldRegisterObservers()) {
             $this->registerObservers();
         }
 
-        // Conditionally register policies  
+        // Register authorization policies
         if ($this->shouldRegisterPolicies()) {
             $this->registerPolicies();
         }
     }
 
     /**
-     * Register orchestration-specific configuration.
+     * Register repository bindings.
      */
-    protected function registerOrchestrationConfig(): void
+    protected function registerRepositories(): void
     {
-        // Configuration is already merged by the main ErpServiceProvider
-        // This method is available for future orchestration-specific config needs
+        $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
+        $this->app->bind(OfficeRepositoryInterface::class, OfficeRepository::class);
+        $this->app->bind(DepartmentRepositoryInterface::class, DepartmentRepository::class);
+        $this->app->bind(StaffRepositoryInterface::class, StaffRepository::class);
+        $this->app->bind(UnitRepositoryInterface::class, UnitRepository::class);
+        $this->app->bind(UnitGroupRepositoryInterface::class, UnitGroupRepository::class);
+        $this->app->bind(PositionRepositoryInterface::class, PositionRepository::class);
+        $this->app->bind(OfficeTypeRepositoryInterface::class, OfficeTypeRepository::class);
+        $this->app->bind(StaffTransferRepositoryInterface::class, StaffTransferRepository::class);
     }
 
     /**
-     * Register console commands for backoffice operations.
-     */
-    protected function registerCommands(): void
-    {
-        if ($this->app->runningInConsole() && config('nexus.backoffice.enable_commands', true)) {
-            $this->commands([
-                InstallBackofficeCommand::class,
-                CreateOfficeTypesCommand::class,
-                ProcessResignationsCommand::class,
-                ProcessStaffTransfersCommand::class,
-            ]);
-        }
-    }
-
-    /**
-     * Register model observers for backoffice entities.
+     * Register model observers.
      */
     protected function registerObservers(): void
     {
@@ -106,7 +116,7 @@ class BackofficeServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register authorization policies for backoffice entities.
+     * Register authorization policies.
      */
     protected function registerPolicies(): void
     {
@@ -122,7 +132,7 @@ class BackofficeServiceProvider extends ServiceProvider
      */
     protected function shouldRegisterObservers(): bool
     {
-        return config('nexus.backoffice.enable_observers', true);
+        return config('backoffice.enable_observers', true);
     }
 
     /**
@@ -130,19 +140,6 @@ class BackofficeServiceProvider extends ServiceProvider
      */
     protected function shouldRegisterPolicies(): bool
     {
-        return config('nexus.backoffice.enable_policies', true);
-    }
-
-    /**
-     * Get the services provided by the provider.
-     */
-    public function provides(): array
-    {
-        return [
-            InstallBackofficeCommand::class,
-            CreateOfficeTypesCommand::class,
-            ProcessResignationsCommand::class,
-            ProcessStaffTransfersCommand::class,
-        ];
+        return config('backoffice.enable_policies', true);
     }
 }

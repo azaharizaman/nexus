@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Nexus\Backoffice\Contracts;
 
-use Nexus\Backoffice\Models\Staff;
-use Nexus\Backoffice\Models\StaffTransfer;
-use Nexus\Backoffice\Models\Company;
-
 /**
  * Audit Contract
  * 
@@ -19,27 +15,27 @@ interface AuditContract
     /**
      * Log changes to a staff member.
      */
-    public function logStaffChange(Staff $staff, array $changes): void;
+    public function logStaffChange(StaffInterface $staff, array $changes): void;
     
     /**
      * Log a staff transfer.
      */
-    public function logTransfer(StaffTransfer $transfer): void;
+    public function logTransfer(StaffTransferInterface $transfer): void;
     
     /**
      * Log changes to a company.
      */
-    public function logCompanyChange(Company $company, array $changes): void;
+    public function logCompanyChange(CompanyInterface $company, array $changes): void;
     
     /**
      * Log department changes.
      */
-    public function logDepartmentChange(object $department, array $changes): void;
+    public function logDepartmentChange(DepartmentInterface $department, array $changes): void;
     
     /**
      * Log office changes.
      */
-    public function logOfficeChange(object $office, array $changes): void;
+    public function logOfficeChange(OfficeInterface $office, array $changes): void;
     
     /**
      * Log organizational hierarchy changes.

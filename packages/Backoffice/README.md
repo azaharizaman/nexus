@@ -1,120 +1,83 @@
-# Backoffice Laravel Package
+# Nexus\Backoffice
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/azaharizaman/laravel-backoffice.svg?style=flat-square)](https://packagist.org/packages/azaharizaman/laravel-backoffice)
-[![GitHub Tests Action Status](https://github.com/azaharizaman/laravel-backoffice/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/azaharizaman/laravel-backoffice/actions)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/azaharizaman/laravel-backoffice/Check%20&%20fix%20styling?label=code%20style)](https://github.com/azaharizaman/laravel-backoffice/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/azaharizaman/laravel-backoffice.svg?style=flat-square)](https://packagist.org/packages/azaharizaman/laravel-backoffice)
+[![Latest Version](https://img.shields.io/packagist/v/nexus/backoffice.svg?style=flat-square)](https://packagist.org/packages/nexus/backoffice)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
-A comprehensive Laravel package for managing hierarchical company structures, offices, departments, staff, and organizational units. This package provides a complete backend solution for complex organizational management without any UI components.
+A **framework-agnostic** PHP package for managing hierarchical organizational structures including companies, offices, departments, staff, and units.
 
-## Features
+## Architecture
 
-### Hierarchical Company Structure
-- **Parent-Child Companies**: Support for multi-level company hierarchies
-- **Office Management**: Physical office structures with hierarchical relationships
-- **Department Management**: Logical department hierarchies
-- **Staff Management**: Employee assignment to offices and/or departments
-- **Unit Management**: Logical staff groupings with unit group organization
+This package follows the **Nexus Monorepo Architecture** principles:
 
-### Key Capabilities
-- **Multi-Hierarchy Support**: Both physical (offices) and logical (departments) hierarchies
-- **Flexible Staff Assignment**: Staff can belong to offices, departments, or both
-- **Unit Organization**: Staff can belong to multiple units within unit groups
-- **Organizational Charts**: Comprehensive reporting line management with chart generation
-- **Export Capabilities**: JSON, CSV, and DOT (Graphviz) export formats
-- **Office Types**: Configurable office type categorization
-- **Model Factories**: 🆕 Comprehensive factories for all models with rich states for testing
-- **Comprehensive Policies**: Built-in authorization policies
-- **Observer Patterns**: Automatic event handling for data changes
-- **Console Commands**: Management utilities via Artisan commands
+- ✅ **Framework-Agnostic**: Pure PHP business logic with no Laravel dependencies
+- ✅ **Contract-Driven**: All data structures and persistence needs defined via interfaces
+- ✅ **Service Layer**: Business logic encapsulated in reusable services
+- ✅ **Zero Database Logic**: No migrations, models, or ORM code
+- ✅ **Publishable**: Self-contained unit ready for Packagist
 
-## Requirements
+## What's Included
 
-- PHP 8.2+
-- Laravel 11.0+ or 12.0+
+### Contracts (Interfaces)
+
+**Data Structure Interfaces:**
+- `CompanyInterface`, `OfficeInterface`, `DepartmentInterface`
+- `StaffInterface`, `UnitInterface`, `UnitGroupInterface`
+- `PositionInterface`, `OfficeTypeInterface`, `StaffTransferInterface`
+
+**Repository Interfaces:**
+- Complete CRUD interfaces for all entities
+- Hierarchy navigation methods
+- Specialized query methods
+
+### Services
+
+- `CompanyManager` - Company management with hierarchy validation
+- `StaffTransferManager` - Staff transfer workflow management
+
+### Enums & Exceptions
+
+- Domain-specific enums for statuses and types
+- Comprehensive exception hierarchy
 
 ## Installation
 
-You can install the package via composer:
-
 ```bash
-composer require azaharizaman/backoffice
+composer require nexus/backoffice
 ```
 
-Publish and run the migrations:
+## Usage
 
-```bash
-php artisan vendor:publish --provider="AzahariZaman\BackOffice\BackOfficeServiceProvider" --tag="backoffice-migrations"
-php artisan migrate
-```
-
-Optionally, you can publish the config file:
-
-```bash
-php artisan vendor:publish --provider="AzahariZaman\BackOffice\BackOfficeServiceProvider" --tag="backoffice-config"
-```
-
-## Quick Start
+### 1. Implement the Contracts
 
 ```php
-use AzahariZaman\BackOffice\Models\{Company, Office, Staff};
-use AzahariZaman\BackOffice\Helpers\OrganizationalChart;
+use Nexus\Backoffice\Contracts\CompanyInterface;
 
-// Create organizational structure using factories
-$company = Company::factory()->create(['name' => 'Acme Corp']);
-$office = Office::factory()->for($company)->create();
-
-// Create hierarchical staff structure using factories
-$ceo = Staff::factory()->ceo()->inOffice($office)->create();
-$manager = Staff::factory()->manager()->withSupervisor($ceo)->create();
-$employee = Staff::factory()->withSupervisor($manager)->create();
-
-// Generate organizational chart
-$chart = OrganizationalChart::forCompany($company);
-$stats = OrganizationalChart::statistics($company);
-
-// Export chart data
-$csvData = OrganizationalChart::export($company, 'csv');
+class Company extends Model implements CompanyInterface
+{
+    // Implement interface methods
+}
 ```
 
-See the [documentation](docs/README.md) for detailed usage instructions.
+### 2. Create Repository Implementations
 
-## Documentation
+```php
+use Nexus\Backoffice\Contracts\CompanyRepositoryInterface;
 
-- [Installation Guide](docs/installation.md)
-- [Configuration](docs/configuration.md)
-- [Models & Relationships](docs/models.md)
-- **[Model Factories](docs/factories.md)** 🆕
-- [Organizational Chart & Reporting Lines](docs/organizational-chart.md)
-- [Traits & Behaviors](docs/traits.md)
-- [Policies & Authorization](docs/policies.md)
-- [Console Commands](docs/commands.md)
-- [API Reference](docs/api.md)
-- [Examples](docs/examples.md)
-
-## Testing
-
-```bash
-composer test
+class CompanyRepository implements CompanyRepositoryInterface
+{
+    // Implement repository methods
+}
 ```
 
-## Changelog
+### 3. Use Services
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+```php
+use Nexus\Backoffice\Services\CompanyManager;
 
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Azahari Zaman](https://github.com/azaharizaman)
-- [All Contributors](../../contributors)
+$manager = new CompanyManager($companyRepository);
+$company = $manager->createCompany($data);
+```
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Please see [License File](LICENSE) for more information.

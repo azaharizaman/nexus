@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Nexus\Backoffice\Contracts;
 
-use Nexus\Backoffice\Models\Staff;
-use Nexus\Backoffice\Models\StaffTransfer;
-use Nexus\Backoffice\Models\Company;
-
 /**
  * Notification Contract
  * 
@@ -19,12 +15,12 @@ interface NotificationContract
     /**
      * Notify about a staff transfer.
      */
-    public function notifyStaffTransfer(StaffTransfer $transfer): void;
+    public function notifyStaffTransfer(StaffTransferInterface $transfer): void;
     
     /**
      * Notify about a staff resignation.
      */
-    public function notifyResignation(Staff $staff): void;
+    public function notifyResignation(StaffInterface $staff): void;
     
     /**
      * Notify about organizational changes.
@@ -34,22 +30,22 @@ interface NotificationContract
     /**
      * Notify about company hierarchy changes.
      */
-    public function notifyCompanyHierarchyChange(Company $company, array $changes): void;
+    public function notifyCompanyHierarchyChange(CompanyInterface $company, array $changes): void;
     
     /**
      * Notify about staff creation.
      */
-    public function notifyStaffCreated(Staff $staff): void;
+    public function notifyStaffCreated(StaffInterface $staff): void;
     
     /**
      * Notify about department changes.
      */
-    public function notifyDepartmentChange(object $department, string $action): void;
+    public function notifyDepartmentChange(DepartmentInterface $department, string $action): void;
     
     /**
      * Notify about office changes.
      */
-    public function notifyOfficeChange(object $office, string $action): void;
+    public function notifyOfficeChange(OfficeInterface $office, string $action): void;
     
     /**
      * Send a custom notification with data.
