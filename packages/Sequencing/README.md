@@ -1,11 +1,10 @@
 # Nexus Sequencing - Atomic Serial Number Generation
 
-**Status:** ✅ Phase 1 Complete | 🔄 Phase 1.5 Refactoring Planned | ⏳ Phase 2 Enhancements Planned
+**Framework-Agnostic Package for Atomic Serial Number Generation**
 
-[![Latest Version](https://img.shields.io/packagist/v/azaharizaman/erp-serial-numbering.svg)](https://packagist.org/packages/azaharizaman/erp-serial-numbering)
-[![License](https://img.shields.io/packagist/l/azaharizaman/erp-serial-numbering.svg)](LICENSE.md)
+[![License](https://img.shields.io/packagist/l/nexus/sequencing.svg)](LICENSE)
 
-**Atomic, transaction-safe serial number generation for Laravel ERP systems with configurable patterns, scope isolation, and comprehensive audit trails.**
+**Pure PHP package providing atomic, transaction-safe serial number generation with configurable patterns, scope isolation, and comprehensive audit trails.**
 
 ---
 
@@ -19,233 +18,216 @@ The **Nexus Sequencing** package provides **one core capability**: generating **
 - **Scope Isolation** - Multi-tenant or multi-department sequences
 - **Transaction Safety** - Automatic rollback on failures
 - **Reset Periods** - Daily, monthly, yearly, or never
-- **Audit Trail** - Complete history of all generations and overrides
+- **Framework-Agnostic Core** - Pure PHP business logic
 
 ### ❌ This Package Does NOT Handle:
+- **Database Persistence** - Applications provide Eloquent/Doctrine implementations
 - **Sub-Identifiers** (versions `/v2`, spawns `(a)`, copies `1 of 3`) - Your application manages these
-- **Document Status** (active/voided) - Use `nexus-workflow` package for lifecycle management
+- **Document Status** (active/voided) - Use workflow packages for lifecycle management
 - **Business Logic** - Package is agnostic to what the numbers represent
+- **Laravel-Specific Features** - No controllers, models, or migrations in package
+
+---
+
+## 📐 Architecture
+
+This package follows the **Nexus Monorepo Architecture** principles:
+
+### Package Structure (Framework-Agnostic)
+```
+packages/Sequencing/
+├── composer.json           # Pure PHP, no Laravel dependencies
+├── LICENSE                 # MIT License
+├── README.md              # This file
+└── src/
+    ├── Contracts/         # Interfaces defining the package API
+    │   ├── SequenceInterface.php
+    │   ├── SerialNumberLogInterface.php
+    │   ├── SequenceRepositoryInterface.php
+    │   ├── SerialNumberLogRepositoryInterface.php
+    │   ├── PatternParserServiceInterface.php
+    │   └── GenerationServiceInterface.php
+    ├── Core/              # Framework-agnostic business logic
+    │   ├── Services/
+    │   ├── ValueObjects/
+    │   ├── Engine/
+    │   └── Variables/
+    ├── Exceptions/        # Domain-specific exceptions
+    │   ├── SequenceNotFoundException.php
+    │   ├── InvalidPatternException.php
+    │   ├── GenerationException.php
+    │   └── SequenceConfigurationException.php
+    └── Enums/            # Enumerations (ResetPeriod, etc.)
+```
+
+### Application Layer (Laravel Example in apps/Atomy)
+```
+apps/Atomy/
+├── database/migrations/
+│   ├── *_create_serial_number_sequences_table.php
+│   └── *_create_serial_number_logs_table.php
+├── app/
+│   ├── Models/
+│   │   ├── Sequence.php              # implements SequenceInterface
+│   │   └── SerialNumberLog.php       # implements SerialNumberLogInterface
+│   └── Repositories/Sequencing/
+│       ├── SequenceRepository.php    # implements SequenceRepositoryInterface
+│       └── SerialNumberLogRepository.php
+└── app/Providers/AtomyServiceProvider.php  # IoC bindings
+```
+
+---
+
+## 📦 Installation
+
+### Step 1: Install Package
+
+```bash
+composer require nexus/sequencing
+```
+
+### Step 2: Implement in Your Application
+
+Since this is a framework-agnostic package, you need to provide:
+
+1. **Database Schema** - Create migrations for `serial_number_sequences` and `serial_number_logs` tables
+2. **Models** - Create models that implement `SequenceInterface` and `SerialNumberLogInterface`
+3. **Repositories** - Create repositories that implement the repository interfaces
+4. **IoC Bindings** - Bind the interfaces to your concrete implementations
+
+**Example for Laravel:**
+
+See the complete implementation in `apps/Atomy` directory of the [monorepo](https://github.com/azaharizaman/nexus).
+
+---
+
+## 🚀 Usage
+
+### Core Services
+
+The package provides framework-agnostic services via interfaces:
+
+```php
+use Nexus\Sequencing\Contracts\SequenceRepositoryInterface;
+use Nexus\Sequencing\Contracts\GenerationServiceInterface;
+
+// Inject via your IoC container
+class InvoiceService
+{
+    public function __construct(
+        private readonly SequenceRepositoryInterface $sequenceRepo,
+        private readonly GenerationServiceInterface $generationService
+    ) {}
+
+    public function createInvoice(array $data): Invoice
+    {
+        // Find sequence configuration
+        $sequence = $this->sequenceRepo->find('tenant-123', 'invoices');
+        
+        // Generate unique invoice number
+        $invoiceNumber = $this->generationService->generate($sequence, [
+            'department_code' => 'SALES',
+        ]);
+        
+        // Create invoice with generated number
+        return Invoice::create([
+            'invoice_number' => $invoiceNumber,
+            'amount' => $data['amount'],
+            // ...
+        ]);
+    }
+}
+```
 
 ---
 
 ## 📚 Table of Contents
 
 1. [Installation](#installation)
-2. [Progressive Journey](#progressive-journey)
-   - [Level 1: Simple Direct Usage](#level-1-simple-direct-usage-current-phase-1) ⭐ **Start Here**
-   - [Level 2: Advanced Patterns](#level-2-advanced-patterns)
-   - [Level 3: Custom Orchestration](#level-3-custom-orchestration)
-3. [Pattern Variables Reference](#pattern-variables-reference)
-4. [Reset Periods](#reset-periods)
-5. [Preview Mode](#preview-mode)
-6. [Manual Override](#manual-override)
-7. [API Endpoints](#api-endpoints)
+2. [Architecture](#architecture)
+3. [Usage](#usage)
+4. [Pattern Variables Reference](#pattern-variables-reference)
+5. [Reset Periods](#reset-periods)
+6. [Contracts (Interfaces)](#contracts-interfaces)
+7. [Core Services](#core-services)
 8. [Events](#events)
-9. [Phase 2 Preview](#phase-2-preview-coming-soon)
-10. [Architecture Notes](#architecture-notes)
+9. [Testing](#testing)
+10. [License](#license)
 
 ---
 
-## Installation
+## 🔌 Contracts (Interfaces)
 
-### Step 1: Install Package
+The package exposes the following interfaces that your application must implement:
 
-```bash
-composer require azaharizaman/erp-serial-numbering
-```
+### Data Structure Contracts
 
-### Step 2: Publish Configuration (Optional)
+#### `SequenceInterface`
+Defines what a Sequence IS (data structure):
+- `getId()`, `getTenantId()`, `getSequenceName()`
+- `getPattern()`, `getResetPeriod()`, `getPadding()`
+- `getStepSize()`, `getResetLimit()`, `getCurrentValue()`
+- `getLastResetAt()`, `getMetadata()`, `getVersion()`
+- `getCreatedAt()`, `getUpdatedAt()`
 
-```bash
-php artisan vendor:publish --tag=serial-numbering-config
-```
+#### `SerialNumberLogInterface`
+Defines what a log entry IS (immutable audit record):
+- `getId()`, `getSequenceId()`, `getGeneratedNumber()`
+- `getCounterValue()`, `getContext()`, `getActionType()`
+- `getReason()`, `getCauserId()`, `getCreatedAt()`
 
-Configuration file: `config/serial-numbering.php`
+### Repository Contracts
 
-### Step 3: Run Migrations
+#### `SequenceRepositoryInterface`
+Defines HOW to save/find sequences (persistence):
+- `find()`, `findById()`, `create()`, `update()`, `delete()`
+- `lockAndIncrement()` - Atomic counter increment with locking
+- `reset()`, `override()`, `exists()`, `getAllForTenant()`
 
-```bash
-php artisan migrate
-```
+#### `SerialNumberLogRepositoryInterface`
+Defines HOW to save/find log entries:
+- `create()`, `findBySequence()`, `findByGeneratedNumber()`
+- `getLastGenerated()`, `getHistory()`
 
-**Tables Created:**
-- `serial_number_sequences` - Sequence configurations
-- `serial_number_logs` - Audit trail of all generations
+### Service Contracts
 
-### Step 4: Configure Sequence
+#### `PatternParserServiceInterface`
+Pattern parsing and variable substitution:
+- `parse()`, `validate()`, `getVariables()`, `preview()`
 
-Create a sequence definition programmatically or via API:
-
-```php
-use Nexus\Sequencing\Contracts\SequenceRepositoryContract;
-
-$repository = app(SequenceRepositoryContract::class);
-
-$sequence = $repository->create([
-    'tenant_id' => '123',                    // Scope identifier
-    'sequence_name' => 'invoices',           // Unique name per tenant
-    'pattern' => 'INV-{YEAR}-{COUNTER:5}',  // Format template
-    'reset_period' => 'yearly',              // When to reset counter
-    'padding' => 5,                          // Minimum digits for counter
-]);
-```
-
----
-
-## Progressive Journey
-
-### Level 1: Simple Direct Usage (Current - Phase 1) ⭐
-
-**For:** Most developers who just need unique numbers  
-**Complexity:** Simple action call  
-**Use When:** You need a unique identifier for a document/record
-
-#### Basic Generation
-
-```php
-use Nexus\Sequencing\Actions\GenerateSerialNumberAction;
-
-// Generate next invoice number
-$invoiceNumber = GenerateSerialNumberAction::run(
-    tenantId: '123',
-    sequenceName: 'invoices'
-);
-// Result: INV-2025-00001
-```
-
-#### With Custom Context
-
-```php
-$poNumber = GenerateSerialNumberAction::run(
-    tenantId: '456',
-    sequenceName: 'purchase-orders',
-    context: [
-        'department_code' => 'IT',
-        'prefix' => 'URGENT',
-    ]
-);
-// Result (if pattern is {PREFIX}-PO-{DEPARTMENT}-{COUNTER:4}): URGENT-PO-IT-0001
-```
-
-#### In Your Controller
-
-```php
-use App\Models\Invoice;
-use Nexus\Sequencing\Actions\GenerateSerialNumberAction;
-
-class InvoiceController extends Controller
-{
-    public function store(Request $request)
-    {
-        $invoice = new Invoice($request->validated());
-        
-        // Generate unique invoice number
-        $invoice->invoice_number = GenerateSerialNumberAction::run(
-            tenantId: auth()->user()->tenant_id,
-            sequenceName: 'invoices'
-        );
-        
-        $invoice->save();
-        
-        return response()->json($invoice, 201);
-    }
-}
-```
+#### `GenerationServiceInterface`
+Core generation orchestration:
+- `generate()`, `preview()`, `validate()`, `needsReset()`
 
 ---
 
-### Level 2: Advanced Patterns
+## 🛠️ Core Services
 
-**For:** Developers needing complex numbering schemes  
-**Complexity:** Pattern configuration + context variables  
-**Use When:** You need department codes, dates, or custom prefixes in numbers
+The package includes framework-agnostic implementations in `src/Core/`:
 
-#### Example Patterns
+### GenerationService
+Orchestrates the complete generation workflow:
+1. Validates pattern syntax
+2. Checks if reset is needed
+3. Atomically increments counter (via repository)
+4. Evaluates pattern with context
+5. Returns generated number
 
-| Pattern | Context | Result | Use Case |
-|---------|---------|--------|----------|
-| `INV-{YEAR}-{COUNTER:5}` | - | `INV-2025-00001` | Simple invoice numbering |
-| `PO-{YEAR:2}{MONTH}-{COUNTER:4}` | - | `PO-2511-0001` | Purchase orders with YY-MM |
-| `{TENANT}-RCP-{YEAR}-{MONTH}-{DAY}-{COUNTER:3}` | `tenant_code: ACME` | `ACME-RCP-2025-11-14-001` | Receipts with full date |
-| `{PREFIX}-{DEPARTMENT}-{COUNTER:6}` | `prefix: URGENT`<br>`department_code: IT` | `URGENT-IT-000001` | Department-scoped with priority |
-| `DOC-{YEAR}/{COUNTER:4}` | - | `DOC-2025/0001` | Simple documents |
+### ValidationService
+Validates serial numbers against pattern definitions:
+- Syntax validation
+- Regex matching
+- Variable format checking
 
-#### Using Complex Patterns
-
-```php
-// IT Purchase Order
-$itPO = GenerateSerialNumberAction::run('acme-corp', 'it-purchase-orders');
-// Result: IT-PO-2511-00001
-
-// Finance Invoice with Department
-$invoice = GenerateSerialNumberAction::run(
-    tenantId: 'acme-corp',
-    sequenceName: 'finance-invoices',
-    context: ['department_code' => 'SALES']
-);
-// Result: SALES-INV-2025-000001
-```
+### PatternParserService
+Handles pattern variable substitution:
+- Built-in variables: `{YEAR}`, `{MONTH}`, `{DAY}`, `{COUNTER}`
+- Custom variables: `{TENANT}`, `{DEPARTMENT}`, `{PREFIX}`, etc.
+- Padding support: `{COUNTER:5}` = `00001`
 
 ---
 
-### Level 3: Custom Orchestration
-
-**For:** Advanced users managing spawns, versions, and copies  
-**Complexity:** Application-level orchestration  
-**Use When:** You need sub-identifiers like `PO-224(a)` or `DOC-001/v2`
-
-#### Understanding Responsibility Split
-
-| Component | Provides | Example |
-|-----------|----------|---------|
-| **Nexus Sequencing** | Base unique number | `PO-224` |
-| **Your Application** | Sub-identifiers & orchestration | `PO-224(a)`, `PO-224(b)`, `PO-224(c)` |
-
-#### Example: Purchase Order Spawns
-
-```php
-use App\Models\PurchaseOrder;
-use Nexus\Sequencing\Actions\GenerateSerialNumberAction;
-
-class PurchaseOrderOrchestrator
-{
-    public function createWithSpawns(array $data, int $spawnCount): Collection
-    {
-        // Step 1: Get base number from sequencing (only once!)
-        $baseNumber = GenerateSerialNumberAction::run(
-            auth()->user()->tenant_id,
-            'purchase-orders'
-        );
-        // Result: PO-224
-        
-        // Step 2: Create spawns with sub-identifiers
-        $spawns = collect();
-        $spawnLetters = range('a', chr(ord('a') + $spawnCount - 1));
-        
-        foreach ($spawnLetters as $letter) {
-            $po = PurchaseOrder::create([
-                'po_number' => $baseNumber . '(' . $letter . ')',
-                'base_number' => $baseNumber,
-                'spawn_identifier' => $letter,
-                // ... other fields
-            ]);
-            
-            $spawns->push($po);
-        }
-        
-        return $spawns;
-    }
-}
-
-// Usage
-$orchestrator = new PurchaseOrderOrchestrator();
-$pos = $orchestrator->createWithSpawns($request->validated(), 3);
-// Creates: PO-224(a), PO-224(b), PO-224(c)
-```
-
----
-
-## Pattern Variables Reference
+## 📝 Pattern Variables Reference
 
 ### Built-in Date Variables
 
@@ -254,7 +236,7 @@ $pos = $orchestrator->createWithSpawns($request->validated(), 3);
 | `{YEAR}` | 4-digit year | `2025` | `YYYY` |
 | `{YEAR:2}` | 2-digit year | `25` | `YY` |
 | `{MONTH}` | 2-digit month | `11` | `MM` |
-| `{DAY}` | 2-digit day | `14` | `DD` |
+| `{DAY}` | 2-digit day | `16` | `DD` |
 
 ### Counter Variable
 
@@ -265,17 +247,24 @@ $pos = $orchestrator->createWithSpawns($request->validated(), 3);
 
 ### Context Variables
 
-| Variable | Description | Example | Context Key |
-|----------|-------------|---------|-------------|
-| `{PREFIX}` | Custom prefix | `URGENT` | `prefix` |
-| `{TENANT}` | Tenant code | `ACME` | `tenant_code` |
-| `{DEPARTMENT}` | Department code | `IT`, `SALES` | `department_code` |
+Pass custom variables via context array:
+
+```php
+$generationService->generate($sequence, [
+    'tenant_code' => 'ACME',
+    'department_code' => 'IT',
+    'prefix' => 'URGENT',
+]);
+```
+
+Pattern: `{PREFIX}-{DEPARTMENT}-{COUNTER:5}`  
+Result: `URGENT-IT-00001`
 
 ---
 
-## Reset Periods
+## 🔄 Reset Periods
 
-Control when the counter resets to 1:
+Control when the counter resets to initial value:
 
 | Reset Period | Behavior | Use Case |
 |--------------|----------|----------|
@@ -286,180 +275,105 @@ Control when the counter resets to 1:
 
 ---
 
-## Preview Mode
+## 🎭 Events
 
-Preview the next number **without consuming** the counter:
-
-```php
-use Nexus\Sequencing\Actions\PreviewSerialNumberAction;
-
-$preview = PreviewSerialNumberAction::run(
-    tenantId: '123',
-    sequenceName: 'invoices'
-);
-// Returns: INV-2025-00042
-// Counter is NOT incremented
-```
-
----
-
-## Manual Override
-
-Administrators can manually set the counter:
+Your application layer can dispatch events (if using Laravel):
 
 ```php
-use Nexus\Sequencing\Actions\OverrideSerialNumberAction;
-
-OverrideSerialNumberAction::run(
-    tenantId: '123',
-    sequenceName: 'invoices',
-    newValue: 5000,
-    reason: 'Migration from legacy system',
-    causer: auth()->user()
-);
-// Next generation will be 5001
-```
-
----
-
-## API Endpoints
-
-All endpoints require `auth:sanctum` middleware.
-
-```http
-GET    /api/v1/sequences              - List all sequences
-POST   /api/v1/sequences              - Create sequence
-GET    /api/v1/sequences/{name}       - Get details
-PATCH  /api/v1/sequences/{name}       - Update
-DELETE /api/v1/sequences/{name}       - Delete
-POST   /api/v1/sequences/{name}/generate  - Generate number
-GET    /api/v1/sequences/{name}/preview   - Preview next
-```
-
----
-
-## Events
-
-### SequenceGeneratedEvent
-
-```php
+// Example event dispatching in your repository
 use Nexus\Sequencing\Events\SequenceGeneratedEvent;
 
-Event::listen(SequenceGeneratedEvent::class, function ($event) {
-    Log::info("Generated: {$event->generatedNumber}");
-});
+event(new SequenceGeneratedEvent(
+    $sequence,
+    $generatedNumber,
+    $counterValue
+));
 ```
 
-### SequenceResetEvent
+Available event classes:
+- `SequenceGeneratedEvent`
+- `SequenceResetEvent`
+- `SequenceOverriddenEvent`
+
+---
+
+## 🧪 Testing
+
+The Core services are pure PHP and easily testable:
 
 ```php
-use Nexus\Sequencing\Events\SequenceResetEvent;
+use Nexus\Sequencing\Core\Services\GenerationService;
+use PHPUnit\Framework\TestCase;
 
-Event::listen(SequenceResetEvent::class, function ($event) {
-    Log::info("Reset: {$event->sequenceName}");
-});
-```
-
-### SequenceOverriddenEvent
-
-```php
-use Nexus\Sequencing\Events\SequenceOverriddenEvent;
-
-Event::listen(SequenceOverriddenEvent::class, function ($event) {
-    Log::warning("Override by: {$event->causer->name}");
-});
+class GenerationServiceTest extends TestCase
+{
+    public function testGeneratesUniqueNumber(): void
+    {
+        // Mock your repository
+        $mockRepo = $this->createMock(CounterRepositoryInterface::class);
+        $mockRepo->expects($this->once())
+            ->method('lockAndIncrement')
+            ->willReturn(1);
+        
+        $service = new GenerationService($mockRepo, ...);
+        
+        $result = $service->generate($sequenceConfig, $context);
+        
+        $this->assertMatchesPattern('/INV-2025-\d{5}/', $result);
+    }
+}
 ```
 
 ---
 
-## Phase 2 Preview (Coming Soon)
+## 📄 License
 
-### 🔄 Phase 1.5: Core Refactoring
-- Pure PHP `Core/` separation
-- Zero Laravel dependencies in core
-- 95%+ test coverage
-
-### ⏳ Phase 2: New Features
-1. **HasSequence Trait** - Automatic generation on model creation
-2. **Pattern Validation** - Validate existing numbers against patterns
-3. **Step Size Support** - Increment by custom amounts
-4. **Count-Based Reset** - Reset after N generations
-5. **Preview with Remaining Count** - See counts until next reset
-
-**See [REQUIREMENTS.md](REQUIREMENTS.md) for complete roadmap.**
+MIT License - See [LICENSE](LICENSE)
 
 ---
 
-## Architecture Notes
+## 🤝 Contributing
 
-### Maximum Atomicity Principle
+This package is part of the [Nexus Monorepo](https://github.com/azaharizaman/nexus).
 
-✅ **This Package:**
-- Generates unique base identifiers
-- Manages counter state
-- Handles pattern formatting
-- Provides audit trail
-
-❌ **Not This Package:**
-- Document lifecycle (use `nexus-workflow`)
-- Business validation (your application)
-- Sub-identifiers (your application)
-- Multi-package orchestration (Nexus ERP Core)
-
-### Transaction Safety
-
-All operations wrapped in database transactions with atomic locking:
-
-```sql
-SELECT * FROM serial_number_sequences 
-WHERE tenant_id = ? AND sequence_name = ?
-FOR UPDATE;  -- Row-level lock
-```
-
-**Result:** 100 concurrent requests = 100 unique numbers, zero duplicates.
-
----
-
-## Testing
+### Development Setup
 
 ```bash
-cd packages/nexus-sequencing
-vendor/bin/pest tests/Unit
+# Clone the monorepo
+git clone https://github.com/azaharizaman/nexus.git
+cd nexus/packages/Sequencing
 
-# Integration tests in Edward CLI
-cd apps/edward
-php artisan test --filter=Sequencing
+# Install dependencies
+composer install
+
+# Run tests
+composer test
+
+# Run static analysis
+composer analyse
 ```
 
 ---
 
-## Performance
+## 📖 Documentation
 
-| Operation | Target | Current | Status |
-|-----------|--------|---------|--------|
-| Generate (single) | < 50ms | ~30ms | ✅ |
-| Generate (100 concurrent) | < 100ms p95 | ~80ms | ✅ |
-| Preview | < 20ms | ~15ms | ✅ |
+- **[Monorepo Architecture](../../.github/copilot-instructions.md)** - Complete architectural guidelines
+- **[REQUIREMENTS.md](REQUIREMENTS.md)** - Detailed requirements and specifications
+- **[REFACTORED_REQUIREMENTS.md](../../REFACTORED_REQUIREMENTS.md)** - Implementation tracking
 
 ---
 
-## License
+## 🏆 Package Status
 
-MIT License - See [LICENSE.md](LICENSE.md)
+**Version:** 2.0.0 (Refactored)  
+**Status:** ✅ Framework-Agnostic Complete
 
----
+### Architectural Compliance:
+✅ Zero Laravel dependencies  
+✅ Comprehensive contracts (6 interfaces)  
+✅ Domain-specific exceptions  
+✅ Pure PHP Core services  
+✅ Complete test coverage  
+✅ Publishable to Packagist  
 
-## Support
-
-- **Documentation:** [REQUIREMENTS.md](REQUIREMENTS.md)
-- **Issues:** GitHub Issues
-- **Discussions:** GitHub Discussions
-
----
-
-**Package Status:**
-- ✅ **Phase 1:** Implementation complete
-- 🔄 **Phase 1.5:** Core refactoring planned
-- ⏳ **Phase 2:** New features planned
-
-*This package maintains **Maximum Atomicity** - it does one thing exceptionally well: generating unique, sequential base identifiers.*
+*This package maintains **Maximum Atomicity** - it does one thing exceptionally well: providing the framework-agnostic business logic for generating unique, sequential base identifiers.*
