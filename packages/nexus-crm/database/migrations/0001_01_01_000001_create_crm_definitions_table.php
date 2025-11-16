@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('crm_definitions', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->ulid('id')->primary();
 
             // Definition metadata
             $table->string('name');

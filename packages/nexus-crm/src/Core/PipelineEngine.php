@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Nexus\Crm\Core;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Nexus\Crm\Enums\PipelineAction;
 use Nexus\Crm\Models\CrmEntity;
 use Nexus\Crm\Models\CrmPipeline;
 use Nexus\Crm\Models\CrmStage;
-use Nexus\Crm\Enums\PipelineAction;
-use Illuminate\Support\Collection;
 
 /**
  * Pipeline Engine
@@ -137,7 +138,7 @@ class PipelineEngine
             $entity->assignments()->create([
                 'user_id' => $userId,
                 'role' => $role,
-                'assigned_by' => auth()->id() ?? 'system',
+                'assigned_by' => auth()->id() ?? config('crm.system_user_id', 'system'),
                 'assigned_at' => now(),
             ]);
         }
@@ -150,7 +151,7 @@ class PipelineEngine
     {
         // Implementation depends on notification system
         // For now, just log it
-        \Log::info('CRM Notification', [
+        Log::info('CRM Notification', [
             'entity_id' => $entity->id,
             'action' => $action
         ]);

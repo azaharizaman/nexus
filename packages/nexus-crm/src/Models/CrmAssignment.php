@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Nexus\Crm\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CrmAssignment extends Model
 {
+    use HasUlids;
     protected $fillable = [
         'entity_id',
         'user_id',

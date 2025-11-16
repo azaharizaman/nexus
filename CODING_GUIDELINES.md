@@ -4725,6 +4725,386 @@ public function __construct(
 
 ---
 
+## Package-Specific Best Practices
+
+### 1. ULID vs UUID - Project Standard
+
+**✅ REQUIRED:** This project uses ULID (Universally Unique Lexicographically Sortable Identifier) for all primary keys, NOT UUID.
+
+#### Why ULID Over UUID?
+- **Lexicographically sortable** - Natural ordering by creation time
+- **Better database performance** - More index-friendly than random UUIDs
+- **URL-safe** - Uses Crockford's base32 for better readability
+- **Timestamp component** - First 48 bits encode timestamp
+
+#### ❌ Incorrect (Using UUID)
+```php
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
+class Product extends Model
+{
+    use HasUuids;
+}
+
+// Migration
+Schema::create('products', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+});
+```
+
+#### ✅ Correct (Using ULID)
+```php
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+
+class Product extends Model
+{
+    use HasUlids;
+}
+
+// Migration
+Schema::create('products', function (Blueprint $table) {
+    $table->ulid('id')->primary();
+    $table->foreignUlid('category_id')->constrained();
+});
+```
+
+**Migration Column Types:**
+- Primary keys: `$table->ulid('id')->primary()`
+- Foreign keys: `$table->foreignUlid('parent_id')->constrained()`
+- Nullable foreign keys: `$table->ulid('optional_id')->nullable()`
+
+**Important:** Once chosen for a project, be consistent. Do not mix ULID and UUID within the same codebase.
+
+### 2. Proper Facade Import Requirements
+
+**✅ REQUIRED:** Always import facades using `use` statements at the top of the file. Never use the global `\` prefix.
+
+#### ❌ Incorrect (Global Namespace Access)
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+class MyService
+{
+    public function doSomething(): void
+    {
+        \Log::info('Something happened'); // BAD!
+        \Cache::put('key', 'value');      // BAD!
+    }
+}
+```
+
+#### ✅ Correct (Proper Import)
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+
+class MyService
+{
+    public function doSomething(): void
+    {
+        Log::info('Something happened');
+        Cache::put('key', 'value');
+    }
+}
+```
+
+**Why This Matters:**
+- **IDE Support:** Proper imports enable autocomplete and type hints
+- **Refactoring Safety:** IDEs can track and update imports during refactoring
+- **Code Quality:** Static analysis tools can detect issues
+- **Readability:** Clear dependencies at the top of the file
+- **Testability:** Easier to mock facades when properly imported
+
+**Common Facades to Import:**
+```php
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+```
+
+### 3. Model Primary Key Generation with HasUlids
+
+**✅ REQUIRED:** All models using ULID primary keys must use the `HasUlids` trait for automatic ID generation.
+
+#### Complete Model Setup
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Product extends Model
+{
+    use HasUlids;
+    use SoftDeletes;
+
+    protected $fillable = [
+        'name',
+        'sku',
+        'price',
+        'category_id',
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+    ];
+}
+```
+
+**Key Points:**
+- The `HasUlids` trait automatically generates ULID values for the `id` column
+- No need to manually set the `$keyType` or `$incrementing` properties
+- ULIDs are 26 characters long (Crockford's base32 encoding)
+- First 10 characters encode timestamp, rest is randomness
+
+### 4. Auth Context Handling in CLI/Queue Contexts
+
+**✅ REQUIRED:** Always check if a user is authenticated before calling `auth()->id()` or `auth()->user()`.
+
+#### ❌ Incorrect (Assumes Auth Context)
+```php
+public function handle(): void
+{
+    $userId = auth()->id(); // May be null in CLI/queue!
+    
+    activity()
+        ->causedBy(auth()->user()) // Will fail if not authenticated!
+        ->log('Action performed');
+}
+```
+
+#### ✅ Correct (With Fallback)
+```php
+public function handle(): void
+{
+    // Option 1: Throw exception if auth required
+    $userId = auth()->id() ?? throw new \RuntimeException('User authentication required');
+    
+    // Option 2: Use config fallback for system user
+    $userId = auth()->id() ?? config('app.system_user_id', 'system');
+    
+    // Option 3: Check before using
+    if (auth()->check()) {
+        activity()->causedBy(auth()->user())->log('Action performed');
+    }
+}
+```
+
+**Common Scenarios:**
+1. **Console Commands:** No authenticated user by default
+2. **Queue Jobs:** No authenticated user unless explicitly passed
+3. **Scheduled Tasks:** No authenticated user
+4. **Event Listeners:** May not have authenticated user depending on event source
+
+**Best Practices:**
+```php
+// In Actions/Services that might run in CLI context
+public function __construct(
+    private readonly ?string $userId = null
+) {
+    $this->userId = $userId ?? auth()->id();
+}
+
+// In Queue Jobs
+public function __construct(
+    private readonly string $userId
+) {}
+
+public static function dispatch(string $userId): void
+{
+    dispatch(new static($userId));
+}
+```
+
+### 5. Type Safety for Operations on ULID Strings
+
+**✅ REQUIRED:** ULIDs are strings, not integers. Never perform arithmetic operations on ULID values.
+
+#### ❌ Incorrect (Arithmetic on ULID)
+```php
+use Nexus\Crm\Core\RoundRobinAssignmentStrategy;
+
+class RoundRobinAssignmentStrategy
+{
+    public function resolve(CrmEntity $entity, array $config = []): array
+    {
+        $availableUsers = $config['users'] ?? [];
+        
+        // BAD: Modulo on ULID string will fail!
+        $userIndex = $entity->id % count($availableUsers);
+        
+        return [$availableUsers[$userIndex] => 'assignee'];
+    }
+}
+```
+
+#### ✅ Correct (Hash-based Selection)
+```php
+use Nexus\Crm\Core\RoundRobinAssignmentStrategy;
+
+class RoundRobinAssignmentStrategy
+{
+    public function resolve(CrmEntity $entity, array $config = []): array
+    {
+        $availableUsers = $config['users'] ?? [];
+        
+        // GOOD: Hash ULID to integer for modulo operation
+        $userIndex = crc32($entity->id) % count($availableUsers);
+        
+        return [$availableUsers[$userIndex] => 'assignee'];
+    }
+}
+```
+
+**Hash Functions for ULID:**
+- `crc32($ulid)` - Fast, returns 32-bit integer
+- `hexdec(substr(md5($ulid), 0, 8))` - MD5-based, more distribution
+- `abs(crc32($ulid))` - Always positive integer
+
+**Common Use Cases:**
+- Round-robin assignment
+- Shard selection
+- Deterministic distribution
+- Cache key generation
+
+### 6. Webhook Security Best Practices
+
+**✅ REQUIRED:** All webhook integrations must implement proper security measures.
+
+#### Minimum Security Requirements
+
+1. **URL Validation (Whitelist)**
+```php
+private function validateWebhookUrl(string $url): void
+{
+    $whitelist = config('crm.webhook_whitelist', []);
+    
+    if (empty($whitelist)) {
+        return; // No whitelist = allow all (dev only!)
+    }
+    
+    $host = parse_url($url, PHP_URL_HOST);
+    
+    foreach ($whitelist as $allowedPattern) {
+        if (fnmatch($allowedPattern, $host)) {
+            return;
+        }
+    }
+    
+    throw new \RuntimeException("Webhook URL not whitelisted: {$url}");
+}
+```
+
+2. **Data Filtering (Remove Sensitive Fields)**
+```php
+private function filterSensitiveData(array $data): array
+{
+    $sensitiveFields = config('crm.webhook_sensitive_fields', [
+        'password',
+        'secret',
+        'token',
+        'api_key',
+        'credit_card',
+        'ssn',
+    ]);
+    
+    return $this->recursiveFilter($data, $sensitiveFields);
+}
+
+private function recursiveFilter(array $data, array $sensitive): array
+{
+    foreach ($data as $key => $value) {
+        foreach ($sensitive as $field) {
+            if (stripos($key, $field) !== false) {
+                $data[$key] = '[REDACTED]';
+                continue 2;
+            }
+        }
+        
+        if (is_array($value)) {
+            $data[$key] = $this->recursiveFilter($value, $sensitive);
+        }
+    }
+    
+    return $data;
+}
+```
+
+3. **Payload Signing (HMAC)**
+```php
+private function signPayload(array $payload, string $secret): string
+{
+    return hash_hmac('sha256', json_encode($payload), $secret);
+}
+
+// In execute method
+if (!empty($config['secret'])) {
+    $headers['X-Webhook-Signature'] = $this->signPayload($payload, $config['secret']);
+}
+```
+
+4. **Timeout Configuration**
+```php
+Http::withHeaders($headers)
+    ->timeout(10) // Prevent hanging requests
+    ->retry(3, 100) // Optional: retry with backoff
+    ->send($method, $url, ['json' => $payload]);
+```
+
+**Configuration Example:**
+```php
+// config/crm.php
+return [
+    'webhook_whitelist' => [
+        '*.example.com',
+        'webhook.myservice.com',
+        '*.trusted-partner.net',
+    ],
+    
+    'webhook_sensitive_fields' => [
+        'password',
+        'secret',
+        'token',
+        'api_key',
+        'credit_card',
+        'ssn',
+        'auth',
+    ],
+    
+    'system_user_id' => env('SYSTEM_USER_ID', 'system'),
+];
+```
+
+**Why This Matters:**
+- **Data Leakage:** Prevents sensitive data from being sent to external services
+- **SSRF Protection:** Whitelist prevents attacks on internal services
+- **Authentication:** Signature allows receiver to verify payload authenticity
+- **Reliability:** Timeout prevents hanging connections
+
+---
+
 ## Questions or Suggestions
 
 If you have questions about these guidelines or suggestions for improvements, please:
@@ -4732,4 +5112,4 @@ If you have questions about these guidelines or suggestions for improvements, pl
 2. Discuss in the team chat
 3. Propose changes via pull request
 
-**Last Updated:** November 12, 2025
+**Last Updated:** November 16, 2025

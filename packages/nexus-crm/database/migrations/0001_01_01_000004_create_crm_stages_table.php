@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('crm_stages', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->ulid('id')->primary();
 
             // Stage metadata
             $table->string('name');
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('color')->nullable(); // Hex color for UI
 
             // Pipeline relationship
-            $table->foreignUuid('pipeline_id')->constrained('crm_pipelines')->onDelete('cascade');
+            $table->foreignUlid('pipeline_id')->constrained('crm_pipelines')->onDelete('cascade');
 
             // Stage configuration
             $table->integer('order')->default(0);

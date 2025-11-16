@@ -26,10 +26,8 @@ trait HasCrm
      */
     public static function bootHasCrm(): void
     {
-        // Cast the CRM data column
-        static::addGlobalScope('crm', function ($builder) {
-            // This will be implemented when we add the crm_data column casting
-        });
+        // Trait boot method - intentionally empty
+        // Any initialization logic can be added here if needed
     }
 
     /**
@@ -270,7 +268,7 @@ trait HasCrm
         $configuration = $this->getCrmConfiguration();
 
         foreach ($configuration as $field => $rules) {
-            if (($rules['required'] ?? false) && empty($data[$field])) {
+            if (($rules['required'] ?? false) && !isset($data[$field])) {
                 throw new \InvalidArgumentException("Field '{$field}' is required");
             }
 

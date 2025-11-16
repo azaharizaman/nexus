@@ -82,17 +82,24 @@ it('can transition entity through pipeline stages', function () {
 it('provides dashboard data for user', function () {
     $userId = 'user-123';
 
-    // Create some test entities
-    $definition = CrmDefinition::create([
+    // Create definitions for different entity types
+    $leadDefinition = CrmDefinition::create([
         'name' => 'test_lead',
         'type' => 'lead',
         'schema' => ['name' => ['type' => 'string', 'required' => true]],
         'is_active' => true,
     ]);
 
+    $opportunityDefinition = CrmDefinition::create([
+        'name' => 'test_opportunity',
+        'type' => 'opportunity',
+        'schema' => ['name' => ['type' => 'string', 'required' => true]],
+        'is_active' => true,
+    ]);
+
     $entity1 = CrmEntity::create([
         'entity_type' => 'lead',
-        'definition_id' => $definition->id,
+        'definition_id' => $leadDefinition->id,
         'data' => ['name' => 'Lead 1'],
         'status' => 'pending',
         'assigned_users' => [$userId],
@@ -100,7 +107,7 @@ it('provides dashboard data for user', function () {
 
     $entity2 = CrmEntity::create([
         'entity_type' => 'opportunity',
-        'definition_id' => $definition->id,
+        'definition_id' => $opportunityDefinition->id,
         'data' => ['name' => 'Opp 1'],
         'status' => 'active',
         'assigned_users' => [$userId],

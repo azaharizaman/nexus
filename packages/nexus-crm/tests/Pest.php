@@ -13,7 +13,7 @@ declare(strict_types=1);
 |
 */
 
-use Tests\TestCase;
+use Nexus\Crm\Tests\TestCase;
 
 uses(TestCase::class)->in('Feature');
 uses()->in('Unit');

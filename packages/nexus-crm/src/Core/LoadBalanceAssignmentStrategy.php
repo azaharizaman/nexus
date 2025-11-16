@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Nexus\Crm\Core;
 
-use Nexus\Crm\Models\CrmEntity;
 use Nexus\Crm\Contracts\AssignmentStrategyContract;
+use Nexus\Crm\Models\CrmAssignment;
+use Nexus\Crm\Models\CrmEntity;
 
 /**
  * Load Balance Assignment Strategy
@@ -29,8 +30,7 @@ class LoadBalanceAssignmentStrategy implements AssignmentStrategyContract
         // Find user with least assignments
         $userWorkloads = [];
         foreach ($availableUsers as $userId) {
-            $workload = $entity->assignments()
-                ->where('user_id', $userId)
+            $workload = CrmAssignment::where('user_id', $userId)
                 ->where('is_active', true)
                 ->count();
             $userWorkloads[$userId] = $workload;

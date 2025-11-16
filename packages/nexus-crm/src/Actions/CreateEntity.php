@@ -39,7 +39,7 @@ class CreateEntity
         $entity = CrmEntity::create([
             'entity_type' => $entityType,
             'definition_id' => $definition->id,
-            'owner_id' => $options['owner_id'] ?? auth()->id(),
+            'owner_id' => $options['owner_id'] ?? (auth()->id() ?? throw new \RuntimeException('Owner ID is required')),
             'data' => $data,
             'status' => $options['initial_status'] ?? 'draft',
             'priority' => $options['priority'] ?? 5,

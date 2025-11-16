@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('crm_pipelines', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->ulid('id')->primary();
 
             // Pipeline metadata
             $table->string('name');

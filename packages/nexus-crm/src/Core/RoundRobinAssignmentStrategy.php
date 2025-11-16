@@ -26,8 +26,8 @@ class RoundRobinAssignmentStrategy implements AssignmentStrategyContract
             return [];
         }
 
-        // Simple round-robin: use entity ID to determine assignment
-        $userIndex = $entity->id % count($availableUsers);
+        // Simple round-robin: use hash of entity ID to determine assignment
+        $userIndex = crc32($entity->id) % count($availableUsers);
         $selectedUser = $availableUsers[$userIndex];
 
         return [$selectedUser => $role];

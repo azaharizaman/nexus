@@ -23,7 +23,13 @@ abstract class TestCase extends OrchestraTestCase
      */
     protected function defineEnvironment($app): void
     {
-        // Define your environment setup here
+        // Setup testing database connection
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('database.connections.testing', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
     }
 
     /**
@@ -33,19 +39,7 @@ abstract class TestCase extends OrchestraTestCase
     {
         parent::setUp();
 
-        // Set up a basic database connection for models
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('database.connections.testing', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-        ]);
-
-        // Set the connection resolver
-        $connection = $app['db']->connection('testing');
-        $resolver = \Illuminate\Database\Connection::getResolver();
-        if ($resolver) {
-            \Illuminate\Database\Eloquent\Model::setConnectionResolver($app['db']);
-        }
+        // Run migrations for tests
+        $this->artisan('migrate', ['--database' => 'testing'])->run();
     }
 }

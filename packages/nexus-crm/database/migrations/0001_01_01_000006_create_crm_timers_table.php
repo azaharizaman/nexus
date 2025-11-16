@@ -14,10 +14,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('crm_timers', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->ulid('id')->primary();
 
             // Entity relationship
-            $table->foreignUuid('entity_id')->constrained('crm_entities')->onDelete('cascade');
+            $table->foreignUlid('entity_id')->constrained('crm_entities')->onDelete('cascade');
 
             // Timer configuration
             $table->string('name');

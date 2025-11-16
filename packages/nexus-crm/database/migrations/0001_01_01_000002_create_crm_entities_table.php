@@ -14,19 +14,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('crm_entities', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->ulid('id')->primary();
 
             // Entity metadata
             $table->string('entity_type'); // 'lead', 'opportunity', 'contact'
-            $table->uuid('definition_id');
-            $table->uuid('owner_id'); // User who owns this entity
+            $table->ulid('definition_id');
+            $table->ulid('owner_id'); // User who owns this entity
 
             // Entity data (JSON)
             $table->json('data');
 
             // Status and workflow
             $table->string('status')->default('active');
-            $table->uuid('current_stage_id')->nullable();
+            $table->ulid('current_stage_id')->nullable();
             $table->integer('stage_order')->default(0);
 
             // Assignment
