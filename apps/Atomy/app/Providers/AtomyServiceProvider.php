@@ -11,6 +11,7 @@ use Nexus\Atomy\Support\Contracts\SearchServiceContract;
 use Nexus\Atomy\Support\Contracts\TokenServiceContract;
 use Nexus\Atomy\Support\Services\Auth\SanctumTokenService;
 use Nexus\Atomy\Support\Services\Logging\SpatieActivityLogger;
+use Nexus\Erp\Support\Contracts\ActivityLoggerContract;
 use Nexus\AuditLog\Contracts\AuditLogRepositoryContract;
 use Nexus\Atomy\Support\Services\Logging\SpatieActivityLoggerAdapter;
 use Nexus\Atomy\Support\Services\Permission\SpatiePermissionService;
@@ -159,6 +160,9 @@ class AtomyServiceProvider extends ServiceProvider
         $this->app->singleton(\Nexus\ProjectManagement\Contracts\ExpenseRepositoryInterface::class, \Nexus\Atomy\Repositories\DbExpenseRepository::class);
         $this->app->singleton(\Nexus\ProjectManagement\Contracts\InvoiceRepositoryInterface::class, \Nexus\Atomy\Repositories\DbInvoiceRepository::class);
         $this->app->singleton(\Nexus\ProjectManagement\Contracts\TaskDependencyRepositoryInterface::class, \Nexus\Atomy\Repositories\DbTaskDependencyRepository::class);
+        // Accounting repository bindings
+        $this->app->singleton(\Nexus\Accounting\Contracts\AccountRepositoryInterface::class, \Nexus\Atomy\Repositories\Accounting\DbAccountRepository::class);
+        $this->app->singleton(\Nexus\Accounting\Contracts\JournalRepositoryInterface::class, \Nexus\Atomy\Repositories\Accounting\DbJournalRepository::class);
         // Managers
         $this->app->singleton(\Nexus\ProjectManagement\Services\TaskManager::class, function ($app) {
             return new \Nexus\ProjectManagement\Services\TaskManager(
@@ -178,6 +182,26 @@ class AtomyServiceProvider extends ServiceProvider
         });
         $this->app->singleton(\Nexus\ProjectManagement\Services\MilestoneManager::class, function ($app) {
             return new \Nexus\ProjectManagement\Services\MilestoneManager($app->make(\Nexus\ProjectManagement\Contracts\MilestoneRepositoryInterface::class));
+        });
+
+        // Accounting Manager
+        $this->app->singleton(\Nexus\Accounting\Services\AccountingManager::class, function ($app) {
+            return new \Nexus\Accounting\Services\AccountingManager(
+                $app->make(\Nexus\Accounting\Contracts\AccountRepositoryInterface::class),
+                $app->make(\Nexus\Accounting\Contracts\JournalRepositoryInterface::class),
+                $app->make(\Nexus\Atomy\Support\Contracts\ActivityLoggerContract::class)
+            );
+        });
+        // Analytics engine & manager
+        $this->app->singleton(\Nexus\Analytics\Core\Contracts\AnalyticsEngineContract::class, function ($app) {
+            return new \Nexus\Analytics\Core\Engine\AnalyticsEngine();
+        });
+
+        $this->app->singleton(\Nexus\Atomy\Services\Analytics\AnalyticsManager::class, function ($app) {
+            return new \Nexus\Atomy\Services\Analytics\AnalyticsManager(
+                $app->make(\Nexus\Analytics\Core\Contracts\AnalyticsEngineContract::class),
+                $app->make(\Nexus\Atomy\Support\Contracts\ActivityLoggerContract::class)
+            );
         });
         // Billing rate provider: simple default returns app config or default value
         $this->app->singleton(\Nexus\ProjectManagement\Contracts\BillingRateProviderInterface::class, function ($app) {

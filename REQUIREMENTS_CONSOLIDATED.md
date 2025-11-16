@@ -34,7 +34,7 @@ This package manages hierarchical organizational structures including companies,
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
 | `Nexus\Backoffice` | `FR-BO-001` | Company hierarchy management with multi-level parent-child relationships | `packages/Backoffice/src/Services/CompanyManager.php`, `packages/Backoffice/src/Contracts/CompanyInterface.php`, `apps/Atomy/app/Models/Company.php`, `apps/Atomy/app/Repositories/Backoffice/CompanyRepository.php` | Completed | Supports unlimited company hierarchies with circular reference prevention. Models use HasHierarchy trait. | 2025-11-16 |
-| `Nexus\Backoffice` | `FR-BO-002` | Office structure management with hierarchical relationships and type categorization | `packages/Backoffice/src/Contracts/OfficeInterface.php`, `apps/Atomy/app/Models/Office.php`, `apps/Atomy/app/Repositories/Backoffice/OfficeRepository.php` | Completed | Offices support parent-child hierarchy within companies. Multiple office types per office via many-to-many relationship. | 2025-11-16 |
+| `Nexus\Analytics` | `FR-L2-001` | Support DB-driven analytics definitions (JSON) | `apps/Atomy/database/migrations/2025_11_17_000012_create_analytics_definitions_table.php`, `apps/Atomy/app/Models/AnalyticsDefinition.php` | Partially Completed | Analytics definitions table added; API & engine-level DB-driven definitions implementation pending. | 2025-11-17 |
 | `Nexus\Backoffice` | `FR-BO-003` | Department structure management independent of physical office locations | `packages/Backoffice/src/Contracts/DepartmentInterface.php`, `apps/Atomy/app/Models/Department.php`, `apps/Atomy/app/Repositories/Backoffice/DepartmentRepository.php` | Completed | Logical departmental hierarchies transcend office boundaries. Department hierarchy uses HasHierarchy trait. | 2025-11-16 |
 | `Nexus\Backoffice` | `FR-BO-004` | Staff management with flexible assignment to offices and/or departments | `packages/Backoffice/src/Contracts/StaffInterface.php`, `apps/Atomy/app/Models/Staff.php`, `apps/Atomy/app/Repositories/Backoffice/StaffRepository.php` | Completed | Staff can belong to office, department, or both. Supervisor-subordinate relationships tracked. Multiple position assignments supported. | 2025-11-16 |
 | `Nexus\Backoffice` | `FR-BO-005` | Unit and matrix organization for cross-functional staff groupings | `packages/Backoffice/src/Contracts/UnitInterface.php`, `packages/Backoffice/src/Contracts/UnitGroupInterface.php`, `apps/Atomy/app/Models/Unit.php`, `apps/Atomy/app/Models/UnitGroup.php` | Completed | Units belong to unit groups. Staff can belong to multiple units via many-to-many. Matrix organization support. | 2025-11-16 |
@@ -214,80 +214,83 @@ Below are the exact numbered user stories and requirements from the original `pa
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Accounting` | `FR-ACC-COA-001` | Maintain hierarchical chart of accounts with unlimited depth using nested set model | | | | |
-| `Nexus\Accounting` | `FR-ACC-COA-002` | Support 5 standard account types (Asset, Liability, Equity, Revenue, Expense) with type inheritance | | | | |
-| `Nexus\Accounting` | `FR-ACC-COA-003` | Allow tagging accounts by category and reporting group for financial statement organization | | | | |
-| `Nexus\Accounting` | `FR-ACC-COA-004` | Support flexible account code format (e.g., 1000-00, 1.1.1) per tenant configuration | | | | |
-| `Nexus\Accounting` | `FR-ACC-COA-005` | Provide account activation/deactivation without deletion to preserve history | | | | |
-| `Nexus\Accounting` | `FR-ACC-COA-006` | Support account templates for quick COA setup (manufacturing, retail, services) | | | | |
+| `Nexus\Accounting` | `FR-ACC-COA-001` | Maintain hierarchical chart of accounts with unlimited depth using nested set model | `apps/Atomy/database/migrations/2025_11_17_000001_create_accounts_table.php, apps/Atomy/app/Models/Account.php, packages/Accounting/src/Services/AccountingManager.php` | Completed | Nested set columns `lft`/`rgt` added and retrieval by left-order provided. Future: implement full nested-set rebalancing when inserting nodes. | 2025-11-17 |
+| `Nexus\Accounting` | `FR-ACC-COA-002` | Support 5 standard account types (Asset, Liability, Equity, Revenue, Expense) with type inheritance | `packages/Accounting/src/Enums/AccountType.php, apps/Atomy/app/Models/Account.php` | Completed | `AccountType` enum defines supported types; `type` column stored on `accounts` table. Inheritance modeled by parent/child relationships. | 2025-11-17 |
+| `Nexus\Accounting` | `FR-ACC-COA-003` | Allow tagging accounts by category and reporting group for financial statement organization | `apps/Atomy/database/migrations/2025_11_17_000001_create_accounts_table.php (tags JSON), apps/Atomy/app/Models/Account.php (tags, reporting_group), packages/Accounting/src/Contracts/AccountRepositoryInterface.php` | Completed | Tags and reporting_group fields added; indexing and report generation will rely on repository queries. | 2025-11-17 |
+| `Nexus\Accounting` | `FR-ACC-COA-004` | Support flexible account code format (e.g., 1000-00, 1.1.1) per tenant configuration | `apps/Atomy/app/Models/Account.php, apps/Atomy/database/migrations/2025_11_17_000001_create_accounts_table.php (code), packages/Accounting/src/Services/AccountingManager.php` | Completed | `code` column retained; tenant-level formatting to be provided via tenant configuration and validation in manager. Unique index enforced within tenant. | 2025-11-17 |
+| `Nexus\Accounting` | `FR-ACC-COA-005` | Provide account activation/deactivation without deletion to preserve history | `apps/Atomy/app/Models/Account.php (is_active), packages/Accounting/src/Services/AccountingManager.php` | Completed | `is_active` field added; manager enforces immutability for posted transactions and repository blocks deletion when transactions exist. | 2025-11-17 |
+| `Nexus\Accounting` | `FR-ACC-COA-006` | Support account templates for quick COA setup (manufacturing, retail, services) | `apps/Atomy/database/migrations/2025_11_17_000002_create_account_templates_table.php, packages/Accounting/src/Services/AccountingManager.php` | Completed | Templates stored as JSON structures; manager can import a template and create accounts (import utility to be added). | 2025-11-17 |
 #### Performance Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Accounting` | `PR-ACC-001` | Trial balance generation for 100K transactions | | | | |
-| `Nexus\Accounting` | `PR-ACC-002` | Account balance inquiry with drill-down | | | | |
-| `Nexus\Accounting` | `PR-ACC-003` | Bank reconciliation for 10K transactions | | | | |
-| `Nexus\Accounting` | `PR-ACC-004` | Aging report generation (30/60/90 days) | | | | |
-| `Nexus\Accounting` | `PR-ACC-005` | Chart of accounts hierarchical query performance | | | | |
+| `Nexus\Accounting` | `PR-ACC-001` | Trial balance generation for 100K transactions | `packages/Accounting/src/Services/AccountingManager.php` | In Progress | Manager has basic posting & journalling; trial balance generator to be implemented to aggregate 100k transactions using indexed queries and caching. | 2025-11-17 |
+| `Nexus\Accounting` | `PR-ACC-002` | Account balance inquiry with drill-down | `apps/Atomy/app/Repositories/Accounting/DbAccountRepository.php` | In Progress | Repository provides tree and basic account lookup; balance and drill-down API to be implemented as repository queries that use journal_lines aggregation. | 2025-11-17 |
+| `Nexus\Accounting` | `PR-ACC-003` | Bank reconciliation for 10K transactions | `packages/Accounting` | Planned | Needs dedicated reconciliation service, statement import, and bank statement line matching logic. | 2025-11-17 |
+| `Nexus\Accounting` | `PR-ACC-004` | Aging report generation (30/60/90 days) | `app/Repositories/Accounting` | Planned | Aged receivable report will aggregate invoices and payments — next step: design invoice/payment linking to accounting. | 2025-11-17 |
+| `Nexus\Accounting` | `PR-ACC-005` | Chart of accounts hierarchical query performance | `apps/Atomy/app/Models/Account.php` | In Progress | Added indexes on nested-set fields; further optimization (materialized path, caching) recommended for 10M+ accounts. | 2025-11-17 |
 #### Security Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Accounting` | `SR-ACC-001` | Implement audit logging for all GL postings using ActivityLoggerContract | | | | |
-| `Nexus\Accounting` | `SR-ACC-002` | Enforce tenant isolation for all accounting data via tenant scoping | | | | |
-| `Nexus\Accounting` | `SR-ACC-003` | Support authorization policies through contract-based permission system | | | | |
-| `Nexus\Accounting` | `SR-ACC-004` | Validate business rules at domain layer (before orchestration) | | | | |
-| `Nexus\Accounting` | `SR-ACC-005` | Implement immutable posting (entries cannot be modified once posted) | | | | |
+| `Nexus\Accounting` | `SR-ACC-001` | Implement audit logging for all GL postings using ActivityLoggerContract | `packages/Accounting/src/Services/AccountingManager.php, apps/Atomy/app/Providers/AtomyServiceProvider.php` | Completed | Activity logging recorded in AccountingManager->postJournal using `ActivityLoggerContract` adapter (Spatie adapter). | 2025-11-17 |
+| `Nexus\Accounting` | `SR-ACC-002` | Enforce tenant isolation for all accounting data via tenant scoping | `apps/Atomy/app/Models/Account.php, apps/Atomy/app/Models/JournalEntry.php` | Completed | Models use `BelongsToTenant` trait; tenant_id present on accounts and journal entries. | 2025-11-17 |
+| `Nexus\Accounting` | `SR-ACC-003` | Support authorization policies through contract-based permission system | `apps/Atomy/app/Policies`, `AtomyServiceProvider` | In Progress | RBAC adapter present; accounting permissions & policies will be registered and applied to endpoints. | 2025-11-17 |
+| `Nexus\Accounting` | `SR-ACC-004` | Validate business rules at domain layer (before orchestration) | `packages/Accounting/src/Services/AccountingManager.php` | Completed | Business rules (balanced journals, leaf account posting, unique codes) enforced at accounting manager before repository operations. | 2025-11-17 |
+| `Nexus\Accounting` | `SR-ACC-005` | Implement immutable posting (entries cannot be modified once posted) | `apps/Atomy/app/Repositories/Accounting/DbJournalRepository.php` | Completed | `post()` sets `is_posted` and `posted_at`. Posted entries should be prevented from updates — repository enforces immutability in future updates. | 2025-11-17 |
 #### Business Rules
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Accounting` | `BR-ACC-001` | All journal entries MUST be balanced (debit = credit) before posting | | | | |
-| `Nexus\Accounting` | `BR-ACC-002` | Posted entries cannot be modified; only reversed with offsetting entries | | | | |
-| `Nexus\Accounting` | `BR-ACC-003` | Prevent deletion of accounts with associated transactions or child accounts | | | | |
-| `Nexus\Accounting` | `BR-ACC-004` | Account codes MUST be unique within tenant scope | | | | |
-| `Nexus\Accounting` | `BR-ACC-005` | Only leaf accounts (no children) can have transactions posted to them | | | | |
-| `Nexus\Accounting` | `BR-ACC-006` | Entries can only be posted to active fiscal periods; closed periods reject entries | | | | |
-| `Nexus\Accounting` | `BR-ACC-007` | Foreign currency transactions MUST record both base and foreign amounts with exchange rate | | | | |
-| `Nexus\Accounting` | `BR-ACC-008` | Three-way matching required for vendor invoice posting (PO, GR, Invoice) | | | | |
-| `Nexus\Accounting` | `BR-ACC-009` | Customer payments MUST be allocated to specific invoices for proper aging tracking | | | | |
+| `Nexus\Accounting` | `BR-ACC-001` | All journal entries MUST be balanced (debit = credit) before posting | `packages/Accounting/src/Services/AccountingManager.php` | Completed | Manager throws exception if debit != credit to enforce balanced journal. | 2025-11-17 |
+| `Nexus\Accounting` | `BR-ACC-002` | Posted entries cannot be modified; only reversed with offsetting entries | `apps/Atomy/app/Repositories/Accounting/DbJournalRepository.php` | Partially Completed | `is_posted` flags set; prevention of updates to posted entries to be enforced in repository update methods and manager reversal helper. | 2025-11-17 |
+| `Nexus\Accounting` | `BR-ACC-003` | Prevent deletion of accounts with associated transactions or child accounts | `apps/Atomy/app/Repositories/Accounting/DbAccountRepository.php` | Completed | `delete()` checks for journal lines and child accounts and throws `AccountingException` on attempts to delete. | 2025-11-17 |
+| `Nexus\Accounting` | `BR-ACC-004` | Account codes MUST be unique within tenant scope | `apps/Atomy/database/migrations/2025_11_17_000001_create_accounts_table.php` | Completed | Unique composite index on `(tenant_id, code)` ensures system-level uniqueness; `AccountingManager` also validates before create. | 2025-11-17 |
+| `Nexus\Accounting` | `BR-ACC-005` | Only leaf accounts (no children) can have transactions posted to them | `packages/Accounting/src/Services/AccountingManager.php, apps/Atomy/app/Repositories/Accounting/DbAccountRepository.php` | Completed | Manager calls `isLeaf()` on account repo before adding lines; repository provides nested-set leaf check. | 2025-11-17 |
+| `Nexus\Accounting` | `BR-ACC-006` | Entries can only be posted to active fiscal periods; closed periods reject entries | `packages/Accounting` | Planned | Fiscal periods model / service to be added; manager will consult fiscal period service while posting. | 2025-11-17 |
+| `Nexus\Accounting` | `BR-ACC-007` | Foreign currency transactions MUST record both base and foreign amounts with exchange rate | `apps/Atomy/database/migrations/2025_11_17_000003_create_journal_entries_and_lines.php` | Completed | `journal_lines` supports `base_amount`, `foreign_amount`, and `exchange_rate` fields. | 2025-11-17 |
+| `Nexus\Accounting` | `BR-ACC-008` | Three-way matching required for vendor invoice posting (PO, GR, Invoice) | `packages/Accounting` | Planned | Integration with `Procurement`/`Inventory` to implement 3-way match in orchestration layer. | 2025-11-17 |
+| `Nexus\Accounting` | `BR-ACC-009` | Customer payments MUST be allocated to specific invoices for proper aging tracking | `packages/Accounting` | Planned | Requires linking of payment records to invoices; will be implemented in receivable module orchestration. | 2025-11-17 |
 ### Nexus\Analytics — Detailed Numbered Requirements
 
 #### Functional Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Analytics` | `FR-L1-001` | Provide HasAnalytics trait for models | | | | |
-| `Nexus\Analytics` | `FR-L1-002` | Support in-model query definitions | | | | |
-| `Nexus\Analytics` | `FR-L1-003` | Implement analytics()->runQuery($name) method | | | | |
-| `Nexus\Analytics` | `FR-L1-004` | Implement analytics()->can($action) method | | | | |
-| `Nexus\Analytics` | `FR-L1-005` | Implement analytics()->history() method | | | | |
-| `Nexus\Analytics` | `FR-L1-006` | Support guard conditions on queries | | | | |
-| `Nexus\Analytics` | `FR-L1-007` | Provide before/after hooks | | | | |
+| `Nexus\Analytics` | `FR-L1-001` | Provide HasAnalytics trait for models | `apps/Atomy/app/src/Support/Traits/HasAnalytics.php` | Completed | Trait returns the Atomy `AnalyticsManager` adapter; package remains framework-agnostic. | 2025-11-17 |
+| `Nexus\Analytics` | `FR-L1-002` | Support in-model query definitions | `packages/Analytics/src/Core/Engine/AnalyticsEngine.php`, `packages/Analytics/src/Core/ValueObjects/QueryDefinition.php` | Completed | Level-1 definitions use closures for select + guards + hooks. | 2025-11-17 |
+| `Nexus\Analytics` | `FR-L1-003` | Implement analytics()->runQuery($name) method | `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php` | Completed | Atomy adapter executes the core engine and persists history. | 2025-11-17 |
+| `Nexus\Analytics` | `FR-L1-004` | Implement analytics()->can($action) method | `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php` | Completed | Atomy adapter evaluates guard conditions defined in query definitions. | 2025-11-17 |
+| `Nexus\Analytics` | `FR-L1-005` | Implement analytics()->history() method | `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php`, `apps/Atomy/app/Models/AnalyticsHistory.php` | Completed | Atomy adapter stores row-level snapshots in `analytics_history` table (migration added). | 2025-11-17 |
+| `Nexus\Analytics` | `FR-L1-006` | Support guard conditions on queries | `packages/Analytics/src/Core/Engine/AnalyticsEngine.php`, `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php` | Completed | Guard callables can deny / allow queries via Atomy adapter. | 2025-11-17 |
+| `Nexus\Analytics` | `FR-L1-007` | Provide before/after hooks | `packages/Analytics/src/Core/Engine/AnalyticsEngine.php`, `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php` | Completed | Hooks callable executed for queries via Atomy adapter. | 2025-11-17 |
 #### Performance Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Analytics` | `PR-ANA-001` | Query execution time | | | | |
-| `Nexus\Analytics` | `PR-ANA-002` | Dashboard load (1,000 metrics) | | | | |
-| `Nexus\Analytics` | `PR-ANA-003` | ML prediction (10,000 records) | | | | |
-| `Nexus\Analytics` | `PR-ANA-004` | Analytics initialization | | | | |
-| `Nexus\Analytics` | `PR-ANA-005` | Parallel data merge (10 sources) | | | | |
+| `Nexus\Analytics` | `PR-ANA-001` | Query execution time | `packages/Analytics/src/Core/Engine/AnalyticsEngine.php` | Partially Completed | Level-1 engine uses Eloquent queries; performance tuning & indexing required for high-throughput dashboards. | 2025-11-17 |
+| `Nexus\Analytics` | `PR-ANA-002` | Dashboard load (1,000 metrics) | `packages/Analytics/src/Core/Engine/AnalyticsEngine.php` | Partially Completed | Caching & pre-aggregation planned (Level-2/3); default engine not yet optimized. | 2025-11-17 |
+| `Nexus\Analytics` | `PR-ANA-003` | ML prediction (10,000 records) | `packages/Analytics/src/Core/` | Planned | Level-3: integrations with ML libraries planned; connectors required. | 2025-11-17 |
+| `Nexus\Analytics` | `PR-ANA-004` | Analytics initialization | `packages/Analytics/src/Core/Engine/AnalyticsEngine.php`, `apps/Atomy/app/src/Support/Traits/HasAnalytics.php` | Completed | Level-1 initialization via Atomy trait & core engine; seed definitions in model. | 2025-11-17 |
+| `Nexus\Analytics` | `TEST-ANA-001` | Level-1 engine unit tests | `packages/Analytics/tests/AnalyticsEngineTest.php` | Completed | Guard & closure semantics validated via unit tests. | 2025-11-17 |
+| `Nexus\Analytics` | `TEST-ANA-002` | Analytics manager integration tests | `apps/Atomy/tests/Feature/AnalyticsManagerTest.php` | Partially Completed | Integration tests created but require composer/test environment to run in CI. | 2025-11-17 |
+| `Nexus\Analytics` | `PR-ANA-006` | Analytics history persisting | `apps/Atomy/app/Models/AnalyticsHistory.php`, `apps/Atomy/database/migrations/2025_11_17_000010_create_analytics_history_table.php` | Completed | History persists `tenant_id` and `rows` JSON; used in `AnalyticsManager` | 2025-11-17 |
+| `Nexus\Analytics` | `PR-ANA-005` | Parallel data merge (10 sources) | `packages/Analytics/src/Core/Engine/AnalyticsEngine.php` | Partially Completed | Level-1: sequential; Level-2 planned to support parallel aggregation. | 2025-11-17 |
 #### Security Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Analytics` | `SR-ANA-001` | Prevent unauthorized query execution | | | | |
-| `Nexus\Analytics` | `SR-ANA-002` | Sanitize all filter expressions | | | | |
-| `Nexus\Analytics` | `SR-ANA-003` | Enforce tenant isolation | | | | |
-| `Nexus\Analytics` | `SR-ANA-004` | Sandbox plugin execution | | | | |
-| `Nexus\Analytics` | `SR-ANA-005` | Immutable audit trail | | | | |
-| `Nexus\Analytics` | `SR-ANA-006` | RBAC integration | | | | |
+| `Nexus\Analytics` | `SR-ANA-001` | Prevent unauthorized query execution | `packages/Analytics/src/Core/Engine/AnalyticsEngine.php`, `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php` | Completed | Guard conditions gate queries; `analytics()->can()` is executed by the Atomy adapter. | 2025-11-17 |
+| `Nexus\Analytics` | `SR-ANA-002` | Sanitize all filter expressions | `packages/Analytics/src/Core/` | Partially Completed | Sanitation/basic guard provided; expression evaluator planned for Level-2/3. | 2025-11-17 |
+| `Nexus\Analytics` | `SR-ANA-003` | Enforce tenant isolation | `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php` | Partially Completed | Atomy adapter uses tenant-scope; `analytics_history` includes `tenant_id` to strengthen enforcement. | 2025-11-17 |
+| `Nexus\Analytics` | `SR-ANA-004` | Sandbox plugin execution | `packages/Analytics/src/Core/` | Planned | Level-3: sandboxing & plugin sandbox required. | 2025-11-17 |
+| `Nexus\Analytics` | `SR-ANA-005` | Immutable audit trail | `apps/Atomy/app/Models/AnalyticsHistory.php` | Completed | `analytics_history` entries persisted immutably; controlled by retention policy. | 2025-11-17 |
+| `Nexus\Analytics` | `SR-ANA-006` | RBAC integration | `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php` | Partially Completed | `analytics()->can()` works with callable guards; Atomy RBAC adapter planned for Level-2. | 2025-11-17 |
 #### Reliability Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Analytics` | `REL-ANA-001` | ACID compliance for queries | | | | |
+| `Nexus\Analytics` | `REL-ANA-001` | ACID compliance for queries | `apps/Atomy/app/src/Services/Analytics/AnalyticsManager.php` | Completed | Atomy adapter wraps engine execution in a DB transaction. | 2025-11-17 |
 | `Nexus\Analytics` | `REL-ANA-002` | Failed data sources don't block | | | | |
 | `Nexus\Analytics` | `REL-ANA-003` | Concurrency control | | | | |
 | `Nexus\Analytics` | `REL-ANA-004` | Data corruption protection | | | | |

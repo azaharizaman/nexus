@@ -8,6 +8,25 @@ YOU MUST NOT DEVIATE from THE CODING STANDARDS, ARCHITECTURAL PRINCIPLES, OR WOR
 
 As an AI Coding Agent, you must always plan your moves, create relevant to-do lists, and reason about your actions before executing them. Your responses should reflect a clear understanding of the tasks at hand and demonstrate a methodical approach to problem-solving, be concise yet comprehensive, and maintain high standards of code quality and best practices. Stop and reassess if you find yourself deviating from these principles. Systematically approach your task goal, anticipate if you are going to hit the response limit, and if so, break down your response into manageable parts to ensure completeness.
 
+If you were tasked to deliver or implement a specific list of requirements, features, or user stories, you must ensure that each item is addressed in your response according to the guidelines in this document. Your implementation must be modular, maintainable, and adhere to the defined architecture. You must, before finalizing your task, update the REQUIREMENTS_CONSOLIDATED.md file by inserting the given requirements, features, or user stories in a well-structured format within that file, or update the existing entries as necessary to reflect the current state of the project. The table format for the REQUIREMENTS_CONSOLIDATED.md file is as follows:
+
+```markdown
+| Package/App (Namespace) | Requirement # | Description (concise and understandable by developer) | Implemented in (Class / File / Method) | Status (status of the delivery or implementation for this requirement) | Notes (to support the status or linkbacks to other Requirements #) | Date (when this row item was recently updated) |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Nexus\Crm` | `BR-001` | Users cannot self-assign leads (configurable) | `packages/Crm/src/Core/AssignmentStrategyResolver.php` | Completed | Level 2 only; enforced by assignment resolver. | 2025-11-16 |
+| `Nexus\Crm` | `BR-002` | All state changes must be ACID-compliant | `packages/Crm/src/Core/PipelineEngine.php` | Completed | All state changes must be ACID-compliant. | 2025-11-16 |
+| `Nexus\Crm` | `BR-003` | Stale leads auto-escalate after configured timeout | `packages/Crm/src/Core/EscalationService.php` | Completed | Stale leads auto-escalate after configured timeout. | 2025-11-16 |
+| `Nexus\Crm` | `BR-004` | Compensation activities execute in reverse order | `packages/Crm/src/Core/PipelineEngine.php` | Partially Completed | Compensation activities execute in reverse order. | 2025-11-16 |
+| `Nexus\Crm` | `BR-005` | Delegation chain maximum depth: 3 levels | `packages/Crm/src/Core/AssignmentStrategyResolver.php` | Completed | Delegation chain maximum depth: 3 levels. | 2025-11-16 |
+| `Nexus\Crm` | `BR-006` | Level 1 code remains compatible after Level 2/3 upgrades | `packages/Crm/src/Traits/HasCrm.php` | Completed | Level 1 code remains compatible after Level 2/3 upgrades. | 2025-11-16 |
+| `Nexus\Crm` | `BR-007` | One CRM instance per subject model | `packages/Crm/src/Core/CrmManager.php` | Completed | One CRM instance per subject model. | 2025-11-16 |
+| `Nexus\Crm` | `BR-008` | Parallel branches must all complete before proceeding | `packages/Crm/src/Core/PipelineEngine.php` | Completed | Parallel branches must all complete before proceeding. | 2025-11-16 |
+| `Nexus\Crm` | `BR-009` | Assignment checks delegation chain first | `packages/Crm/src/Core/AssignmentStrategyResolver.php` | Completed | Assignment checks delegation chain first. | 2025-11-16 |
+| `Nexus\Crm` | N/A | Unit & Feature tests added for ProjectManagement & API flows | `packages/ProjectManagement/tests/Unit/*` and `apps/Atomy/tests/Feature/*` | Completed | Unit tests for managers and feature tests for controllers and repos added. Coverage: target 90%+, run tests to verify. | 2025-11-16 |
+
+```
+Note on the above format: DO NOT add in table seperator or formatting outside of the table itself. Only add rows as needed within the table structure shown.
+
 # Update on Atomic Package Structure and Naming Conventions
 
 The naming convention for files and directories may differ based on the current repository structure, but the principles and guidelines outlined herein must always be followed annd you should update the naming accordingly.
