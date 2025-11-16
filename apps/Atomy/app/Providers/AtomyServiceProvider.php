@@ -147,6 +147,9 @@ class AtomyServiceProvider extends ServiceProvider
         $this->app->singleton(\Nexus\Sequencing\Contracts\SequenceRepositoryInterface::class, \App\Repositories\Sequencing\SequenceRepository::class);
         $this->app->singleton(\Nexus\Sequencing\Contracts\SerialNumberLogRepositoryInterface::class, \App\Repositories\Sequencing\SerialNumberLogRepository::class);
 
+        // Sequencing Service bindings
+        $this->app->singleton(\Nexus\Sequencing\Contracts\PatternParserServiceInterface::class, \App\Services\Sequencing\PatternParserService::class);
+        $this->app->singleton(\Nexus\Sequencing\Contracts\GenerationServiceInterface::class, \App\Services\Sequencing\GenerationService::class);
         // Project Management Services
         $this->app->singleton(\Nexus\ProjectManagement\Contracts\ProjectRepositoryInterface::class, \Nexus\Atomy\Repositories\DbProjectRepository::class);
         $this->app->singleton(\Nexus\ProjectManagement\Contracts\TaskRepositoryInterface::class, \Nexus\Atomy\Repositories\DbTaskRepository::class);
