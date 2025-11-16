@@ -143,6 +143,10 @@ class AtomyServiceProvider extends ServiceProvider
             });
         }
 
+        // Sequencing Services - Atomic serial number generation
+        $this->app->singleton(\Nexus\Sequencing\Contracts\SequenceRepositoryInterface::class, \App\Repositories\Sequencing\SequenceRepository::class);
+        $this->app->singleton(\Nexus\Sequencing\Contracts\SerialNumberLogRepositoryInterface::class, \App\Repositories\Sequencing\SerialNumberLogRepository::class);
+
         // Project Management Services
         $this->app->singleton(\Nexus\ProjectManagement\Contracts\ProjectRepositoryInterface::class, \Nexus\Atomy\Repositories\DbProjectRepository::class);
         $this->app->singleton(\Nexus\ProjectManagement\Contracts\TaskRepositoryInterface::class, \Nexus\Atomy\Repositories\DbTaskRepository::class);
