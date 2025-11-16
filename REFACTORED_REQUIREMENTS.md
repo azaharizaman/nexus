@@ -872,4 +872,86 @@ Below are the exact numbered user stories and requirements from the original `pa
 | `Nexus\Sequencing` | `ARCH-SEQ-005` | All database migrations in application layer | `apps/Atomy/database/migrations/2025_11_12_*`, `apps/Atomy/database/migrations/2025_11_14_*` | Completed | 3 migrations moved to Atomy. Package contains no migrations. | 2025-11-16 |
 | `Nexus\Sequencing` | `ARCH-SEQ-006` | All Eloquent models in application layer | `apps/Atomy/app/Models/Sequence.php`, `apps/Atomy/app/Models/SerialNumberLog.php` | Completed | 2 models implementing package interfaces. All in Atomy application. | 2025-11-16 |
 | `Nexus\Sequencing` | `ARCH-SEQ-007` | Repository implementations in application layer | `apps/Atomy/app/Repositories/Sequencing/SequenceRepository.php`, `apps/Atomy/app/Repositories/Sequencing/SerialNumberLogRepository.php` | Completed | 2 concrete repositories implementing package repository interfaces. | 2025-11-16 |
-| `Nexus\Sequencing` | `ARCH-SEQ-008` | IoC container bindings in application service provider | `apps/Atomy/app/Providers/AtomyServiceProvider.php` | Completed | All repository interfaces bound to concrete implementations. | 2025-11-16 |
+| `Nexus\Sequencing` | `ARCH-SEQ-008` | IoC container bindings in application service provider | `apps/Atomy/app/Providers/AtomyServiceProvider.php` | Completed | All repository interfaces bound to concrete implementations. | 2025-11-16 || `Nexus\Sequencing` | `ARCH-SEQ-008` | IoC container bindings in application service provider | `apps/Atomy/app/Providers/AtomyServiceProvider.php` | Completed | All repository interfaces bound to concrete implementations. | 2025-11-16 |
+
+### Nexus\AuditLogger — Detailed Numbered Requirements
+
+This package provides comprehensive audit logging capabilities for tracking all system activities, changes, and user actions with immutable, searchable logs that support compliance requirements.
+
+#### Functional Requirements
+
+| Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Nexus\AuditLogger` | `FR-AUD-001` | Automatically capture CRUD operations (create, read, update, delete) for auditable models | `packages/AuditLogger/src/Contracts/AuditLogInterface.php`, `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php` | In Progress | Contracts defined; Laravel implementation (traits, observers) to be moved to apps/Atomy | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-002` | Record before/after state for all model updates | `packages/AuditLogger/src/Services/AuditLogManager.php` | In Progress | Manager service created; needs integration with repository | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-003` | Capture user context (who performed the action) with IP address, user agent, and timestamp | `packages/AuditLogger/src/Contracts/AuditLogInterface.php::getCauserId()`, `AuditLogInterface::getIpAddress()`, `AuditLogInterface::getUserAgent()` | In Progress | Interface methods defined | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-004` | Support tenant-based isolation of audit logs | `packages/AuditLogger/src/Contracts/AuditLogInterface.php::getTenantId()` | In Progress | Interface method defined; tenant scoping to be implemented in repository | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-005` | Provide full-text search across descriptions and properties | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php::search()` | In Progress | Repository contract defines search interface | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-006` | Filter logs by date range, user, entity type, entity ID, and event type | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php::getByDateRange()`, `AuditLogRepositoryContract::getByCauser()`, `AuditLogRepositoryContract::getForSubject()` | In Progress | Repository contract methods defined | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-007` | Export audit logs to CSV, JSON, and PDF formats | `packages/AuditLogger/src/Contracts/LogExporterContract.php`, `packages/AuditLogger/src/Services/LogExporterService.php` | Partially Completed | Exporter service exists but needs refactoring | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-008` | Mask sensitive fields (passwords, tokens, secrets) automatically | `packages/AuditLogger/src/Services/AuditLogManager.php::maskSensitiveData()` | Completed | Framework-agnostic masking logic implemented | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-009` | Support batch operations with UUID grouping for related activities | `packages/AuditLogger/src/Contracts/AuditLogInterface.php::getBatchUuid()` | In Progress | Interface method defined | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-010` | Configurable retention policies with automated purging of expired logs | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php::purgeExpired()`, `AuditLogInterface::hasExpired()` | In Progress | Interface methods defined; purge job needs implementation | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-011` | Support multiple audit levels (Low, Medium, High, Critical) for risk-based filtering | `packages/AuditLogger/src/Contracts/AuditLogInterface.php::getAuditLevel()`, `AuditLogInterface::getAuditLevelName()` | In Progress | Interface methods defined | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-012` | Asynchronous logging via queue to prevent performance impact | `packages/AuditLogger/src/Jobs/LogActivityJob.php` | Partially Completed | Job exists but needs refactoring to use contracts | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-013` | Event-driven architecture with notifications for high-value activities | `packages/AuditLogger/src/Events/ActivityLoggedEvent.php`, `packages/AuditLogger/src/Listeners/NotifyHighValueActivityListener.php` | Partially Completed | Events exist but need refactoring | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-014` | RESTful API endpoints for log retrieval, search, and export | - | Planned | To be implemented in apps/Atomy | 2025-11-16 |
+| `Nexus\AuditLogger` | `FR-AUD-015` | Activity statistics and reporting (total counts, counts by log name, trends over time) | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php::getStatistics()` | In Progress | Repository contract method defined | 2025-11-16 |
+
+#### Performance Requirements
+
+| Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Nexus\AuditLogger` | `PR-AUD-001` | Audit log creation time < 50ms (p95) when processed asynchronously | `packages/AuditLogger/src/Jobs/LogActivityJob.php` | Planned | Queue-based implementation required | 2025-11-16 |
+| `Nexus\AuditLogger` | `PR-AUD-002` | Search query response time < 500ms for 100K+ log entries with proper indexing | - | Planned | Database indexes to be created in apps/Atomy migrations | 2025-11-16 |
+| `Nexus\AuditLogger` | `PR-AUD-003` | Export generation time < 5 seconds for 10,000 log entries in CSV format | `packages/AuditLogger/src/Services/LogExporterService.php` | Planned | Exporter optimization needed | 2025-11-16 |
+| `Nexus\AuditLogger` | `PR-AUD-004` | Support 1M+ audit log entries per tenant without degradation | - | Planned | Requires partitioning strategy in apps/Atomy | 2025-11-16 |
+| `Nexus\AuditLogger` | `PR-AUD-005` | Purge operation < 10 seconds for 100K expired entries using batch deletion | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php::purgeExpired()` | Planned | Batch deletion implementation needed | 2025-11-16 |
+
+#### Security Requirements
+
+| Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Nexus\AuditLogger` | `SR-AUD-001` | Immutable audit logs - once created, logs cannot be modified or deleted (append-only) | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php::create()` | In Progress | Repository contract enforces append-only operations | 2025-11-16 |
+| `Nexus\AuditLogger` | `SR-AUD-002` | Enforce strict tenant isolation - logs can only be accessed by their owning tenant | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php` | Planned | Tenant scoping to be implemented in apps/Atomy repository | 2025-11-16 |
+| `Nexus\AuditLogger` | `SR-AUD-003` | Automatic masking of sensitive fields (passwords, tokens, API keys, credit cards) | `packages/AuditLogger/src/Services/AuditLogManager.php::maskSensitiveData()` | Completed | Recursive masking with configurable field patterns | 2025-11-16 |
+| `Nexus\AuditLogger` | `SR-AUD-004` | Role-based access control for audit log viewing and export operations | - | Planned | Authorization policies to be implemented in apps/Atomy | 2025-11-16 |
+| `Nexus\AuditLogger` | `SR-AUD-005` | Cryptographic verification of log integrity (hash chain or digital signatures) | - | Planned | Advanced security feature for compliance | 2025-11-16 |
+| `Nexus\AuditLogger` | `SR-AUD-006` | Audit the audit system - log all access to audit logs (meta-auditing) | - | Planned | Self-auditing capability | 2025-11-16 |
+
+#### Reliability Requirements
+
+| Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Nexus\AuditLogger` | `REL-AUD-001` | Failed audit log writes MUST NOT cause application failures (graceful degradation) | `packages/AuditLogger/src/Jobs/LogActivityJob.php` | Planned | Queue retry logic with dead letter queue | 2025-11-16 |
+| `Nexus\AuditLogger` | `REL-AUD-002` | Queue-based logging with automatic retry on transient failures (3 attempts with exponential backoff) | `packages/AuditLogger/src/Jobs/LogActivityJob.php` | Planned | Laravel queue retry configuration | 2025-11-16 |
+| `Nexus\AuditLogger` | `REL-AUD-003` | Database transaction safety - audit logs committed atomically with related entity changes | - | Planned | Transaction management in apps/Atomy | 2025-11-16 |
+| `Nexus\AuditLogger` | `REL-AUD-004` | Backup and archival strategy for long-term log retention (beyond database) | - | Planned | External archive integration | 2025-11-16 |
+
+#### Business Rules
+
+| Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Nexus\AuditLogger` | `BR-AUD-001` | Audit logs MUST include log_name, description, and timestamp at minimum | `packages/AuditLogger/src/Services/AuditLogManager.php::validateLogData()` | Completed | Validation enforces required fields | 2025-11-16 |
+| `Nexus\AuditLogger` | `BR-AUD-002` | Audit level MUST be one of: 1 (Low), 2 (Medium), 3 (High), 4 (Critical) | `packages/AuditLogger/src/Services/AuditLogManager.php::validateLogData()` | Completed | Validation enforces valid levels | 2025-11-16 |
+| `Nexus\AuditLogger` | `BR-AUD-003` | Retention days CANNOT be negative; default retention is 90 days | `packages/AuditLogger/src/Services/AuditLogManager.php::validateLogData()` | Completed | Validation enforces non-negative retention | 2025-11-16 |
+| `Nexus\AuditLogger` | `BR-AUD-004` | System activities (cron jobs, queue workers, CLI commands) are logged with causer_type = null | - | Planned | System context detection in apps/Atomy | 2025-11-16 |
+| `Nexus\AuditLogger` | `BR-AUD-005` | High-value entity changes (users, roles, permissions, financial records) default to Critical level | - | Planned | Model-specific audit level configuration | 2025-11-16 |
+| `Nexus\AuditLogger` | `BR-AUD-006` | Batch operations MUST use a single batch_uuid to group related logs | `packages/AuditLogger/src/Contracts/AuditLogInterface.php::getBatchUuid()` | In Progress | Interface method defined | 2025-11-16 |
+| `Nexus\AuditLogger` | `BR-AUD-007` | Expired logs (past retention period) are purged automatically via scheduled job | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php::purgeExpired()` | Planned | Scheduled command to be created in apps/Atomy | 2025-11-16 |
+
+#### Architecture Compliance
+
+| Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Nexus\AuditLogger` | `ARCH-AUD-001` | Package MUST be framework-agnostic with no Laravel dependencies in core services | `packages/AuditLogger/src/Services/AuditLogManager.php`, `packages/AuditLogger/src/Contracts/*` | Completed | Core manager and contracts are pure PHP | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-002` | All data structures defined via interfaces (AuditLogInterface) | `packages/AuditLogger/src/Contracts/AuditLogInterface.php` | Completed | Complete data structure interface defined | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-003` | All persistence operations via repository interface | `packages/AuditLogger/src/Contracts/AuditLogRepositoryContract.php` | Completed | Repository contract updated to be framework-agnostic | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-004` | Business logic in service layer (AuditLogManager) | `packages/AuditLogger/src/Services/AuditLogManager.php` | Completed | Manager contains validation, masking, and orchestration logic | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-005` | All database migrations in application layer (apps/Atomy) | - | Planned | Migration to be created in apps/Atomy for activity_log table | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-006` | All Eloquent models in application layer | `packages/AuditLogger/src/Models/AuditLog.php` | Planned | Model to be moved to apps/Atomy and implement AuditLogInterface | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-007` | Repository implementations in application layer | - | Planned | DatabaseAuditLogRepository to be created in apps/Atomy | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-008` | Traits and Observers in application layer (Laravel-specific) | `packages/AuditLogger/src/Traits/Auditable.php`, `packages/AuditLogger/src/Observers/AuditObserver.php` | Planned | Traits and observers to be moved to apps/Atomy | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-009` | IoC container bindings in application service provider | - | Planned | AuditLogRepositoryContract to be bound in apps/Atomy provider | 2025-11-16 |
+| `Nexus\AuditLogger` | `ARCH-AUD-010` | Package composer.json MUST NOT depend on laravel/framework | `packages/AuditLogger/composer.json` | Planned | Remove Laravel dependency, allow only illuminate/support if absolutely necessary | 2025-11-16 |
+
