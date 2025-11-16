@@ -261,15 +261,15 @@ Below are the exact numbered user stories and requirements from the original `pa
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\FieldService` | `US-001` | P1 | | | | |
-| `Nexus\FieldService` | `US-002` | P2 | | | | |
-| `Nexus\FieldService` | `US-003` | P3 | | | | |
-| `Nexus\FieldService` | `US-004` | P3 | | | | |
-| `Nexus\FieldService` | `US-005` | P3 | | | | |
-| `Nexus\FieldService` | `US-006` | P3 | | | | |
-| `Nexus\FieldService` | `US-007` | P3 | | | | |
-| `Nexus\FieldService` | `US-008` | P4 | | | | |
-| `Nexus\FieldService` | `US-009` | P1 | | | | |
+| `Nexus\FieldService` | `US-001` | As a service manager, I want to create work orders specifying service location, work type, and priority | | | | |
+| `Nexus\FieldService` | `US-002` | As a dispatcher, I want to assign work orders to available technicians based on skills and location | | | | |
+| `Nexus\FieldService` | `US-003` | As a field technician, I want to view my assigned jobs for the day on my mobile device | | | | |
+| `Nexus\FieldService` | `US-004` | As a field technician, I want to start a job, capture time spent, and upload before/after photos | | | | |
+| `Nexus\FieldService` | `US-005` | As a field technician, I want to record parts/materials used during service | | | | |
+| `Nexus\FieldService` | `US-006` | As a field technician, I want to capture customer signature upon job completion | | | | |
+| `Nexus\FieldService` | `US-007` | As a field technician, I want the system to auto-generate a service report (PDF) for customer | | | | |
+| `Nexus\FieldService` | `US-008` | As a customer, I want to receive a service completion report via email with photos and technician notes | | | | |
+| `Nexus\FieldService` | `US-009` | As a service manager, I want to view work order status (new, scheduled, in progress, completed, verified) | | | | |
 #### Functional Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
@@ -385,13 +385,13 @@ Below are the exact numbered user stories and requirements from the original `pa
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Manufacturing` | `US-001` | P1 | | | | |
-| `Nexus\Manufacturing` | `US-002` | P1 | | | | |
-| `Nexus\Manufacturing` | `US-003` | P2 | | | | |
-| `Nexus\Manufacturing` | `US-004` | P3 | | | | |
-| `Nexus\Manufacturing` | `US-005` | P3 | | | | |
-| `Nexus\Manufacturing` | `US-006` | P2 | | | | |
-| `Nexus\Manufacturing` | `US-007` | P5 | | | | |
+| `Nexus\Manufacturing` | `US-001` | As a production planner, I want to define a bill of materials (BOM) for a finished product listing all required components | | | | |
+| `Nexus\Manufacturing` | `US-002` | As a production planner, I want to create a work order specifying what to produce, quantity, and due date | | | | |
+| `Nexus\Manufacturing` | `US-003` | As a shop floor supervisor, I want to release a work order to the floor and issue raw materials to production | | | | |
+| `Nexus\Manufacturing` | `US-004` | As a machine operator, I want to report production output (quantity completed, quantity scrapped) | | | | |
+| `Nexus\Manufacturing` | `US-005` | As a machine operator, I want to record material consumption (actual qty used vs BOM standard) | | | | |
+| `Nexus\Manufacturing` | `US-006` | As a shop floor supervisor, I want to complete a work order and move finished goods to inventory | | | | |
+| `Nexus\Manufacturing` | `US-007` | As a production manager, I want to view work order status (planned, released, in production, completed) | | | | |
 #### Functional Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
@@ -459,13 +459,13 @@ Below are the exact numbered user stories and requirements from the original `pa
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Marketing` | `US-001` | P1 | | | | |
-| `Nexus\Marketing` | `US-002` | P1 | | | | |
-| `Nexus\Marketing` | `US-003` | P1 | | | | |
-| `Nexus\Marketing` | `US-004` | P1 | | | | |
-| `Nexus\Marketing` | `US-005` | P1 | | | | |
-| `Nexus\Marketing` | `US-006` | P1 | | | | |
-| `Nexus\Marketing` | `US-007` | P1 | | | | |
+| `Nexus\Marketing` | `US-001` | As a developer, I want to add HasMarketing trait to my model to enable campaign tracking | | | | |
+| `Nexus\Marketing` | `US-002` | As a developer, I want to define campaigns as an array in my model | | | | |
+| `Nexus\Marketing` | `US-003` | As a developer, I want to call $model->marketing()->launchCampaign($data) to start a campaign | | | | |
+| `Nexus\Marketing` | `US-004` | As a developer, I want to call $model->marketing()->can($action) to check permissions | | | | |
+| `Nexus\Marketing` | `US-005` | As a developer, I want to call $model->marketing()->history() to view campaign history | | | | |
+| `Nexus\Marketing` | `US-006` | As a developer, I want to define guard conditions on actions | | | | |
+| `Nexus\Marketing` | `US-007` | As a developer, I want hooks (before/after) for campaign lifecycle events | | | | |
 #### Functional Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
@@ -563,13 +563,13 @@ Below are the exact numbered user stories and requirements from the original `pa
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\OrgStructure` | `US-001` | P1 | | | | |
-| `Nexus\OrgStructure` | `US-002` | P1 | | | | |
-| `Nexus\OrgStructure` | `US-003` | P1 | | | | |
-| `Nexus\OrgStructure` | `US-004` | P1 | | | | |
-| `Nexus\OrgStructure` | `US-005` | P3 | | | | |
-| `Nexus\OrgStructure` | `US-006` | P5 | | | | |
-| `Nexus\OrgStructure` | `US-007` | P2 | | | | |
+| `Nexus\OrgStructure` | `US-001` | As an HR admin, I want to create hierarchical organizational units (departments, divisions) | | | | |
+| `Nexus\OrgStructure` | `US-002` | As an HR admin, I want to define positions within organizational units | | | | |
+| `Nexus\OrgStructure` | `US-003` | As an HR admin, I want to assign employees to positions with effective dates | | | | |
+| `Nexus\OrgStructure` | `US-004` | As an HR admin, I want to establish manager-subordinate reporting relationships | | | | |
+| `Nexus\OrgStructure` | `US-005` | As a manager, I want to view my direct and indirect reports | | | | |
+| `Nexus\OrgStructure` | `US-006` | As an analyst, I want to generate organizational charts and headcount reports | | | | |
+| `Nexus\OrgStructure` | `US-007` | As an IT admin, I want to configure directory synchronization settings | | | | |
 ### Nexus\Payroll — Detailed Numbered Requirements
 
 #### Functional Requirements
@@ -621,13 +621,13 @@ Below are the exact numbered user stories and requirements from the original `pa
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\Procurement` | `US-001` | P1 | | | | |
-| `Nexus\Procurement` | `US-002` | P2 | | | | |
-| `Nexus\Procurement` | `US-003` | P3 | | | | |
-| `Nexus\Procurement` | `US-004` | P3 | | | | |
-| `Nexus\Procurement` | `US-005` | P4 | | | | |
-| `Nexus\Procurement` | `US-006` | P5 | | | | |
-| `Nexus\Procurement` | `US-007` | P1 | | | | |
+| `Nexus\Procurement` | `US-001` | As a requester, I want to create a purchase requisition for items I need, specifying quantity, description, and estimated cost | | | | |
+| `Nexus\Procurement` | `US-002` | As a department manager, I want to approve or reject requisitions from my team members with comments | | | | |
+| `Nexus\Procurement` | `US-003` | As a procurement officer, I want to convert an approved requisition into a purchase order, selecting a vendor and negotiating final price | | | | |
+| `Nexus\Procurement` | `US-004` | As a procurement officer, I want to create purchase orders directly (without requisition) for regular/recurring purchases | | | | |
+| `Nexus\Procurement` | `US-005` | As warehouse staff, I want to record goods receipt against a PO, noting actual quantity received and any discrepancies | | | | |
+| `Nexus\Procurement` | `US-006` | As AP clerk, I want to match a vendor invoice against the PO and GRN (3-way match) before authorizing payment | | | | |
+| `Nexus\Procurement` | `US-007` | As a requester, I want to view the status of my requisitions (pending, approved, converted to PO, delivered) | | | | |
 #### Functional Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
@@ -696,13 +696,13 @@ Below are the exact numbered user stories and requirements from the original `pa
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Nexus\ProjectManagement` | `US-001` | P1 | | | | |
-| `Nexus\ProjectManagement` | `US-002` | P1 | | | | |
-| `Nexus\ProjectManagement` | `US-003` | P2 | | | | |
-| `Nexus\ProjectManagement` | `US-004` | P2 | | | | |
-| `Nexus\ProjectManagement` | `US-005` | P1 | | | | |
-| `Nexus\ProjectManagement` | `US-006` | P1 | | | | |
-| `Nexus\ProjectManagement` | `US-007` | P2 | | | | |
+| `Nexus\ProjectManagement` | `US-001` | As a project manager, I want to create a project with basic details (name, client, start/end dates, budget) | | | | |
+| `Nexus\ProjectManagement` | `US-002` | As a project manager, I want to create tasks within a project with descriptions, assignees, and due dates | | | | |
+| `Nexus\ProjectManagement` | `US-003` | As a team member, I want to view all tasks assigned to me across all projects in one place | | | | |
+| `Nexus\ProjectManagement` | `US-004` | As a team member, I want to log time against tasks (hours worked, date, description) | | | | |
+| `Nexus\ProjectManagement` | `US-005` | As a project manager, I want to view time logged by team members to track project progress | | | | |
+| `Nexus\ProjectManagement` | `US-006` | As a project manager, I want to mark tasks as complete and track project completion percentage | | | | |
+| `Nexus\ProjectManagement` | `US-007` | As a team member, I want to receive notifications when tasks are assigned to me or deadlines are approaching | | | | |
 #### Functional Requirements
 
 | Package/App (Namespace) | Requirement # | Description | Implemented in (Class / File / Method) | Status | Notes | Date |
