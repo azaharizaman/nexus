@@ -51,14 +51,16 @@ interface UomUnitInterface
     /**
      * Get the conversion factor to the base unit
      *
-     * @return string|float Decimal value
+     * @return string|float Decimal value. For high-precision calculations, the value should be returned as a string.
+     * @note The string type is preferred for precision. Implementers should use high-precision decimal libraries (e.g., Brick\Math\BigDecimal) for arithmetic.
      */
     public function getConversionFactor(): string|float;
 
     /**
      * Get the offset for conversion (used for temperature, etc.)
      *
-     * @return string|float|null Decimal value
+     * @return string|float|null Decimal value. For high-precision calculations, the value should be returned as a string.
+     * @note The string type is preferred for precision. Implementers should use high-precision decimal libraries (e.g., Brick\Math\BigDecimal) for arithmetic.
      */
     public function getOffset(): string|float|null;
 
