@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace Nexus\AuditLog\Contracts;
 
-use Carbon\Carbon;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
-use Nexus\AuditLog\Models\AuditLog;
-
 /**
  * Audit Log Repository Contract
  *
  * Defines the interface for audit log data access operations.
  * Implementations must provide append-only storage with tenant isolation.
  * 
- * NOTE: Uses internal AuditLog model to remove external dependencies
- * and enable independent testing of the atomic package.
+ * This contract is framework-agnostic and defines persistence needs
+ * without depending on Laravel or any concrete implementations.
  */
 interface AuditLogRepositoryContract
 {
@@ -26,17 +21,17 @@ interface AuditLogRepositoryContract
      * This is an append-only operation - no updates or deletes allowed.
      *
      * @param  array<string, mixed>  $data  Log entry data
-     * @return AuditLog Created audit log instance
+     * @return AuditLogInterface Created audit log instance
      */
-    public function create(array $data): AuditLog;
+    public function create(array $data): AuditLogInterface;
 
     /**
      * Find an audit log by ID
      *
      * @param  int  $id  Audit log ID
-     * @return AuditLog|null Audit log instance or null if not found
+     * @return AuditLogInterface|null Audit log instance or null if not found
      */
-    public function find(int $id): ?AuditLog;
+    public function find(int $id): ?AuditLogInterface;
 
     /**
      * Search audit logs with filters and pagination
@@ -55,9 +50,9 @@ interface AuditLogRepositoryContract
      *
      * @param  array<string, mixed>  $filters  Search filters
      * @param  int  $perPage  Results per page (max 1000)
-     * @return LengthAwarePaginator Paginated results
+     * @return array{data: array<int, AuditLogInterface>, total: int, per_page: int, current_page: int, last_page: int}
      */
-    public function search(array $filters, int $perPage = 50): LengthAwarePaginator;
+    public function search(array $filters, int $perPage = 50): array;
 
     /**
      * Get audit logs for a specific subject
@@ -65,9 +60,9 @@ interface AuditLogRepositoryContract
      * @param  string  $subjectType  Model class name
      * @param  int  $subjectId  Model ID
      * @param  int  $limit  Maximum results
-     * @return Collection<int, AuditLog> Audit logs collection
+     * @return array<int, AuditLogInterface> Audit logs array
      */
-    public function getForSubject(string $subjectType, int $subjectId, int $limit = 100): Collection;
+    public function getForSubject(string $subjectType, int $subjectId, int $limit = 100): array;
 
     /**
      * Get audit logs by causer
@@ -75,30 +70,30 @@ interface AuditLogRepositoryContract
      * @param  string  $causerType  Model class name
      * @param  int  $causerId  Model ID
      * @param  int  $limit  Maximum results
-     * @return Collection<int, AuditLog> Audit logs collection
+     * @return array<int, AuditLogInterface> Audit logs array
      */
-    public function getByCauser(string $causerType, int $causerId, int $limit = 100): Collection;
+    public function getByCauser(string $causerType, int $causerId, int $limit = 100): array;
 
     /**
      * Get audit logs within a date range
      *
-     * @param  Carbon  $from  Start date
-     * @param  Carbon  $to  End date
+     * @param  \DateTimeInterface  $from  Start date
+     * @param  \DateTimeInterface  $to  End date
      * @param  string|null  $tenantId  Tenant ID for filtering
-     * @return Collection<int, AuditLog> Audit logs collection
+     * @return array<int, AuditLogInterface> Audit logs array
      */
-    public function getByDateRange(Carbon $from, Carbon $to, ?string $tenantId = null): Collection;
+    public function getByDateRange(\DateTimeInterface $from, \DateTimeInterface $to, ?string $tenantId = null): array;
 
     /**
      * Purge audit logs older than specified date
      *
      * Used for retention policy enforcement.
      *
-     * @param  Carbon  $before  Delete logs older than this date
+     * @param  \DateTimeInterface  $before  Delete logs older than this date
      * @param  string|null  $tenantId  Optional tenant ID for tenant-specific purging
      * @return int Number of logs purged
      */
-    public function purgeExpired(Carbon $before, ?string $tenantId = null): int;
+    public function purgeExpired(\DateTimeInterface $before, ?string $tenantId = null): int;
 
     /**
      * Get activity statistics
@@ -116,7 +111,7 @@ interface AuditLogRepositoryContract
      *
      * @param  array<string, mixed>  $filters  Export filters
      * @param  int  $maxRecords  Maximum records to export
-     * @return Collection<int, AuditLog> Audit logs collection
+     * @return array<int, AuditLogInterface> Audit logs array
      */
-    public function export(array $filters, int $maxRecords = 10000): Collection;
+    public function export(array $filters, int $maxRecords = 10000): array;
 }
