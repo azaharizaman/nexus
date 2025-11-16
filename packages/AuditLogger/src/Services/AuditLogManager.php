@@ -153,7 +153,7 @@ class AuditLogManager
             throw new AuditLogException('Description is required');
         }
 
-        if (isset($data['audit_level']) && !in_array($data['audit_level'], [1, 2, 3, 4])) {
+        if (isset($data['audit_level']) && !in_array($data['audit_level'], [1, 2, 3, 4], true)) {
             throw new AuditLogException('Audit level must be 1 (Low), 2 (Medium), 3 (High), or 4 (Critical)');
         }
 
